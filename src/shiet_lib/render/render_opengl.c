@@ -6,15 +6,14 @@
 
 static void shiet_render_opengl__initialize(const unsigned windowWidth,
                                             const unsigned windowHeight,
-                                            const unsigned windowBPP,
                                             const char *const windowTitle)
 {
-    shiet_surface_opengl__create_surface(windowWidth, windowHeight, windowBPP, windowTitle);
+    shiet_surface_opengl__create_surface(windowWidth, windowHeight, windowTitle);
 
     return;
 }
 
-void shiet_render__get_function_pointers(struct shiet_interface_s *const interface)
+void shiet_render__get_function_pointers(struct shiet_render_interface_s *const interface)
 {
     interface->window.is_window_open = shiet_window_win32__is_window_open;
     interface->window.update_window = shiet_surface_opengl__update_surface;

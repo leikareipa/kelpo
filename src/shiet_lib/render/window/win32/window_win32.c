@@ -70,7 +70,7 @@ void shiet_window_win32__get_window_handle(void **handle)
     return;
 }
 
-void shiet_window_win32__create_window(const unsigned width, const unsigned height, const unsigned bpp, const char *const title)
+void shiet_window_win32__create_window(const unsigned width, const unsigned height, const char *const title)
 {
     const DWORD dwStyle = (WS_CAPTION | WS_BORDER | WS_SYSMENU);
     const HINSTANCE hInstance = GetModuleHandle(NULL);

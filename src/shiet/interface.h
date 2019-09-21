@@ -1,9 +1,9 @@
 #ifndef SHIET_INTERFACE_H_
 #define SHIET_INTERFACE_H_
 
-struct shiet_interface_s
+struct shiet_render_interface_s
 {
-    void (*initialize)(const unsigned, const unsigned, const unsigned, const char *const);
+    void (*initialize)(const unsigned, const unsigned, const char *const);
 
     struct
     {
@@ -38,6 +38,6 @@ struct shiet_interface_s
     } metadata;
 };
 
-struct shiet_interface_s shiet_create_interface(const char *const rasterizer);
+struct shiet_render_interface_s shiet_create_render_interface(const char *const rasterizer);
 
 #endif

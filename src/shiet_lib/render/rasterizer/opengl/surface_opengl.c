@@ -98,7 +98,6 @@ void shiet_surface_opengl__update_surface(void)
 
 void shiet_surface_opengl__create_surface(const unsigned width,
                                           const unsigned height,
-                                          const unsigned bpp,
                                           const char *const windowTitle)
 {
     GLuint pixelFormat;
@@ -123,7 +122,7 @@ void shiet_surface_opengl__create_surface(const unsigned width,
         0, 0, 0
     };
 
-    shiet_window_win32__create_window(width, height, bpp, windowTitle);
+    shiet_window_win32__create_window(width, height, windowTitle);
     shiet_window_win32__get_window_handle((void*)&WINDOW_HANDLE);
     
     WINDOW_DC = GetDC(WINDOW_HANDLE);

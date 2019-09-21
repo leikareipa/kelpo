@@ -17,7 +17,7 @@ int main(void)
 
     while (shiet.window.is_window_open())
     {
-        shiet.rasterize.clear_frame();
+        shiet.rasterizer.clear_frame();
         shiet.window.update_window();
     }
 

@@ -15,20 +15,15 @@ struct shiet_render_interface_s
 
     struct
     {
-        int placeholder;
-    } transform;
-
-    struct
-    {
         void (*clear_frame)(void);
         /*release*/
         /*framebuffer*/
         /*draw_triangles*/
         /*add_texture*/
         /*update_texture*/
-        /*rasterizer_nam*/
+        /*rasterizer_name*/
         /*rasterizer_version*/
-    } rasterize;
+    } rasterizer;
 
     struct
     {

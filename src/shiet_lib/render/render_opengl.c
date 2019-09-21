@@ -19,7 +19,7 @@ void shiet_render__get_function_pointers(struct shiet_render_interface_s *const 
     interface->window.update_window = shiet_surface_opengl__update_surface;
     interface->window.get_handle = shiet_window_win32__get_window_handle;
 
-    interface->rasterize.clear_frame = shiet_rasterize_opengl__clear_frame;
+    interface->rasterizer.clear_frame = shiet_rasterizer_opengl__clear_frame;
 
     interface->initialize = shiet_render_opengl__initialize;
 

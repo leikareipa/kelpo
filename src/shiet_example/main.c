@@ -13,9 +13,14 @@ int main(void)
     struct shiet_render_interface_s shiet = shiet_create_render_interface("opengl");
 
     snprintf(windowTitle, NUM_ARRAY_ELEMENTS(windowTitle),
-             "shiet %d.%d.%d", shiet.metadata.shietMajorVersion,
-                               shiet.metadata.shietMinorVersion,
-                               shiet.metadata.shietPatchVersion);
+             "shiet %d.%d.%d / %s renderer %d.%d.%d",
+             shiet.metadata.shietMajorVersion,
+             shiet.metadata.shietMinorVersion,
+             shiet.metadata.shietPatchVersion,
+             shiet.metadata.rendererName,
+             shiet.metadata.rendererMajorVersion,
+             shiet.metadata.rendererMinorVersion,
+             shiet.metadata.rendererPatchVersion);
 
     shiet.initialize(800, 600, windowTitle);
 

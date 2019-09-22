@@ -23,11 +23,7 @@ struct shiet_render_interface_s
         void (*draw_triangles)(struct shiet_polygon_triangle_s *const, const unsigned);
         /*release*/
         /*framebuffer*/
-        /*draw_triangles*/
-        /*add_texture*/
         /*update_texture*/
-        /*rasterizer_name*/
-        /*rasterizer_version*/
     } rasterizer;
 
     struct
@@ -35,6 +31,11 @@ struct shiet_render_interface_s
         unsigned shietMajorVersion;
         unsigned shietMinorVersion;
         unsigned shietPatchVersion;
+
+        const char *rendererName;
+        unsigned rendererMajorVersion;
+        unsigned rendererMinorVersion;
+        unsigned rendererPatchVersion;
     } metadata;
 };
 

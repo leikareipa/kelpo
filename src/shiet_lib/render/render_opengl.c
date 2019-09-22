@@ -4,6 +4,9 @@
 #include "shiet_lib/render/window/win32/window_win32.h"
 #include "shiet/interface.h"
 
+static const char RENDERER_NAME[] = "OpenGL";
+static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/
+
 static void shiet_render_opengl__initialize(const unsigned windowWidth,
                                             const unsigned windowHeight,
                                             const char *const windowTitle)
@@ -22,6 +25,11 @@ void shiet_render__get_function_pointers(struct shiet_render_interface_s *const 
     interface->rasterizer.clear_frame = shiet_rasterizer_opengl__clear_frame;
     interface->rasterizer.draw_triangles = shiet_rasterizer_opengl__draw_triangles;
     interface->rasterizer.upload_texture = shiet_rasterizer_opengl__upload_texture;
+
+    interface->metadata.rendererName = RENDERER_NAME;
+    interface->metadata.rendererMajorVersion = RENDERER_VERSION[0];
+    interface->metadata.rendererMinorVersion = RENDERER_VERSION[1];
+    interface->metadata.rendererPatchVersion = RENDERER_VERSION[2];
 
     interface->initialize = shiet_render_opengl__initialize;
 

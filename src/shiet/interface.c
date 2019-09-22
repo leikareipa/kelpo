@@ -9,18 +9,18 @@
     #error "Unknown platform."
 #endif
 
-typedef void *(*dll_init_t)(struct shiet_render_interface_s *const);
+typedef void *(*dll_init_t)(struct shiet_renderer_interface_s *const);
 
-struct shiet_render_interface_s shiet_create_render_interface(const char *const rasterizer)
+struct shiet_renderer_interface_s shiet_create_render_interface(const char *const rasterizer)
 {
     #define rasterizer_name_is(name) (strcmp(rasterizer, "opengl") == 0)
 
     dll_init_t get_interface_pointers = NULL;
-    struct shiet_render_interface_s intf = {NULL};
+    struct shiet_renderer_interface_s intf = {NULL};
 
     if (rasterizer_name_is("opengl"))
     {
-        get_interface_pointers = (dll_init_t)dll_function_address("shiet_render_opengl.dll", "shiet_render__get_function_pointers");
+        get_interface_pointers = (dll_init_t)dll_function_address("shiet_renderer_opengl.dll", "shiet_renderer__get_function_pointers");
     }
     else
     {

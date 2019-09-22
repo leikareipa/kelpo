@@ -4,7 +4,7 @@
 struct shiet_polygon_triangle_s;
 struct shiet_polygon_texture_s;
 
-struct shiet_render_interface_s
+struct shiet_renderer_interface_s
 {
     void (*initialize)(const unsigned, const unsigned, const char *const);
 
@@ -39,6 +39,6 @@ struct shiet_render_interface_s
     } metadata;
 };
 
-struct shiet_render_interface_s shiet_create_render_interface(const char *const rasterizer);
+struct shiet_renderer_interface_s shiet_create_render_interface(const char *const rasterizer);
 
 #endif

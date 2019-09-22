@@ -1,13 +1,13 @@
 #include <stdio.h>
-#include "shiet_lib/render/rasterizer/opengl/rasterizer_opengl.h"
-#include "shiet_lib/render/rasterizer/opengl/surface_opengl.h"
-#include "shiet_lib/render/window/win32/window_win32.h"
+#include "shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h"
+#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl.h"
+#include "shiet_lib/renderer/window/win32/window_win32.h"
 #include "shiet/interface.h"
 
 static const char RENDERER_NAME[] = "OpenGL";
 static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/
 
-static void shiet_render_opengl__initialize(const unsigned windowWidth,
+static void shiet_renderer_opengl__initialize(const unsigned windowWidth,
                                             const unsigned windowHeight,
                                             const char *const windowTitle)
 {
@@ -16,7 +16,7 @@ static void shiet_render_opengl__initialize(const unsigned windowWidth,
     return;
 }
 
-void shiet_render__get_function_pointers(struct shiet_render_interface_s *const interface)
+void shiet_renderer__get_function_pointers(struct shiet_renderer_interface_s *const interface)
 {
     interface->window.is_window_open = shiet_window_win32__is_window_open;
     interface->window.update_window = shiet_surface_opengl__update_surface;
@@ -31,7 +31,7 @@ void shiet_render__get_function_pointers(struct shiet_render_interface_s *const 
     interface->metadata.rendererMinorVersion = RENDERER_VERSION[1];
     interface->metadata.rendererPatchVersion = RENDERER_VERSION[2];
 
-    interface->initialize = shiet_render_opengl__initialize;
+    interface->initialize = shiet_renderer_opengl__initialize;
 
     return;
 }

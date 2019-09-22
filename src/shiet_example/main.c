@@ -10,7 +10,7 @@ int main(void)
     char windowTitle[64];
     struct shiet_polygon_texture_s texture;
     struct shiet_polygon_triangle_s triangles[1];
-    struct shiet_render_interface_s shiet = shiet_create_render_interface("opengl");
+    struct shiet_renderer_interface_s shiet = shiet_create_render_interface("opengl");
 
     snprintf(windowTitle, NUM_ARRAY_ELEMENTS(windowTitle),
              "shiet %d.%d.%d / %s renderer %d.%d.%d",

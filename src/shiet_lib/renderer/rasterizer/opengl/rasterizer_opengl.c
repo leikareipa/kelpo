@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "shiet_lib/render/rasterizer/opengl/rasterizer_opengl.h"
+#include "shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h"
 #include "shiet/polygon/triangle/triangle.h"
 #include "shiet/polygon/texture.h"
 

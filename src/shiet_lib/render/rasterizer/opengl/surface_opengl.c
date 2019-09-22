@@ -4,11 +4,13 @@
  */
 
 #include <assert.h>
-#include <windows.h>
-#include <gl/glu.h>
-#include <gl/gl.h>
 #include "shiet_lib/render/rasterizer/opengl/surface_opengl.h"
 #include "shiet_lib/render/window/win32/window_win32.h"
+
+#include <windows.h>
+
+#include <gl/glu.h>
+#include <gl/gl.h>
 
 static HDC WINDOW_DC = 0;
 static HGLRC RENDER_CONTEXT = 0;

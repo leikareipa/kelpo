@@ -1,9 +1,10 @@
 #include <stddef.h>
-#include <gl/gl.h>
-#include <gl/glext.h>
 #include "shiet_lib/render/rasterizer/opengl/rasterizer_opengl.h"
 #include "shiet/polygon/triangle/triangle.h"
 #include "shiet/polygon/texture.h"
+
+#include <gl/gl.h>
+#include <gl/glext.h>
 
 void shiet_rasterizer_opengl__clear_frame(void)
 {

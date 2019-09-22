@@ -3,11 +3,11 @@
 # Build shiet for Win32.
 
 GCC_PATH=~/compi/mingw471
-OUTPUT_FILE_NAME="shiet.exe"
+OUTPUT_FILE_NAME="shiet_example.exe"
 BUILD_OPTIONS="-nostdinc -s -ansi -pedantic -Wall -march=pentium -I./src/ -I$GCC_PATH/lib/gcc/mingw32/4.7.1/include -I$GCC_PATH/include"
 
 SRC_FILES="
-src\\main.c
+src\\shiet_example\\main.c
 src\\shiet\\interface.c
 "
 

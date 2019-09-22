@@ -13,20 +13,18 @@
 static HDC WINDOW_DC = 0;
 static HGLRC RENDER_CONTEXT = 0;
 static HWND WINDOW_HANDLE = 0;
-static unsigned WINDOW_WIDTH = 640;
-static unsigned WINDOW_HEIGHT = 400;
+static unsigned WINDOW_WIDTH = 0;
+static unsigned WINDOW_HEIGHT = 0;
 
 static void resize_gl(GLsizei width, GLsizei height)
 {
-    glViewport(0, 0, width, height);
-
     glLoadIdentity();
     glTranslatef(0, 0, -1);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 8000);
+    glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -86,13 +84,6 @@ void shiet_surface_opengl__update_surface(void)
 
     SwapBuffers(WINDOW_DC);
 
-    #if 0
-        if (kdc_is_window_active())
-        {
-            kdc_update_keypress_info();
-        }
-    #endif
-
     return;
 }
 
@@ -124,7 +115,9 @@ void shiet_surface_opengl__create_surface(const unsigned width,
 
     shiet_window_win32__create_window(width, height, windowTitle);
     shiet_window_win32__get_window_handle((void*)&WINDOW_HANDLE);
-    
+
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
     WINDOW_DC = GetDC(WINDOW_HANDLE);
     pixelFormat = ChoosePixelFormat(WINDOW_DC, &pfd);
 

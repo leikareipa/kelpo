@@ -14,8 +14,8 @@
 static char WINDOW_CLASS_NAME[] = "ShietDisplay";
 static char WINDOW_TITLE[64];
 static HWND WINDOW_HANDLE = 0;
-static unsigned WINDOW_WIDTH = 640;
-static unsigned WINDOW_HEIGHT = 400;
+static unsigned WINDOW_WIDTH = 0;
+static unsigned WINDOW_HEIGHT = 0;
 static int WINDOW_ACTIVE = 0;
 
 int shiet_window_win32__is_window_open(void)

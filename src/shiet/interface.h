@@ -1,6 +1,8 @@
 #ifndef SHIET_INTERFACE_H_
 #define SHIET_INTERFACE_H_
 
+struct shiet_polygon_triangle_s;
+
 struct shiet_render_interface_s
 {
     void (*initialize)(const unsigned, const unsigned, const char *const);
@@ -16,6 +18,7 @@ struct shiet_render_interface_s
     struct
     {
         void (*clear_frame)(void);
+        void (*draw_triangles)(struct shiet_polygon_triangle_s *const, const unsigned);
         /*release*/
         /*framebuffer*/
         /*draw_triangles*/

@@ -13,7 +13,6 @@
 #include <gl/gl.h>
 
 static HDC WINDOW_DC = 0;
-static HGLRC RENDER_CONTEXT = 0;
 static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
@@ -38,13 +37,9 @@ static void resize_gl(GLsizei width, GLsizei height)
 
 static void initialize_gl_state(void)
 {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-
+	glDisable(GL_DEPTH_TEST);
 	glAlphaFunc(GL_GREATER, 0);
-
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClearDepth(1.0f);
 
     return;
 }
@@ -93,8 +88,6 @@ void shiet_surface_opengl__create_surface(const unsigned width,
                                           const unsigned height,
                                           const char *const windowTitle)
 {
-    GLuint pixelFormat;
-
     PIXELFORMATDESCRIPTOR pfd =
     {
         sizeof(PIXELFORMATDESCRIPTOR),
@@ -121,15 +114,14 @@ void shiet_surface_opengl__create_surface(const unsigned width,
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     WINDOW_DC = GetDC(WINDOW_HANDLE);
-    pixelFormat = ChoosePixelFormat(WINDOW_DC, &pfd);
 
-    if (!SetPixelFormat(WINDOW_DC, pixelFormat, &pfd))
+    if (!SetPixelFormat(WINDOW_DC, ChoosePixelFormat(WINDOW_DC, &pfd), &pfd))
     {
         assert(0 && "Failed to obtain an OpenGL-compatible display.");
         return;
     }
-    RENDER_CONTEXT = wglCreateContext(WINDOW_DC);
-    if (!wglMakeCurrent(WINDOW_DC, RENDER_CONTEXT))
+
+    if (!wglMakeCurrent(WINDOW_DC, wglCreateContext(WINDOW_DC)))
     {
         assert(0 && "Failed to obtain an OpenGL-compatible display.");
         return;

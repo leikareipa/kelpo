@@ -4,7 +4,7 @@
  */
 
 #include <assert.h>
-#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl.h"
+#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.h"
 #include "shiet_lib/renderer/window/win32/window_win32.h"
 
 #include <windows.h>
@@ -62,12 +62,12 @@ static void set_gl_vsync(const int vsyncOn)
 	return;
 }
 
-void shiet_surface_opengl__release_surface(void)
+void shiet_surface_opengl_win32__release_surface(void)
 {
     return;
 }
 
-void shiet_surface_opengl__update_surface(void)
+void shiet_surface_opengl_win32__update_surface(void)
 {
     MSG m;
 
@@ -84,9 +84,9 @@ void shiet_surface_opengl__update_surface(void)
     return;
 }
 
-void shiet_surface_opengl__create_surface(const unsigned width,
-                                          const unsigned height,
-                                          const char *const windowTitle)
+void shiet_surface_opengl_win32__create_surface(const unsigned width,
+                                                const unsigned height,
+                                                const char *const windowTitle)
 {
     PIXELFORMATDESCRIPTOR pfd =
     {

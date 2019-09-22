@@ -11,7 +11,7 @@ static void shiet_renderer_opengl__initialize(const unsigned windowWidth,
                                             const unsigned windowHeight,
                                             const char *const windowTitle)
 {
-    shiet_surface_opengl__create_surface(windowWidth, windowHeight, windowTitle);
+    shiet_surface_opengl_win32__create_surface(windowWidth, windowHeight, windowTitle);
 
     return;
 }
@@ -19,7 +19,7 @@ static void shiet_renderer_opengl__initialize(const unsigned windowWidth,
 void shiet_renderer__get_function_pointers(struct shiet_renderer_interface_s *const interface)
 {
     interface->window.is_window_open = shiet_window_win32__is_window_open;
-    interface->window.update_window = shiet_surface_opengl__update_surface;
+    interface->window.update_window = shiet_surface_opengl_win32__update_surface;
     interface->window.get_handle = shiet_window_win32__get_window_handle;
 
     interface->rasterizer.clear_frame = shiet_rasterizer_opengl__clear_frame;

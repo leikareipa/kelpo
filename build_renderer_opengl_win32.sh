@@ -9,7 +9,7 @@ BUILD_OPTIONS="-shared -nostdinc -s -ansi -pedantic -Wall -march=pentium -I./src
 SRC_FILES="
 src\\shiet_lib\\renderer\\renderer_opengl.c
 src\\shiet_lib\\renderer\\rasterizer\\opengl\\rasterizer_opengl.c
-src\\shiet_lib\\renderer\\rasterizer\\opengl\\surface_opengl.c
+src\\shiet_lib\\renderer\\rasterizer\\opengl\\surface_opengl_win32.c
 src\\shiet_lib\\renderer\\window\\win32\\window_win32.c
 "
 

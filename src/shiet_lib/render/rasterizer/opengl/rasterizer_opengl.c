@@ -19,13 +19,16 @@ void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *co
 
 	for (i = 0; i < numTriangles; i++)
 	{
-		const struct shiet_polygon_texture_s *const texture = triangles[i].material.texturePtr;
+		const struct shiet_polygon_texture_s *const texture = triangles[i].material.texture;
 
 		/* If the triangle has no texture, draw it with a solid fill of its base color.*/
 		if (texture == NULL)
 		{
 			glDisable(GL_TEXTURE_2D);
-			glColor4ub(255, 255, 0, 255);
+			glColor4ub(triangles[i].material.baseColor[0],
+			           triangles[i].material.baseColor[1],
+					   triangles[i].material.baseColor[2],
+					   triangles[i].material.baseColor[3]);
 
 			glBegin(GL_TRIANGLES);
 				glVertex2f(triangles[i].vertex[0].x, -triangles[i].vertex[0].y);

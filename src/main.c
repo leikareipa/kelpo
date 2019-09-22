@@ -22,7 +22,10 @@ int main(void)
     triangles[0].vertex[1].y = 150;
     triangles[0].vertex[2].x = 550;
     triangles[0].vertex[2].y = 450;
-    triangles[0].material.texturePtr = NULL;
+    triangles[0].material.texture = NULL;
+    triangles[0].material.baseColor[0] = 128;
+    triangles[0].material.baseColor[1] = 192;
+    triangles[0].material.baseColor[2] = 64;
 
     while (shiet.window.is_window_open())
     {

@@ -21,6 +21,7 @@ void shiet_render__get_function_pointers(struct shiet_render_interface_s *const 
 
     interface->rasterizer.clear_frame = shiet_rasterizer_opengl__clear_frame;
     interface->rasterizer.draw_triangles = shiet_rasterizer_opengl__draw_triangles;
+    interface->rasterizer.upload_texture = shiet_rasterizer_opengl__upload_texture;
 
     interface->initialize = shiet_render_opengl__initialize;
 

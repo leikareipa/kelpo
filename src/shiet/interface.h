@@ -2,6 +2,7 @@
 #define SHIET_INTERFACE_H_
 
 struct shiet_polygon_triangle_s;
+struct shiet_polygon_texture_s;
 
 struct shiet_render_interface_s
 {
@@ -18,6 +19,7 @@ struct shiet_render_interface_s
     struct
     {
         void (*clear_frame)(void);
+        void (*upload_texture)(struct shiet_polygon_texture_s *const);
         void (*draw_triangles)(struct shiet_polygon_triangle_s *const, const unsigned);
         /*release*/
         /*framebuffer*/

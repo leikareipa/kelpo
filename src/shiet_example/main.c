@@ -7,20 +7,19 @@
 
 int main(void)
 {
-    char windowTitle[64];
+    char windowTitle[128];
     struct shiet_polygon_texture_s texture;
     struct shiet_polygon_triangle_s triangles[1];
     struct shiet_renderer_interface_s shiet = shiet_create_render_interface("opengl");
 
-    snprintf(windowTitle, NUM_ARRAY_ELEMENTS(windowTitle),
-             "shiet %d.%d.%d / %s renderer %d.%d.%d",
-             shiet.metadata.shietMajorVersion,
-             shiet.metadata.shietMinorVersion,
-             shiet.metadata.shietPatchVersion,
-             shiet.metadata.rendererName,
-             shiet.metadata.rendererMajorVersion,
-             shiet.metadata.rendererMinorVersion,
-             shiet.metadata.rendererPatchVersion);
+    sprintf(windowTitle, "shiet %d.%d.%d / %s renderer %d.%d.%d",
+            shiet.metadata.shietMajorVersion,
+            shiet.metadata.shietMinorVersion,
+            shiet.metadata.shietPatchVersion,
+            shiet.metadata.rendererName,
+            shiet.metadata.rendererMajorVersion,
+            shiet.metadata.rendererMinorVersion,
+            shiet.metadata.rendererPatchVersion);
 
     shiet.initialize(800, 600, windowTitle);
 

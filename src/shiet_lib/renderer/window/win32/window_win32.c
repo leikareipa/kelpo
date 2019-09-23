@@ -81,7 +81,8 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
 
-    snprintf(WINDOW_TITLE, NUM_ARRAY_ELEMENTS(WINDOW_TITLE), "%s", title);
+    assert((strlen(title) < NUM_ARRAY_ELEMENTS(WINDOW_TITLE)) && "The given window title is too long.");
+    sprintf(WINDOW_TITLE, "%s", title);
 
     memset(&wc, 0, sizeof(wc));
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;

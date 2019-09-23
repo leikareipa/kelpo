@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.h"
 #include "shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h"
-#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl.h"
 #include "shiet_lib/renderer/window/win32/window_win32.h"
 #include "shiet/interface.h"
 

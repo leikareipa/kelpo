@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Build shiet for Win32.
+# Build shiet for Win32 using MinGW via Wine in Linux.
 
 GCC_PATH=~/compi/mingw471
 OUTPUT_FILE_NAME="shiet_example.exe"

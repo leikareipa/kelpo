@@ -37,8 +37,8 @@ static void resize_gl(GLsizei width, GLsizei height)
 
 static void initialize_gl_state(void)
 {
-	glDisable(GL_DEPTH_TEST);
-	glAlphaFunc(GL_GREATER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glAlphaFunc(GL_GREATER, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     return;
@@ -46,20 +46,20 @@ static void initialize_gl_state(void)
 
 static void set_gl_vsync(const int vsyncOn)
 {
-	typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC) (int interval);
-	const char *const extensions = (char*)glGetString(GL_EXTENSIONS);
+    typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC) (int interval);
+    const char *const extensions = (char*)glGetString(GL_EXTENSIONS);
 
-	if (strstr(extensions,"WGL_EXT_swap_control"))
-	{
-		PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-		wglSwapIntervalEXT(vsyncOn);
-	}
-	else
-	{
-		/* TODO: Handle vsync not supported by video card.*/
-	}
+    if (strstr(extensions,"WGL_EXT_swap_control"))
+    {
+        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+        wglSwapIntervalEXT(vsyncOn);
+    }
+    else
+    {
+        /* TODO: Handle vsync not supported by video card.*/
+    }
 
-	return;
+    return;
 }
 
 void shiet_surface_opengl_win32__release_surface(void)
@@ -133,7 +133,7 @@ void shiet_surface_opengl_win32__create_surface(const unsigned width,
 
     resize_gl(WINDOW_WIDTH, WINDOW_HEIGHT);
     initialize_gl_state();
-	set_gl_vsync(1);
+    set_gl_vsync(1);
 
     UpdateWindow(WINDOW_HANDLE);
 

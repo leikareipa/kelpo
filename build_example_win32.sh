@@ -8,6 +8,7 @@ BUILD_OPTIONS="-nostdinc -s -ansi -pedantic -Wall -march=pentium -I ./src/ -isys
 
 SRC_FILES="
 src\\shiet_example\\main.c
+src\\shiet_example\\poly_transform.c
 src\\shiet\\interface.c
 "
 

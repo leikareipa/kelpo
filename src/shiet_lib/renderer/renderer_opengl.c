@@ -8,15 +8,15 @@ static const char RENDERER_NAME[] = "OpenGL";
 static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/
 
 static void shiet_renderer_opengl__initialize(const unsigned windowWidth,
-                                            const unsigned windowHeight,
-                                            const char *const windowTitle)
+                                              const unsigned windowHeight,
+                                              const char *const windowTitle)
 {
     shiet_surface_opengl_win32__create_surface(windowWidth, windowHeight, windowTitle);
 
     return;
 }
 
-void shiet_renderer__get_function_pointers(struct shiet_renderer_interface_s *const interface)
+void shiet_renderer__set_function_pointers(struct shiet_renderer_interface_s *const interface)
 {
     interface->window.is_window_open = shiet_window_win32__is_window_open;
     interface->window.update_window = shiet_surface_opengl_win32__update_surface;

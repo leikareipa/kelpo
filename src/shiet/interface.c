@@ -11,32 +11,32 @@
 
 typedef void *(*dll_init_t)(struct shiet_renderer_interface_s *const);
 
-struct shiet_renderer_interface_s shiet_create_render_interface(const char *const rasterizer)
+struct shiet_renderer_interface_s shiet_create_renderer_interface(const char *const rasterizerName)
 {
-    #define rasterizer_name_is(name) (strcmp(rasterizer, "opengl") == 0)
+    #define rasterizer_name_is(string) (strcmp(rasterizerName, string) == 0)
 
-    dll_init_t get_interface_pointers = NULL;
-    struct shiet_renderer_interface_s intf = {NULL};
+    dll_init_t set_interface_pointers = NULL;
+    struct shiet_renderer_interface_s renderer = {NULL};
 
-    if (rasterizer_name_is("opengl"))
+    if (rasterizer_name_is("OpenGL"))
     {
-        get_interface_pointers = (dll_init_t)dll_function_address("shiet_renderer_opengl.dll", "shiet_renderer__get_function_pointers");
+        set_interface_pointers = (dll_init_t)dll_function_address("shiet_renderer_opengl.dll", "shiet_renderer__set_function_pointers");
     }
     else
     {
         assert(0 && "Unrecognized rasterizer name.");
     }
 
-    assert(get_interface_pointers && "Failed to fetch render library pointers.");
-    get_interface_pointers(&intf);
+    assert(set_interface_pointers && "Failed to fetch renderer library pointers.");
+    set_interface_pointers(&renderer);
 
     #undef rasterizer_name_is
 
-    intf.metadata.shietMajorVersion = 0;
-    intf.metadata.shietMinorVersion = 0;
-    intf.metadata.shietPatchVersion = 1;
+    renderer.metadata.shietMajorVersion = 0;
+    renderer.metadata.shietMinorVersion = 0;
+    renderer.metadata.shietPatchVersion = 1;
 
-    return intf;
+    return renderer;
 }
 
 #undef dll_address

@@ -10,18 +10,18 @@ int main(void)
     char windowTitle[128];
     struct shiet_polygon_texture_s texture;
     struct shiet_polygon_triangle_s triangles[1];
-    struct shiet_renderer_interface_s shiet = shiet_create_render_interface("opengl");
+    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
 
     sprintf(windowTitle, "shiet %d.%d.%d / %s renderer %d.%d.%d",
-            shiet.metadata.shietMajorVersion,
-            shiet.metadata.shietMinorVersion,
-            shiet.metadata.shietPatchVersion,
-            shiet.metadata.rendererName,
-            shiet.metadata.rendererMajorVersion,
-            shiet.metadata.rendererMinorVersion,
-            shiet.metadata.rendererPatchVersion);
+            renderer.metadata.shietMajorVersion,
+            renderer.metadata.shietMinorVersion,
+            renderer.metadata.shietPatchVersion,
+            renderer.metadata.rendererName,
+            renderer.metadata.rendererMajorVersion,
+            renderer.metadata.rendererMinorVersion,
+            renderer.metadata.rendererPatchVersion);
 
-    shiet.initialize(800, 600, windowTitle);
+    renderer.initialize(800, 600, windowTitle);
 
     /* Set up a basic texture, for testing.*/
     {
@@ -50,7 +50,7 @@ int main(void)
         texture.pixelArray[13] = 0;
         texture.pixelArray[14] = 255;
 
-        shiet.rasterizer.upload_texture(&texture);
+        renderer.rasterizer.upload_texture(&texture);
     }
 
     /* Set up a basic triangle in the middle of the screen, for testing.*/
@@ -79,11 +79,11 @@ int main(void)
         triangles[0].material.baseColor[2] = 64;
     }
 
-    while (shiet.window.is_window_open())
+    while (renderer.window.is_window_open())
     {
-        shiet.rasterizer.clear_frame();
-        shiet.rasterizer.draw_triangles(triangles, 1);
-        shiet.window.update_window();
+        renderer.rasterizer.clear_frame();
+        renderer.rasterizer.draw_triangles(triangles, 1);
+        renderer.window.update_window();
     }
 
     free(texture.pixelArray);

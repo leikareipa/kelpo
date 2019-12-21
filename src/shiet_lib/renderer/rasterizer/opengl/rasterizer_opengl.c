@@ -35,7 +35,6 @@ void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *co
     {
         const struct shiet_polygon_texture_s *const texture = triangles[i].material.texture;
 
-        /* If the triangle has no texture, draw it with a solid fill of its base color.*/
         if (texture == NULL)
         {
             glDisable(GL_TEXTURE_2D);
@@ -50,7 +49,6 @@ void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *co
                 glVertex2f(triangles[i].vertex[2].x, -triangles[i].vertex[2].y);
             glEnd();
         }
-        /* Otherwise, draw the triangle with a texture.*/
         else
         {
             const float w = triangles[i].vertex[0].w;

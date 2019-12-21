@@ -39,6 +39,6 @@ struct shiet_renderer_interface_s
     } metadata;
 };
 
-struct shiet_renderer_interface_s shiet_create_render_interface(const char *const rasterizer);
+struct shiet_renderer_interface_s shiet_create_renderer_interface(const char *const rasterizerName);
 
 #endif

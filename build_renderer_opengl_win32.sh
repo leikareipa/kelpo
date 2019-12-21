@@ -4,7 +4,7 @@
 
 GCC_PATH=~/compi/mingw471
 OUTPUT_FILE_NAME="shiet_renderer_opengl.dll"
-BUILD_OPTIONS="-shared -nostdinc -s -ansi -pedantic -Wall -march=pentium -I./src/ -I$GCC_PATH/lib/gcc/mingw32/4.7.1/include -I$GCC_PATH/include"
+BUILD_OPTIONS="-shared -nostdinc -s -ansi -pedantic -Wall -march=pentium -I ./src/ -isystem $GCC_PATH/lib/gcc/mingw32/4.7.1/include -isystem $GCC_PATH/include"
 
 SRC_FILES="
 src\\shiet_lib\\renderer\\renderer_opengl.c

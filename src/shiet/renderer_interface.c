@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <string.h>
-#include "shiet/interface.h"
+#include "shiet/renderer_interface.h"
 
 #if _WIN32
     #include <windows.h>

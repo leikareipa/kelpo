@@ -9,7 +9,7 @@ BUILD_OPTIONS="-nostdinc -s -ansi -pedantic -Wall -march=pentium -I ./src/ -isys
 SRC_FILES="
 src\\shiet_example\\main.c
 src\\shiet_example\\poly_transform.c
-src\\shiet\\interface.c
+src\\shiet\\renderer_interface.c
 "
 
 wine "$GCC_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE_NAME $SRC_FILES -lm

@@ -4,7 +4,7 @@
 #include "shiet/polygon/triangle/triangle.h"
 #include "shiet_example/poly_transform.h"
 #include "shiet/common/globals.h"
-#include "shiet/interface.h"
+#include "shiet/renderer_interface.h"
 
 int main(void)
 {

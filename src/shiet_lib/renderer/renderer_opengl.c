@@ -2,7 +2,7 @@
 #include "shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.h"
 #include "shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h"
 #include "shiet_lib/renderer/window/win32/window_win32.h"
-#include "shiet/interface.h"
+#include "shiet/renderer_interface.h"
 
 static const char RENDERER_NAME[] = "OpenGL";
 static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/

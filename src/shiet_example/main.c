@@ -36,6 +36,7 @@ int main(void)
     {
         texture.width = 2;
         texture.height = 2;
+        texture.filtering = SHIET_TEXTURE_FILTER_LINEAR;
         texture.pixelArray = malloc(texture.width * texture.height * 4);
         memset(texture.pixelArray, 255, (texture.width * texture.height * 4));
 

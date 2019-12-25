@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/renderer_interface.h>
 #include <shiet/common/globals.h>
@@ -8,6 +9,7 @@
 
 int main(void)
 {
+    time_t timer = time(NULL); /* Used to toggle between linear and nearest texture filtering.*/
     const struct { unsigned width; unsigned height; } renderResolution = {1024, 768};
 
     struct shiet_polygon_texture_s texture;
@@ -95,6 +97,16 @@ int main(void)
     while (renderer.window.is_window_open())
     {
         const unsigned numTransformedTriangles = transform_triangles(triangles, 1, transformedTriangles);
+
+        if ((time(NULL) - timer) > 3)
+        {
+            texture.filtering = ((texture.filtering == SHIET_TEXTURE_FILTER_NEAREST)?
+                                 SHIET_TEXTURE_FILTER_LINEAR : SHIET_TEXTURE_FILTER_NEAREST);
+
+            renderer.rasterizer.update_texture(&texture);
+
+            timer = time(NULL);
+        }
 
         renderer.rasterizer.clear_frame();
         renderer.rasterizer.draw_triangles(transformedTriangles, numTransformedTriangles);

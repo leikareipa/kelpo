@@ -1,10 +1,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "shiet/polygon/triangle/triangle.h"
-#include "shiet_example/poly_transform.h"
-#include "shiet/common/globals.h"
-#include "shiet/renderer_interface.h"
+#include <shiet/polygon/triangle/triangle.h>
+#include <shiet/renderer_interface.h>
+#include <shiet/common/globals.h>
+#include "poly_transform.h"
 
 int main(void)
 {
@@ -32,7 +32,7 @@ int main(void)
         initialize_geometry(renderResolution.width, renderResolution.height);
     }
 
-    /* Set up a basic texture, for testing.*/
+    /* Set up a basic texture.*/
     {
         texture.width = 2;
         texture.height = 2;
@@ -63,7 +63,7 @@ int main(void)
         renderer.rasterizer.upload_texture(&texture);
     }
 
-    /* Set up a basic triangle in the middle of the screen, for testing.*/
+    /* Set up a triangle in the middle of the screen.*/
     {
         triangles[0].vertex[0].x = -0.5;
         triangles[0].vertex[0].y = -0.5;

@@ -36,10 +36,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include "shiet/polygon/triangle/triangle.h"
-#include "shiet/polygon/vertex.h"
-#include "shiet/common/globals.h"
-#include "shiet_example/poly_transform.h"
+#include <shiet/polygon/triangle/triangle.h>
+#include <shiet/polygon/vertex.h>
+#include <shiet/common/globals.h>
+#include "poly_transform.h"
 
 static const float NEAR_CLIP = 1;
 static const float FAR_CLIP = 2000;

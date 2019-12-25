@@ -11,4 +11,6 @@ void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *con
 void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles);
 
+void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *const texture);
+
 #endif

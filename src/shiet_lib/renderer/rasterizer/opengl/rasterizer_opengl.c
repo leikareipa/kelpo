@@ -26,6 +26,21 @@ void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *con
     return;
 }
 
+void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *const texture)
+{
+    if (!glIsTexture(texture->apiId))
+    {
+        return;
+    }
+    
+    glBindTexture(GL_TEXTURE_2D, texture->apiId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->filtering == SHIET_TEXTURE_FILTER_LINEAR? GL_LINEAR : GL_NEAREST));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->filtering == SHIET_TEXTURE_FILTER_LINEAR? GL_LINEAR : GL_NEAREST));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixelArray);
+
+    return;
+}
+
 void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {

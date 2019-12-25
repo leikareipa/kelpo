@@ -25,6 +25,7 @@ void shiet_renderer__set_function_pointers(struct shiet_renderer_interface_s *co
     interface->rasterizer.clear_frame = shiet_rasterizer_opengl__clear_frame;
     interface->rasterizer.draw_triangles = shiet_rasterizer_opengl__draw_triangles;
     interface->rasterizer.upload_texture = shiet_rasterizer_opengl__upload_texture;
+    interface->rasterizer.update_texture = shiet_rasterizer_opengl__update_texture;
 
     interface->metadata.rendererName = RENDERER_NAME;
     interface->metadata.rendererMajorVersion = RENDERER_VERSION[0];

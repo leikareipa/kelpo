@@ -5,7 +5,7 @@
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/renderer_interface.h>
 #include <shiet/common/globals.h>
-#include "poly_transform.h"
+#include "../../common_src/transform_and_rotate_triangles.h"
 
 int main(void)
 {

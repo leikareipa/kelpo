@@ -53,7 +53,7 @@
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/polygon/vertex.h>
 #include <shiet/common/globals.h>
-#include "poly_transform.h"
+#include "transform_and_rotate_triangles.h"
 
 struct matrix44_s
 {

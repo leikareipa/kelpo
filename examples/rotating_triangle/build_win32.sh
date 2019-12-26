@@ -9,7 +9,7 @@ BUILD_OPTIONS="-nostdinc -s -ansi -pedantic -Wall -march=pentium -I../../src/ -i
 
 SRC_FILES="
 src\\main.c
-src\\poly_transform.c
+..\\common_src\\transform_and_rotate_triangles.c
 ..\\..\\src\\shiet\\renderer_interface.c
 "
 

@@ -1,7 +1,21 @@
 /*
  * Tarpeeksi Hyvae Soft 2019
  * 
- * Software: shiet render example 1
+ * Software: shiet and its related functionality
+ * 
+ * Transforms triangles into screen space and makes them rotate around the origin.
+ * 
+ * USAGE:
+ * 
+ *   1. Call trirot_initialize_screen_geometry() with your screen (render) resolution.
+ *      This has to be done only once in the program's lifetime, but prior to attempting 
+ *      to have any triangles transformed.
+ * 
+ *   2. Call trirot_transform_and_rotate_triangles() with the triangles to be transformed,
+ *      and a destination triangle buffer in which to place the transformed triangles (the
+ *      operation is not in-place).
+ * 
+ * 
  *
  * Portions of this file have been adapted from 4-by-4 matrix manipulation code written
  * by Benny Bobaganoosh (https://github.com/BennyQBD/3DSoftwareRenderer):
@@ -41,18 +55,24 @@
 #include <shiet/common/globals.h>
 #include "poly_transform.h"
 
+struct matrix44_s
+{
+    float elements[4*4];
+};
+
 static const float NEAR_CLIP = 1;
 static const float FAR_CLIP = 2000;
 
-static matrix44_s SCREEN_SPACE_MAT;
-static matrix44_s PERSP_MAT;
+static struct matrix44_s SCREEN_SPACE_MAT;
+static struct matrix44_s PERSP_MAT;
 
-static void transform_vert(struct shiet_polygon_vertex_s *const v, const matrix44_s *const m)
+static void transform_vert(struct shiet_polygon_vertex_s *const v,
+                           const struct matrix44_s *const m)
 {
-    float x0 = ((m->data[0] * v->x) + (m->data[4] * v->y) + (m->data[8] * v->z) + (m->data[12] * v->w));
-    float y0 = ((m->data[1] * v->x) + (m->data[5] * v->y) + (m->data[9] * v->z) + (m->data[13] * v->w));
-    float z0 = ((m->data[2] * v->x) + (m->data[6] * v->y) + (m->data[10] * v->z) + (m->data[14] * v->w));
-    float w0 = ((m->data[3] * v->x) + (m->data[7] * v->y) + (m->data[11] * v->z) + (m->data[15] * v->w));
+    float x0 = ((m->elements[0] * v->x) + (m->elements[4] * v->y) + (m->elements[ 8] * v->z) + (m->elements[12] * v->w));
+    float y0 = ((m->elements[1] * v->x) + (m->elements[5] * v->y) + (m->elements[ 9] * v->z) + (m->elements[13] * v->w));
+    float z0 = ((m->elements[2] * v->x) + (m->elements[6] * v->y) + (m->elements[10] * v->z) + (m->elements[14] * v->w));
+    float w0 = ((m->elements[3] * v->x) + (m->elements[7] * v->y) + (m->elements[11] * v->z) + (m->elements[15] * v->w));
 
     v->x = x0;
     v->y = y0;
@@ -62,7 +82,9 @@ static void transform_vert(struct shiet_polygon_vertex_s *const v, const matrix4
     return;
 }
 
-static void mul_two_mats(const matrix44_s *const m1, const matrix44_s *const m2, matrix44_s *const dst)
+static void mul_two_mats(const struct matrix44_s *const m1,
+                         const struct matrix44_s *const m2,
+                         struct matrix44_s *const dst)
 {
     int i, j;
 
@@ -72,34 +94,35 @@ static void mul_two_mats(const matrix44_s *const m1, const matrix44_s *const m2,
     {
         for (j = 0; j < 4; j++)
         {
-            dst->data[i + (j * 4)] = m1->data[i + (0 * 4)] * m2->data[0 + (j * 4)] +
-                                     m1->data[i + (1 * 4)] * m2->data[1 + (j * 4)] +
-                                     m1->data[i + (2 * 4)] * m2->data[2 + (j * 4)] +
-                                     m1->data[i + (3 * 4)] * m2->data[3 + (j * 4)];
+            dst->elements[i + (j * 4)] = m1->elements[i + (0 * 4)] * m2->elements[0 + (j * 4)] +
+                                     m1->elements[i + (1 * 4)] * m2->elements[1 + (j * 4)] +
+                                     m1->elements[i + (2 * 4)] * m2->elements[2 + (j * 4)] +
+                                     m1->elements[i + (3 * 4)] * m2->elements[3 + (j * 4)];
         }
     }
 
     return;
 }
 
-static void make_rot_mat(matrix44_s *const m, float x, float y, float z)
+static void make_rot_mat(struct matrix44_s *const m,
+                         float x, float y, float z)
 {
-    matrix44_s rx, ry, rz, tmp;
+    struct matrix44_s rx, ry, rz, tmp;
 
-    rx.data[0] = 1;      rx.data[4] = 0;       rx.data[8]  = 0;       rx.data[12] = 0;
-    rx.data[1] = 0;      rx.data[5] = cos(x);  rx.data[9]  = -sin(x); rx.data[13] = 0;
-    rx.data[2] = 0;      rx.data[6] = sin(x);  rx.data[10] = cos(x);  rx.data[14] = 0;
-    rx.data[3] = 0;      rx.data[7] = 0;       rx.data[11] = 0;       rx.data[15] = 1;
+    rx.elements[0] = 1;      rx.elements[4] = 0;       rx.elements[8]  = 0;       rx.elements[12] = 0;
+    rx.elements[1] = 0;      rx.elements[5] = cos(x);  rx.elements[9]  = -sin(x); rx.elements[13] = 0;
+    rx.elements[2] = 0;      rx.elements[6] = sin(x);  rx.elements[10] = cos(x);  rx.elements[14] = 0;
+    rx.elements[3] = 0;      rx.elements[7] = 0;       rx.elements[11] = 0;       rx.elements[15] = 1;
 
-    ry.data[0] = cos(y); ry.data[4] = 0;       ry.data[8]  = -sin(y); ry.data[12] = 0;
-    ry.data[1] = 0;      ry.data[5] = 1;       ry.data[9]  = 0;       ry.data[13] = 0;
-    ry.data[2] = sin(y); ry.data[6] = 0;       ry.data[10] = cos(y);  ry.data[14] = 0;
-    ry.data[3] = 0;      ry.data[7] = 0;       ry.data[11] = 0;       ry.data[15] = 1;
+    ry.elements[0] = cos(y); ry.elements[4] = 0;       ry.elements[8]  = -sin(y); ry.elements[12] = 0;
+    ry.elements[1] = 0;      ry.elements[5] = 1;       ry.elements[9]  = 0;       ry.elements[13] = 0;
+    ry.elements[2] = sin(y); ry.elements[6] = 0;       ry.elements[10] = cos(y);  ry.elements[14] = 0;
+    ry.elements[3] = 0;      ry.elements[7] = 0;       ry.elements[11] = 0;       ry.elements[15] = 1;
 
-    rz.data[0] = cos(z); rz.data[4] = -sin(z); rz.data[8]  = 0;       rz.data[12] = 0;
-    rz.data[1] = sin(z); rz.data[5] = cos(z);  rz.data[9]  = 0;       rz.data[13] = 0;
-    rz.data[2] = 0;      rz.data[6] = 0;       rz.data[10] = 1;       rz.data[14] = 0;
-    rz.data[3] = 0;      rz.data[7] = 0;       rz.data[11] = 0;       rz.data[15] = 1;
+    rz.elements[0] = cos(z); rz.elements[4] = -sin(z); rz.elements[8]  = 0;       rz.elements[12] = 0;
+    rz.elements[1] = sin(z); rz.elements[5] = cos(z);  rz.elements[9]  = 0;       rz.elements[13] = 0;
+    rz.elements[2] = 0;      rz.elements[6] = 0;       rz.elements[10] = 1;       rz.elements[14] = 0;
+    rz.elements[3] = 0;      rz.elements[7] = 0;       rz.elements[11] = 0;       rz.elements[15] = 1;
 
     mul_two_mats(&rz, &ry, &tmp);
     mul_two_mats(&rx, &tmp, m);
@@ -107,58 +130,50 @@ static void make_rot_mat(matrix44_s *const m, float x, float y, float z)
     return;
 }
 
-static void make_transl_mat(matrix44_s *const m,
+static void make_transl_mat(struct matrix44_s *const m,
                             const float x, const float y, const float z)
 {
-    m->data[0] = 1;    m->data[4] = 0;    m->data[8]  = 0; m->data[12] = x;
-    m->data[1] = 0;    m->data[5] = 1;    m->data[9]  = 0; m->data[13] = y;
-    m->data[2] = 0;    m->data[6] = 0;    m->data[10] = 1; m->data[14] = z;
-    m->data[3] = 0;    m->data[7] = 0;    m->data[11] = 0; m->data[15] = 1;
+    m->elements[0] = 1;    m->elements[4] = 0;    m->elements[8]  = 0; m->elements[12] = x;
+    m->elements[1] = 0;    m->elements[5] = 1;    m->elements[9]  = 0; m->elements[13] = y;
+    m->elements[2] = 0;    m->elements[6] = 0;    m->elements[10] = 1; m->elements[14] = z;
+    m->elements[3] = 0;    m->elements[7] = 0;    m->elements[11] = 0; m->elements[15] = 1;
 
     return;
 }
 
-static void make_persp_mat(matrix44_s *const m,
+static void make_persp_mat(struct matrix44_s *const m,
                            const float fov, const float aspectRatio,
                            const float zNear, const float zFar)
 {
     float tanHalfFOV = tan(fov / 2);
     float zRange = zNear - zFar;
 
-    m->data[0] = 1.0f / (tanHalfFOV * aspectRatio); m->data[4] = 0;                 m->data[8] = 0;                         m->data[12] = 0;
-    m->data[1] = 0;                                 m->data[5] = 1.0f / tanHalfFOV; m->data[9] = 0;                         m->data[13] = 0;
-    m->data[2] = 0;                                 m->data[6] = 0;                 m->data[10] = (-zNear -zFar)/zRange;    m->data[14] = 2 * zFar * zNear / zRange;
-    m->data[3] = 0;                                 m->data[7] = 0;                 m->data[11] = 1;                        m->data[15] = 0;
+    m->elements[0] = 1.0f / (tanHalfFOV * aspectRatio); m->elements[4] = 0;                 m->elements[8] = 0;                         m->elements[12] = 0;
+    m->elements[1] = 0;                                 m->elements[5] = 1.0f / tanHalfFOV; m->elements[9] = 0;                         m->elements[13] = 0;
+    m->elements[2] = 0;                                 m->elements[6] = 0;                 m->elements[10] = (-zNear -zFar)/zRange;    m->elements[14] = 2 * zFar * zNear / zRange;
+    m->elements[3] = 0;                                 m->elements[7] = 0;                 m->elements[11] = 1;                        m->elements[15] = 0;
 
     return;
 }
 
-static void make_scaling_mat(matrix44_s *const m,
+static void make_scaling_mat(struct matrix44_s *const m,
                              const float x, const float y, const float z)
 {
-    m->data[0] = x;    m->data[4] = 0;    m->data[8]  = 0;    m->data[12] = 0;
-    m->data[1] = 0;    m->data[5] = y;    m->data[9]  = 0;    m->data[13] = 0;
-    m->data[2] = 0;    m->data[6] = 0;    m->data[10] = z;    m->data[14] = 0;
-    m->data[3] = 0;    m->data[7] = 0;    m->data[11] = 0;    m->data[15] = 1;
+    m->elements[0] = x;    m->elements[4] = 0;    m->elements[8]  = 0;    m->elements[12] = 0;
+    m->elements[1] = 0;    m->elements[5] = y;    m->elements[9]  = 0;    m->elements[13] = 0;
+    m->elements[2] = 0;    m->elements[6] = 0;    m->elements[10] = z;    m->elements[14] = 0;
+    m->elements[3] = 0;    m->elements[7] = 0;    m->elements[11] = 0;    m->elements[15] = 1;
 
     return;
 }
 
-static void make_screen_space_mat(matrix44_s *const m,
+static void make_screen_space_mat(struct matrix44_s *const m,
                                   const float halfWidth, const float halfHeight)
 {
-    m->data[0] = halfWidth; m->data[4] = 0;             m->data[8]  = 0;    m->data[12] = halfWidth - 0.5f;
-    m->data[1] = 0;         m->data[5] = -halfHeight;   m->data[9]  = 0;    m->data[13] = halfHeight - 0.5f;
-    m->data[2] = 0;         m->data[6] = 0;             m->data[10] = 1;    m->data[14] = 0;
-    m->data[3] = 0;         m->data[7] = 0;             m->data[11] = 0;    m->data[15] = 1;
-
-    return;
-}
-
-void initialize_geometry(const unsigned renderWidth, const unsigned renderHeight)
-{
-    make_screen_space_mat(&SCREEN_SPACE_MAT, (renderWidth / 2.0f), (renderHeight / 2.0f));
-    make_persp_mat(&PERSP_MAT, DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
+    m->elements[0] = halfWidth; m->elements[4] = 0;             m->elements[8]  = 0;    m->elements[12] = halfWidth - 0.5f;
+    m->elements[1] = 0;         m->elements[5] = -halfHeight;   m->elements[9]  = 0;    m->elements[13] = halfHeight - 0.5f;
+    m->elements[2] = 0;         m->elements[6] = 0;             m->elements[10] = 1;    m->elements[14] = 0;
+    m->elements[3] = 0;         m->elements[7] = 0;             m->elements[11] = 0;    m->elements[15] = 1;
 
     return;
 }
@@ -177,13 +192,21 @@ static void tri_perspective_divide(struct shiet_polygon_triangle_s *const t)
     return;
 }
 
-unsigned transform_triangles(struct shiet_polygon_triangle_s *const triangles,
-                             const unsigned numTriangles,
-                             struct shiet_polygon_triangle_s *const transformedTriangles)
+void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigned renderHeight)
+{
+    make_screen_space_mat(&SCREEN_SPACE_MAT, (renderWidth / 2.0f), (renderHeight / 2.0f));
+    make_persp_mat(&PERSP_MAT, DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
+
+    return;
+}
+
+unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *const triangles,
+                                               const unsigned numTriangles,
+                                               struct shiet_polygon_triangle_s *const dst)
 {
     static float rot = 0;
     unsigned i, numTransformedTriangles = 0;
-    matrix44_s rotation, transl, worldSpace, clipSpace;
+    struct matrix44_s rotation, transl, worldSpace, clipSpace;
 
     /* Add some placeholder rotation, for visual interest.*/
     rot += 0.02;
@@ -200,24 +223,24 @@ unsigned transform_triangles(struct shiet_polygon_triangle_s *const triangles,
     {
         int triIsVisible = 1;
 
-        transformedTriangles[numTransformedTriangles] = triangles[i];
+        dst[numTransformedTriangles] = triangles[i];
 
         /* Transform into clip-space.*/
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[0], &clipSpace);
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[1], &clipSpace);
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[2], &clipSpace);
+        transform_vert(&dst[numTransformedTriangles].vertex[0], &clipSpace);
+        transform_vert(&dst[numTransformedTriangles].vertex[1], &clipSpace);
+        transform_vert(&dst[numTransformedTriangles].vertex[2], &clipSpace);
 
         /* Something might happen in clip-space at some point, but not now.*/
 
         /* Transform into screen-space.*/
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[0], &SCREEN_SPACE_MAT);
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[1], &SCREEN_SPACE_MAT);
-        transform_vert(&transformedTriangles[numTransformedTriangles].vertex[2], &SCREEN_SPACE_MAT);
-        tri_perspective_divide(&transformedTriangles[numTransformedTriangles]);
+        transform_vert(&dst[numTransformedTriangles].vertex[0], &SCREEN_SPACE_MAT);
+        transform_vert(&dst[numTransformedTriangles].vertex[1], &SCREEN_SPACE_MAT);
+        transform_vert(&dst[numTransformedTriangles].vertex[2], &SCREEN_SPACE_MAT);
+        tri_perspective_divide(&dst[numTransformedTriangles]);
 
         /* Back-face culling would go here.*/
 
-        /* Depth-clipping would go here.*/
+        /* Depth clipping would go here.*/
 
         /* If the triangle is visible, allow it to be drawn. If it's not, the
          * next triangle, indexed with k, will overwrite this one.*/

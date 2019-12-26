@@ -31,7 +31,8 @@ int main(void)
                 renderer.metadata.rendererPatchVersion);
 
         renderer.initialize(renderResolution.width, renderResolution.height, windowTitle);
-        initialize_geometry(renderResolution.width, renderResolution.height);
+
+        trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
     }
 
     /* Set up a basic texture.*/
@@ -96,7 +97,7 @@ int main(void)
 
     while (renderer.window.is_window_open())
     {
-        const unsigned numTransformedTriangles = transform_triangles(triangles, 1, transformedTriangles);
+        const unsigned numTris = trirot_transform_and_rotate_triangles(triangles, 1, transformedTriangles);
 
         if ((time(NULL) - timer) > 3)
         {
@@ -109,7 +110,7 @@ int main(void)
         }
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles, numTransformedTriangles);
+        renderer.rasterizer.draw_triangles(transformedTriangles, numTris);
         renderer.window.update_window();
     }
 

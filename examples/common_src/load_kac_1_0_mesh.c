@@ -23,6 +23,21 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
     struct kac_1_0_texture_s *kacTextures = NULL;
     struct kac_1_0_normal_s *kacNormals = NULL;
 
+    *numTextures = 0;
+    *numTriangles = 0;
+
+    #define RELEASE_TEMPORARY_KAC_BUFFERS {uint32_t i = 0;\
+                                           for (i = 0; i < *numTextures; i++)\
+                                           {\
+                                               free(kacTextures[i].pixels);\
+                                           }\
+                                           free(kacVertexCoords);\
+                                           free(kacUVCoords);\
+                                           free(kacMaterials);\
+                                           free(kacTriangles);\
+                                           free(kacTextures);\
+                                           free(kacNormals);}
+
     if (kac10_reader__open_file(kacFilename) &&
         (*numTriangles = kac10_reader__read_triangles(&kacTriangles)) &&
         (*numTextures = kac10_reader__read_textures(&kacTextures)) &&
@@ -60,6 +75,7 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
                 /* 4 color channels per pixel.*/
                 const uint32_t idx = (p * 4);
 
+                /* KAC 1.0 texture colors are in the RGBA 5551 format.*/
                 (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * (255 / 31.0));
                 (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * (255 / 31.0));
                 (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * (255 / 31.0));
@@ -99,6 +115,7 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
 
                 (*dstTriangles)[i].material.texture = &(*dstTextures)[material->metadata.textureMetadataIdx];
 
+                /* KAC 1.0 polygon colors are in the RGBA 4444 format.*/
                 (*dstTriangles)[i].material.baseColor[0] = (material->color.r * 17);
                 (*dstTriangles)[i].material.baseColor[1] = (material->color.g * 17);
                 (*dstTriangles)[i].material.baseColor[2] = (material->color.b * 17);
@@ -106,27 +123,14 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
             }
         }
 
-        free(kacVertexCoords);
-        free(kacUVCoords);
-        free(kacMaterials);
-        free(kacTriangles);
-        free(kacTextures);
-        free(kacNormals);
-
+        RELEASE_TEMPORARY_KAC_BUFFERS;
         return (*numTriangles >= 1);
     }
     else
     {
-        *numTriangles = 0;
-        *numTextures = 0;
-
-        free(kacVertexCoords);
-        free(kacUVCoords);
-        free(kacMaterials);
-        free(kacTriangles);
-        free(kacTextures);
-        free(kacNormals);
-
+        RELEASE_TEMPORARY_KAC_BUFFERS;
         return 0;
     }
+
+    #undef RELEASE_TEMPORARY_KAC_BUFFERS
 }

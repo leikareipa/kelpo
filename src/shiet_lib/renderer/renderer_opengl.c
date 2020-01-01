@@ -12,6 +12,7 @@ static void shiet_renderer_opengl__initialize(const unsigned windowWidth,
                                               const char *const windowTitle)
 {
     shiet_surface_opengl_win32__create_surface(windowWidth, windowHeight, windowTitle);
+    shiet_rasterizer_opengl__initialize();
 
     return;
 }

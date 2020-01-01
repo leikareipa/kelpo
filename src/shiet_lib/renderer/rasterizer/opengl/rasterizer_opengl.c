@@ -7,13 +7,16 @@
 #include <gl/gl.h>
 #include <gl/glext.h>
 
-void shiet_rasterizer_opengl__clear_frame(void)
+void shiet_rasterizer_opengl__initialize(void)
 {
-    /* TODO: Put these in an initializer function, since we dont't need to keep
-     * toggling them on every frame.*/
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    return;
+}
+
+void shiet_rasterizer_opengl__clear_frame(void)
+{
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return;

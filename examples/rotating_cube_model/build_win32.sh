@@ -4,12 +4,25 @@
 # Note that this will place the executable under shiet's main bin/ directory.
 
 GCC_PATH=~/compi/mingw471
-OUTPUT_FILE_NAME="rotating_triangle.exe"
-BUILD_OPTIONS="-nostdinc -s -ansi -pedantic -Wall -march=pentium -I../../src/ -isystem $GCC_PATH/lib/gcc/mingw32/4.7.1/include -isystem $GCC_PATH/include"
+
+OUTPUT_FILE_NAME="rotating_cube_model.exe"
+
+BUILD_OPTIONS="
+-nostdinc
+-s
+-ansi
+-pedantic
+-Wall
+-march=pentium
+-I../../src/
+-isystem $GCC_PATH/lib/gcc/mingw32/4.7.1/include
+-isystem $GCC_PATH/include"
 
 SRC_FILES="
 src\\main.c
 ..\\common_src\\transform_and_rotate_triangles.c
+..\\common_src\\load_kac_1_0_mesh.c
+..\\common_src\\kac\\import_kac_1_0.c
 ..\\..\\src\\shiet\\renderer_interface.c
 "
 

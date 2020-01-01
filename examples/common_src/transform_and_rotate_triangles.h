@@ -3,8 +3,8 @@
  *
  */
 
-#ifndef ROTATE_TRIANGLES_H
-#define ROTATE_TRIANGLES_H
+#ifndef SHIET_EXAMPLES_COMMON_TRANSFORM_AND_ROTATE_TRIANGLES_H
+#define SHIET_EXAMPLES_COMMON_TRANSFORM_AND_ROTATE_TRIANGLES_H
 
 struct shiet_polygon_triangle_s;
 
@@ -16,6 +16,8 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
  * buffer (the operation is not in-place).*/
 unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *const triangles,
                                                const unsigned numTriangles,
-                                               struct shiet_polygon_triangle_s *const dst);
+                                               struct shiet_polygon_triangle_s *const dst,
+                                               const float rotX, const float rotY, const float rotZ,
+                                               const float cameraDistance);
 
 #endif

@@ -14,7 +14,7 @@ struct shiet_polygon_texture_s
         SHIET_TEXTURE_FILTER_NEAREST
     } filtering;
 
-    /* The texture's pixels, as consecutive r/g/b/a values.*/
+    /* The texture's pixels, as consecutive RGBA values in the range 0-255.*/
     uint8_t *pixelArray;
     
     /* A value that identifies this texture with the specific render API used.

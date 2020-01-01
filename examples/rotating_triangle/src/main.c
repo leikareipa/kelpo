@@ -1,3 +1,10 @@
+/*
+ * 2019 Tarpeeksi Hyvae Soft
+ * 
+ * Renders a simple rotating triangle using the shiet renderer.
+ * 
+ */
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,6 +49,8 @@ int main(void)
         texture.filtering = SHIET_TEXTURE_FILTER_LINEAR;
         texture.pixelArray = malloc(texture.width * texture.height * 4);
         memset(texture.pixelArray, 255, (texture.width * texture.height * 4));
+
+        /* TODO: Set the texture's wrapping mode to clamp-to-edge.*/
 
         /* Top left.*/
         texture.pixelArray[0] = 255;
@@ -95,9 +104,12 @@ int main(void)
         triangles[0].material.baseColor[2] = 64;
     }
 
+    /* Render.*/
     while (renderer.window.is_window_open())
     {
-        const unsigned numTris = trirot_transform_and_rotate_triangles(triangles, 1, transformedTriangles);
+        const uint32_t sceneTriangleCount = trirot_transform_and_rotate_triangles(triangles, 1, transformedTriangles,
+                                                                                  0, 0.01, 0,
+                                                                                  1.5);
 
         if ((time(NULL) - timer) > 3)
         {
@@ -110,7 +122,7 @@ int main(void)
         }
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles, numTris);
+        renderer.rasterizer.draw_triangles(transformedTriangles, sceneTriangleCount);
         renderer.window.update_window();
     }
 

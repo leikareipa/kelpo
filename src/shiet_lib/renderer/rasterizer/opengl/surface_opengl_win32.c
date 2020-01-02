@@ -1,14 +1,17 @@
 /*
+ * 2019 Tarpeeksi Hyvae Soft
+ * 
+ * OpenGL render surface for the shiet renderer.
+ * 
  * Based loosely on Jeff 'NeHe' Molofee's Win32 window-creation routines.
  *
  */
 
 #include <assert.h>
-#include "shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.h"
-#include "shiet_lib/renderer/window/win32/window_win32.h"
+#include <shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.h>
+#include <shiet_lib/renderer/window/win32/window_win32.h>
 
 #include <windows.h>
-
 #include <gl/glu.h>
 #include <gl/gl.h>
 
@@ -31,15 +34,6 @@ static void resize_gl(GLsizei width, GLsizei height)
     glPushMatrix();
     glLoadIdentity();
     glTranslatef(0, WINDOW_HEIGHT, 0);
-
-    return;
-}
-
-static void initialize_gl_state(void)
-{
-    glDisable(GL_DEPTH_TEST);
-    glAlphaFunc(GL_GREATER, 0);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     return;
 }
@@ -132,7 +126,6 @@ void shiet_surface_opengl_win32__create_surface(const unsigned width,
     SetFocus(WINDOW_HANDLE);
 
     resize_gl(WINDOW_WIDTH, WINDOW_HEIGHT);
-    initialize_gl_state();
     set_gl_vsync(1);
 
     UpdateWindow(WINDOW_HANDLE);

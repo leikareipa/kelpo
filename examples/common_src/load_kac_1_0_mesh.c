@@ -75,10 +75,14 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
                 /* 4 color channels per pixel.*/
                 const uint32_t idx = (p * 4);
 
+                /* Use div/mul instead of bit shift to upscale 5-bit color
+                 * into 8-bit, for potentially better dynamic range.*/
+                const float scale = (255 / 31.0);
+
                 /* KAC 1.0 texture colors are in the RGBA 5551 format.*/
-                (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * (255 / 31.0));
-                (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * (255 / 31.0));
-                (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * (255 / 31.0));
+                (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * scale);
+                (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * scale);
+                (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * scale);
                 (*dstTextures)[i].pixelArray[idx + 3] = (kacTexture->pixels[p].a * 255);
             }
         }
@@ -113,13 +117,17 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
             {
                 const struct kac_1_0_material_s *material = &kacMaterials[kacTriangles[i].materialIdx];
 
+                /* Use div/mul instead of bit shift to upscale 5-bit color
+                 * into 8-bit, for potentially better dynamic range.*/
+                const float scale = (255 / 15.0);
+
                 (*dstTriangles)[i].material.texture = &(*dstTextures)[material->metadata.textureMetadataIdx];
 
                 /* KAC 1.0 polygon colors are in the RGBA 4444 format.*/
-                (*dstTriangles)[i].material.baseColor[0] = (material->color.r * 17);
-                (*dstTriangles)[i].material.baseColor[1] = (material->color.g * 17);
-                (*dstTriangles)[i].material.baseColor[2] = (material->color.b * 17);
-                (*dstTriangles)[i].material.baseColor[3] = (material->color.a * 17);
+                (*dstTriangles)[i].material.baseColor[0] = (material->color.r * scale);
+                (*dstTriangles)[i].material.baseColor[1] = (material->color.g * scale);
+                (*dstTriangles)[i].material.baseColor[2] = (material->color.b * scale);
+                (*dstTriangles)[i].material.baseColor[3] = (material->color.a * scale);
             }
         }
 

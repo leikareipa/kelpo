@@ -1,5 +1,12 @@
-#ifndef SHIET_SURFACE_OPENGL_H_
-#define SHIET_SURFACE_OPENGL_H_
+/*
+ * 2019 Tarpeeksi Hyvae Soft
+ * 
+ * OpenGL render surface for the shiet renderer.
+ * 
+ */
+
+#ifndef SHIET_SURFACE_OPENGL_H
+#define SHIET_SURFACE_OPENGL_H
 
 void shiet_surface_opengl_win32__release_surface(void);
 

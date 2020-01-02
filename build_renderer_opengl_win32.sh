@@ -13,7 +13,7 @@ src\\shiet_lib\\renderer\\rasterizer\\opengl\\surface_opengl_win32.c
 src\\shiet_lib\\renderer\\window\\win32\\window_win32.c
 "
 
-wine "$GCC_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE_NAME $SRC_FILES -lm -lgdi32 -lwinmm -lopengl32 -lglu32
+wine "$GCC_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE_NAME $SRC_FILES -lm -lgdi32 -lopengl32 -lglu32
 
 if [ -e $OUTPUT_FILE_NAME ]
 then

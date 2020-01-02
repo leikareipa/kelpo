@@ -1,14 +1,15 @@
 #include <stddef.h>
 #include <stdio.h>
-#include "shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h"
-#include "shiet/polygon/triangle/triangle.h"
-#include "shiet/polygon/texture.h"
+#include <shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h>
+#include <shiet/polygon/triangle/triangle.h>
+#include <shiet/polygon/texture.h>
 
 #include <gl/gl.h>
 #include <gl/glext.h>
 
 void shiet_rasterizer_opengl__initialize(void)
 {
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -22,7 +23,7 @@ void shiet_rasterizer_opengl__clear_frame(void)
     return;
 }
 
-void shiet_rasterizer_opengl__upload_texture(const struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *const texture)
 {
     if (!texture)
     {
@@ -35,14 +36,15 @@ void shiet_rasterizer_opengl__upload_texture(const struct shiet_polygon_texture_
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixelArray);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixelArray);
 
     return;
 }
 
 void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_s *const texture)
 {
-    if (!glIsTexture(texture->apiId))
+    if (!texture ||
+        !glIsTexture(texture->apiId))
     {
         return;
     }
@@ -50,7 +52,7 @@ void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixelArray);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixelArray);
 
     return;
 }
@@ -58,7 +60,7 @@ void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_
 void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
-    unsigned i;
+    unsigned i = 0;
 
     for (i = 0; i < numTriangles; i++)
     {

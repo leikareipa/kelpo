@@ -1,4 +1,4 @@
-# Build a shiet render example for Win32 using TDM-GCC (MinGW) 4.7.1 via Wine in Linux.
+# Build a shiet render example for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
 # Note that this will place the executable under shiet's root bin/ directory.
 
 SRC_FILES="
@@ -11,7 +11,7 @@ src/main.c
 
 OUTPUT_FILE="../../bin/rotating_cube_model.exe"
 
-MINGW_PATH=~/compi/mingw471
+MINGW_PATH=~/compi/mingw441
 
 BUILD_OPTIONS="
 -nostdinc
@@ -21,7 +21,7 @@ BUILD_OPTIONS="
 -Wall
 -march=pentium
 -I../../src/
--isystem $MINGW_PATH/lib/gcc/mingw32/4.7.1/include
+-isystem $MINGW_PATH/lib/gcc/mingw32/4.4.1/include
 -isystem $MINGW_PATH/include
 "
 

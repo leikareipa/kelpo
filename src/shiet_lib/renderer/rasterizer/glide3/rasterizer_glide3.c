@@ -77,7 +77,7 @@ static GrTexInfo generate_glide_texture_info(const struct shiet_polygon_texture_
 {
     GrTexInfo info;
 
-    assert(!texture &&
+    assert(texture &&
            "Glide 3.x renderer: Received a NULL texture.");
 
     assert((texture->width == texture->height) &&
@@ -119,7 +119,7 @@ void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *con
     texInfo = generate_glide_texture_info(texture);
     textureSize = grTexTextureMemRequired(GR_MIPMAPLEVELMASK_BOTH, &texInfo); 
 
-    assert((CURRENT_TEXTURE_ADDRESS + textureSize) > grTexMaxAddress(GR_TMU0) &&
+    assert(((CURRENT_TEXTURE_ADDRESS + textureSize) <= grTexMaxAddress(GR_TMU0)) &&
            "Glide 3.x renderer: Not enough texture memory to store the given texture.");
 
     grTexDownloadMipMap(GR_TMU0, CURRENT_TEXTURE_ADDRESS, GR_MIPMAPLEVELMASK_BOTH, &texInfo);

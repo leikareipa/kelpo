@@ -51,7 +51,7 @@ void shiet_surface_glide3_win32__create_surface(const unsigned width,
 {
     int glideResolution = 0;
 
-    assert(GLIDE_RENDER_CONTEXT &&
+    assert(!GLIDE_RENDER_CONTEXT &&
            "Glide 3.x renderer: A render context already exists.");
 
     if      ((width == 320)  && (height == 200)) glideResolution = GR_RESOLUTION_320x200;

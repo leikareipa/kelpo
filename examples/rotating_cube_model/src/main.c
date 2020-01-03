@@ -17,7 +17,7 @@
 
 int main(void)
 {
-    const struct { unsigned width; unsigned height; } renderResolution = {1024, 768};
+    const struct { unsigned width; unsigned height; } renderResolution = {640, 480};
     
     uint32_t numTriangles = 0, numTextures = 0;
     struct shiet_polygon_texture_s *textures = NULL;

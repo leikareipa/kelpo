@@ -66,24 +66,31 @@ uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
                                         ? SHIET_TEXTURE_FILTER_LINEAR
                                         : SHIET_TEXTURE_FILTER_NEAREST);*/
             (*dstTextures)[i].filtering = SHIET_TEXTURE_FILTER_LINEAR;
-
-            /* 4 color channels per pixel.*/
             (*dstTextures)[i].pixelArray = malloc(numPixelsInTexture * 4);
+            (*dstTextures)[i].pixelArray16bit = malloc(numPixelsInTexture * sizeof((*dstTextures)[i].pixelArray16bit[0]));
 
             for (p = 0; p < numPixelsInTexture; p++)
             {
-                /* 4 color channels per pixel.*/
-                const uint32_t idx = (p * 4);
+                /* Convert from the KAC RGBA 5551 format into full-color 8888.*/
+                {
+                    /* 4 color channels per pixel.*/
+                    const uint32_t idx = (p * 4);
 
-                /* Use div/mul instead of bit shift to upscale 5-bit color
-                 * into 8-bit, for potentially better dynamic range.*/
-                const float scale = (255 / 31.0);
+                    /* We'll use div/mul instead of bit shifts to upscale the 5-bit
+                     * color values into 8-bit, for potentially better dynamic range.*/
+                    const float scale = (255 / 31.0);
 
-                /* KAC 1.0 texture colors are in the RGBA 5551 format.*/
-                (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * scale);
-                (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * scale);
-                (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * scale);
-                (*dstTextures)[i].pixelArray[idx + 3] = (kacTexture->pixels[p].a * 255);
+                    (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * scale);
+                    (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * scale);
+                    (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * scale);
+                    (*dstTextures)[i].pixelArray[idx + 3] = (kacTexture->pixels[p].a * 255);
+                }
+
+                /* Also keep the 16-bit format around, as ARGB 1555.*/
+                (*dstTextures)[i].pixelArray16bit[p] = (kacTexture->pixels[p].a << 15) |
+                                                       (kacTexture->pixels[p].r << 10) |
+                                                       (kacTexture->pixels[p].g << 5) |
+                                                       (kacTexture->pixels[p].b << 0);
             }
         }
 

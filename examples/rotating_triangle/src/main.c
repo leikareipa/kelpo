@@ -48,7 +48,7 @@ int main(void)
         texture.height = 2;
         texture.filtering = SHIET_TEXTURE_FILTER_LINEAR;
         texture.pixelArray = malloc(texture.width * texture.height * 4);
-        memset(texture.pixelArray, 255, (texture.width * texture.height * 4));
+        texture.pixelArray16bit = malloc(texture.width * texture.height * sizeof(texture.pixelArray16bit[0]));
 
         /* TODO: Set the texture's wrapping mode to clamp-to-edge.*/
 
@@ -56,21 +56,30 @@ int main(void)
         texture.pixelArray[0] = 255;
         texture.pixelArray[1] = 0;
         texture.pixelArray[2] = 0;
+        texture.pixelArray[3] = 255;
 
         /* Top right.*/
         texture.pixelArray[4] = 0;
         texture.pixelArray[5] = 255;
         texture.pixelArray[6] = 0;
+        texture.pixelArray[7] = 255;
 
         /* Bottom left.*/
         texture.pixelArray[8] = 255;
         texture.pixelArray[9] = 0;
         texture.pixelArray[10] = 255;
+        texture.pixelArray[11] = 255;
 
         /* Bottom right.*/
         texture.pixelArray[12] = 0;
         texture.pixelArray[13] = 0;
         texture.pixelArray[14] = 255;
+        texture.pixelArray[15] = 255;
+
+        texture.pixelArray16bit[0] = 0xf801; /* Top left:  255,0,0.  */
+        texture.pixelArray16bit[1] = 0x7c1;  /* Top right: 0,255,0.  */
+        texture.pixelArray16bit[2] = 0xf83f; /* Top right: 255,0,255.*/
+        texture.pixelArray16bit[3] = 0x3f;   /* Top right: 0,0,255.  */
 
         renderer.rasterizer.upload_texture(&texture);
     }

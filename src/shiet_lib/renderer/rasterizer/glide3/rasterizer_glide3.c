@@ -101,7 +101,7 @@ static GrTexInfo generate_glide_texture_info(const struct shiet_polygon_texture_
 
     info.aspectRatioLog2 = GR_ASPECT_LOG2_1x1;
     info.format = GR_TEXFMT_ARGB_1555;
-    info.data = (FxU16*)texture->pixelArray;
+    info.data = (FxU16*)texture->pixelArray16bit;
 
     return info;
 }

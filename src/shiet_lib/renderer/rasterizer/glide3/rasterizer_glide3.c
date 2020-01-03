@@ -50,8 +50,8 @@ void shiet_rasterizer_glide3__initialize(void)
 
     /* Texturing.*/
     grTexClampMode(GR_TMU0,
-                   GR_TEXTURECLAMP_CLAMP,
-                   GR_TEXTURECLAMP_CLAMP);
+                   GR_TEXTURECLAMP_WRAP,
+                   GR_TEXTURECLAMP_WRAP);
     grTexCombine(GR_TMU0,
                  GR_COMBINE_FUNCTION_LOCAL,
                  GR_COMBINE_FACTOR_NONE,
@@ -159,14 +159,13 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
 
         for (v = 0; v < 3; v++)
         {
-            glideVertex[v].w = (1 / triangles[i].vertex[v].w);
-
             glideVertex[v].r = triangles[i].material.baseColor[0];
             glideVertex[v].g = triangles[i].material.baseColor[1];
             glideVertex[v].b = triangles[i].material.baseColor[2];
 
             glideVertex[v].x = triangles[i].vertex[v].x;
             glideVertex[v].y = triangles[i].vertex[v].y;
+			glideVertex[v].w = (1 / triangles[i].vertex[v].w);
         }
     
         /* Set the rendering mode based on whether the triangle has a texture
@@ -181,13 +180,12 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
         }
         else
         {
-            const unsigned glideTexScale = (256 / texture->width);
             GrTexInfo texInfo = generate_glide_texture_info(texture);
 
             for (v = 0; v < 3; v++)
             {
-                glideVertex[v].s = ((triangles[i].vertex[0].u / triangles[i].vertex[0].w) * glideTexScale);
-                glideVertex[v].t = ((triangles[i].vertex[0].v / triangles[i].vertex[0].w) * glideTexScale);
+                glideVertex[v].s = ((triangles[i].vertex[v].u / triangles[i].vertex[v].w) * 256);
+                glideVertex[v].t = ((triangles[i].vertex[v].v / triangles[i].vertex[v].w) * 256);
             }
 
             if (texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)

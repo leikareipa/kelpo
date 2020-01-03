@@ -203,13 +203,14 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
 unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *const triangles,
                                                const unsigned numTriangles,
                                                struct shiet_polygon_triangle_s *const dst,
-                                               const float rotX, const float rotY, const float rotZ,
-                                               const float cameraDistance)
+                                               const float basePosX, const float basePosY, const float basePosZ,
+                                               const float rotX, const float rotY, const float rotZ)
 {
     static float rot[3] = {0};
     unsigned i, numTransformedTriangles = 0;
     struct matrix44_s rotation, transl, worldSpace, clipSpace;
 
+    /* We'll produce cumulative rotation.*/
     rot[0] += rotX;
     rot[1] += rotY;
     rot[2] += rotZ;
@@ -217,7 +218,7 @@ unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *
     /* Create the world-space matrix from the translation and rotation matrices,
      * and pre-bake the perspective matrix into the world space matrix, producing
      * the clip-space matrix.*/
-    make_transl_mat(&transl, 0, 0, cameraDistance);
+    make_transl_mat(&transl, basePosX, basePosY, basePosZ);
     make_rot_mat(&rotation, rot[0], rot[1], rot[2]);
     mul_two_mats(&transl, &rotation, &worldSpace);
     mul_two_mats(&PERSP_MAT, &worldSpace, &clipSpace);

@@ -65,8 +65,8 @@ int main(void)
     while (renderer.window.is_window_open())
     {
         const uint32_t sceneTriangleCount = trirot_transform_and_rotate_triangles(triangles, numTriangles, transformedTriangles,
-                                                                                  0.0035, 0.006, 0.0035,
-                                                                                  4.7);
+                                                                                  0, 0, 4.7,
+                                                                                  0.0035, 0.006, 0.0035);
 
         renderer.rasterizer.clear_frame();
         renderer.rasterizer.draw_triangles(transformedTriangles, sceneTriangleCount);

@@ -117,8 +117,8 @@ int main(void)
     while (renderer.window.is_window_open())
     {
         const uint32_t sceneTriangleCount = trirot_transform_and_rotate_triangles(triangles, 1, transformedTriangles,
-                                                                                  0, 0.01, 0,
-                                                                                  1.5);
+                                                                                  0, 0, 1.5,
+                                                                                  0, 0.01, 0);
 
         if ((time(NULL) - timer) > 3)
         {

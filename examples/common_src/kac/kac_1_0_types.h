@@ -10,13 +10,30 @@
 
 #include <shiet/common/stdint.h>
 
+#define KAC_1_0_VERSION_VALUE 1.0
+
+/* KAC 1.0 requires textures to be at most 256 x 256 and at least 1 x 1, so in
+ * that range we can have up to 8 progressively size-halved mip levels.
+ *
+ * If you modify this value (for another version of KAC), you should also change
+ * the constants on texture dimensions.
+ */
+#define KAC_1_0_MAX_NUM_MIP_LEVELS 8
+
+/* KAC 1.0 requires textures to be square and power-of-two.
+ *
+ * If you modify these value (for another version of KAC), you should also change
+ * the constant on maximum number of mip levels, accordingly.
+ */
+#define KAC_1_0_MAX_TEXTURE_SIDE_LENGTH 256
+#define KAC_1_0_MIN_TEXTURE_SIDE_LENGTH 1
+
 struct kac_1_0_texture_s
 {
     struct kac_1_0_texture_metadata_s
     {
-        unsigned sideLengthExponent : 3;
-        unsigned pixelDataOffset : 25;
-        unsigned unused : 4;
+        unsigned sideLength : 16;
+        unsigned padding : 16;
         uint8_t pixelHash[16]; /* 128 bits of a hash of the texture's pixel data.*/
     } metadata;
 
@@ -26,7 +43,9 @@ struct kac_1_0_texture_s
         unsigned g : 5;
         unsigned b : 5;
         unsigned a : 1;
-    } *pixels;
+    } *mipLevel[KAC_1_0_MAX_NUM_MIP_LEVELS];
+
+    unsigned numMipLevels;
 };
 
 struct kac_1_0_material_s
@@ -41,11 +60,11 @@ struct kac_1_0_material_s
 
     struct kac_1_0_material_metadata_s
     {
-        unsigned textureMetadataIdx : 9;
+        unsigned textureIdx : 16;
         unsigned hasTexture : 1;
         unsigned hasTextureFiltering : 1;
         unsigned hasSmoothShading : 1;
-        unsigned unused : 4;
+        unsigned padding : 13;
     } metadata;
 };
 

@@ -28,17 +28,20 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
     uint32_t numTriangles = 0;
     *numTextures = 0;
 
-    #define RELEASE_TEMPORARY_KAC_BUFFERS {uint32_t i = 0;\
-                                           for (i = 0; i < *numTextures; i++)\
-                                           {\
-                                               free(kacTextures[i].pixels);\
-                                           }\
-                                           free(kacVertexCoords);\
-                                           free(kacUVCoords);\
-                                           free(kacMaterials);\
-                                           free(kacTriangles);\
-                                           free(kacTextures);\
-                                           free(kacNormals);}
+    #define FREE_TEMPORARY_KAC_BUFFERS {uint32_t i = 0, m = 0;\
+                                        for (i = 0; i < *numTextures; i++)\
+                                        {\
+                                            for (m = 0; m < kacTextures[i].numMipLevels; m++)\
+                                            {\
+                                                free(kacTextures[i].mipLevel[m]);\
+                                            }\
+                                        }\
+                                        free(kacVertexCoords);\
+                                        free(kacUVCoords);\
+                                        free(kacMaterials);\
+                                        free(kacTriangles);\
+                                        free(kacTextures);\
+                                        free(kacNormals);}
 
     if (kac10_reader__open_file(kacFilename) &&
         (numTriangles = kac10_reader__read_triangles(&kacTriangles)) &&
@@ -51,45 +54,49 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
     {
         uint32_t i = 0;
 
-        shiet_tristack_grow(dstTriangles, numTriangles);
-        *dstTextures = malloc(*numTextures * sizeof(struct shiet_polygon_texture_s));
+        /* Allocate memory for the destination buffers.*/
+        {
+            shiet_tristack_grow(dstTriangles, numTriangles);
 
-        /* Convert the KAC textures into shiet's format.*/
+            /* Note: The code may rely on unallocated pointers being NULL, so we
+             * use calloc() instead of malloc().*/
+            *dstTextures = calloc(*numTextures, sizeof(struct shiet_polygon_texture_s));
+        }
+
+        /* Convert the KAC textures into shiet's internal format.*/
         for (i = 0; i < *numTextures; i++)
         {
-            uint32_t p = 0;
-            const struct kac_1_0_texture_s *kacTexture = &kacTextures[i];
-            const uint32_t textureSideLen = pow(2, (kacTexture->metadata.sideLengthExponent + 1));
-            const uint32_t numPixelsInTexture = (textureSideLen * textureSideLen);
+            uint32_t p = 0, m = 0;
 
-            (*dstTextures)[i].width = textureSideLen;
-            (*dstTextures)[i].height = textureSideLen;
+            (*dstTextures)[i].width = kacTextures[i].metadata.sideLength;
+            (*dstTextures)[i].height = kacTextures[i].metadata.sideLength;
             (*dstTextures)[i].filtering = SHIET_TEXTURE_FILTER_LINEAR;
-            (*dstTextures)[i].pixelArray = malloc(numPixelsInTexture * 4);
-            (*dstTextures)[i].pixelArray16bit = malloc(numPixelsInTexture * sizeof((*dstTextures)[i].pixelArray16bit[0]));
+            (*dstTextures)[i].numMipLevels = kacTextures[i].numMipLevels;
 
-            for (p = 0; p < numPixelsInTexture; p++)
+            /* Get the pixels for all levels of mipmapping, starting at level 0 and
+             * progressively halving the resolution until we're down to 1 x 1.*/
+            for (m = 0; m < kacTextures[i].numMipLevels; m++)
             {
-                /* Convert from the KAC RGBA 5551 format into full-color 8888.*/
+                const uint32_t mipLevelSideLength = ((*dstTextures)[i].width / pow(2, m));
+                const uint32_t mipLevelPixelCount = (mipLevelSideLength * mipLevelSideLength);
+
+                /* We should never end up at a mip level smaller than 1 x 1. But
+                 * if we do, it may indicate an incorrect mip level count for this
+                 * texture in the KAC data.*/
+                if (mipLevelSideLength < 1)
                 {
-                    /* 4 color channels per pixel.*/
-                    const uint32_t idx = (p * 4);
-
-                    /* We'll use div/mul instead of bit shifts to upscale the 5-bit
-                     * color values into 8-bit, for potentially better dynamic range.*/
-                    const float scale = (255 / 31.0);
-
-                    (*dstTextures)[i].pixelArray[idx + 0] = (kacTexture->pixels[p].r * scale);
-                    (*dstTextures)[i].pixelArray[idx + 1] = (kacTexture->pixels[p].g * scale);
-                    (*dstTextures)[i].pixelArray[idx + 2] = (kacTexture->pixels[p].b * scale);
-                    (*dstTextures)[i].pixelArray[idx + 3] = (kacTexture->pixels[p].a * 255);
+                    goto fail;
                 }
 
-                /* Also keep the 16-bit format around, as ARGB 1555.*/
-                (*dstTextures)[i].pixelArray16bit[p] = (kacTexture->pixels[p].a << 15) |
-                                                      (kacTexture->pixels[p].r << 10) |
-                                                      (kacTexture->pixels[p].g << 5) |
-                                                      (kacTexture->pixels[p].b << 0);
+                (*dstTextures)[i].mipLevel[m] = malloc(mipLevelPixelCount * sizeof((*dstTextures)[i].mipLevel[m][0]));
+                for (p = 0; p < mipLevelPixelCount; p++)
+                {
+                    (*dstTextures)[i].mipLevel[m][p] = (kacTextures[i].mipLevel[m][p].a << 15) |
+                                                       (kacTextures[i].mipLevel[m][p].r << 10) |
+                                                       (kacTextures[i].mipLevel[m][p].g << 5)  |
+                                                       (kacTextures[i].mipLevel[m][p].b << 0);
+                }
+
             }
         }
 
@@ -129,7 +136,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                  * into 8-bit, for potentially better dynamic range.*/
                 const float scale = (255 / 15.0);
 
-                shietTriangle.material.texture = &(*dstTextures)[material->metadata.textureMetadataIdx];
+                shietTriangle.material.texture = &(*dstTextures)[material->metadata.textureIdx];
 
                 /* KAC 1.0 polygon colors are in the RGBA 4444 format.*/
                 shietTriangle.material.baseColor[0] = (material->color.r * scale);
@@ -141,12 +148,13 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
             shiet_tristack_push_copy(dstTriangles, &shietTriangle);
         }
 
-        RELEASE_TEMPORARY_KAC_BUFFERS;
+        FREE_TEMPORARY_KAC_BUFFERS;
         return 1;
     }
 
-    RELEASE_TEMPORARY_KAC_BUFFERS;
+    fail:
+    FREE_TEMPORARY_KAC_BUFFERS;
     return 0;
 
-    #undef RELEASE_TEMPORARY_KAC_BUFFERS
+    #undef FREE_TEMPORARY_KAC_BUFFERS
 }

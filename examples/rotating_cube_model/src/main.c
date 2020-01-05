@@ -78,14 +78,17 @@ int main(void)
 
     /* Release memory.*/
     {
-        uint32_t i = 0;
+        uint32_t i = 0, m = 0;
 
         for (i = 0; i < numTextures; i++)
         {
-            free(textures[i].pixelArray);
+            for (i = 0; i < textures[i].numMipLevels; i++)
+            {
+                free(textures[i].mipLevel[m]);
+            }
         }
-
         free(textures);
+
         shiet_tristack_free(triangles);
         shiet_tristack_free(transformedTriangles);
     }

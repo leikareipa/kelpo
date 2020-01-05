@@ -43,7 +43,7 @@ void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *con
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->pixelArray);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
 
     return;
 }
@@ -59,7 +59,7 @@ void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->pixelArray);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
 
     return;
 }

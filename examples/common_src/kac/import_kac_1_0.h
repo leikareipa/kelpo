@@ -41,8 +41,6 @@ uint32_t kac10_reader__read_textures(struct kac_1_0_texture_s **textures);
 uint32_t kac10_reader__read_materials(struct kac_1_0_material_s **materials);
 uint32_t kac10_reader__read_triangles(struct kac_1_0_triangle_s **triangles);
 uint32_t kac10_reader__read_uv_coordinates(struct kac_1_0_uv_coordinates_s **uvCoords);
-uint32_t kac10_reader__read_texture_pixels(struct kac_1_0_texture_pixel_s **texturePixels);
-uint32_t kac10_reader__read_texture_metadata(struct kac_1_0_texture_metadata_s **textureMetadata);
 uint32_t kac10_reader__read_vertex_coordinates(struct kac_1_0_vertex_coordinates_s **vertexCoords);
 
 /* Returns 1 if the file (specified with kac10_reader__open_file()) contains
@@ -52,8 +50,6 @@ int kac10_reader__file_has_textures(void);
 int kac10_reader__file_has_materials(void);
 int kac10_reader__file_has_triangles(void);
 int kac10_reader__file_has_uv_coordinates(void);
-int kac10_reader__file_has_texture_pixels(void);
-int kac10_reader__file_has_texture_metadata(void);
 int kac10_reader__file_has_vertex_coordinates(void);
 
 #endif

@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <windows.h>
 #include <windowsx.h>
-#include "shiet_lib/renderer/window/win32/window_win32.h"
-#include "shiet/common/globals.h"
+#include <shiet_lib/renderer/window/win32/window_win32.h>
+#include <shiet/common/globals.h>
 
 static char WINDOW_CLASS_NAME[] = "ShietDisplay";
 static char WINDOW_TITLE[64];
@@ -25,23 +25,8 @@ int shiet_window_win32__is_window_open(void)
 
 static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HCURSOR normalCursor = NULL;
-    
-    if (!normalCursor)
-    {
-        normalCursor = LoadCursor(GetModuleHandle(NULL), IDC_ARROW);
-    }
-
     switch (message)
     {
-        case WM_SETCURSOR:
-        {
-            /* Hide the cursor while its inside the window area.*/
-            SetCursor((LOWORD(lParam) == HTCLIENT)? NULL : normalCursor);
-
-            break;
-        }
-
         case WM_ACTIVATE:
         {
             WINDOW_ACTIVE = !HIWORD(wParam);
@@ -90,7 +75,7 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     wc.lpfnWndProc = window_message_handler;
     wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wc.hCursor = NULL;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     RegisterClassA(&wc);
 

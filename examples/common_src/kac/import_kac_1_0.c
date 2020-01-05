@@ -274,7 +274,7 @@ uint32_t kac10_reader__read_textures(struct kac_1_0_texture_s **textures)
 
                 if (mipLevelSideLength < KAC_1_0_MIN_TEXTURE_SIDE_LENGTH)
                 {
-                    /* All textures must have at least one level of mipmapping.*/
+                    /* All textures must have at least one level of mipmapping (the base level).*/
                     if (!m)
                     {
                         return 0;

@@ -80,10 +80,10 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 const uint32_t mipLevelSideLength = ((*dstTextures)[i].width / pow(2, m));
                 const uint32_t mipLevelPixelCount = (mipLevelSideLength * mipLevelSideLength);
 
-                /* We should never end up at a mip level smaller than 1 x 1. But
-                 * if we do, it may indicate an incorrect mip level count for this
-                 * texture in the KAC data.*/
-                if (mipLevelSideLength < 1)
+                /* We should never end up at a mip level smaller than the minumum.
+                 * But if we do, it may indicate an incorrect mip level count for
+                 * this texture in the KAC data.*/
+                if (mipLevelSideLength < KAC_1_0_MIN_TEXTURE_SIDE_LENGTH)
                 {
                     goto fail;
                 }

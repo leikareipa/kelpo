@@ -13,12 +13,13 @@
 #define KAC_1_0_VERSION_VALUE 1.0
 
 /* KAC 1.0 requires textures to be at most 256 x 256 and at least 1 x 1, so in
- * that range we can have up to 8 progressively size-halved mip levels.
+ * that range we can have up to 9 progressively size-halved mip levels (counting
+ * the original size).
  *
  * If you modify this value (for another version of KAC), you should also change
  * the constants on texture dimensions.
  */
-#define KAC_1_0_MAX_NUM_MIP_LEVELS 8
+#define KAC_1_0_MAX_NUM_MIP_LEVELS 9
 
 /* KAC 1.0 requires textures to be square and power-of-two.
  *

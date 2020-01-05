@@ -1,6 +1,8 @@
 #ifndef SHIET_POLYGON_TEXTURE_H_
 #define SHIET_POLYGON_TEXTURE_H_
 
+#include <shiet/common/stdint.h>
+
 struct shiet_polygon_texture_s
 {
     unsigned width, height;

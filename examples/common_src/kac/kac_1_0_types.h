@@ -8,7 +8,7 @@
 #ifndef KAC_1_0_TYPES_H
 #define KAC_1_0_TYPES_H
 
-#include <stdint.h>
+#include <shiet/common/stdint.h>
 
 struct kac_1_0_texture_s
 {

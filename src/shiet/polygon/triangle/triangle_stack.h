@@ -9,7 +9,7 @@
 #ifndef SHIET_POLYGON_TRIANGLE_TRIANGLE_STACK_H
 #define SHIET_POLYGON_TRIANGLE_TRIANGLE_STACK_H
 
-#include <stdint.h>
+#include <shiet/common/stdint.h>
 
 struct shiet_polygon_triangle_s;
 

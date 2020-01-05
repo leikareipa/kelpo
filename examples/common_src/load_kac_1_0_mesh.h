@@ -8,7 +8,7 @@
 #ifndef SHIET_EXAMPLES_COMMON_LOAD_KAC_1_0_MESH_H
 #define SHIET_EXAMPLES_COMMON_LOAD_KAC_1_0_MESH_H
 
-#include <stdint.h>
+#include <shiet/common/stdint.h>
 
 struct shiet_polygon_triangle_stack_s;
 struct shiet_polygon_triangle_s;

@@ -5,6 +5,7 @@ SRC_FILES="
 src/main.c
 ../common_src/transform_and_rotate_triangles.c
 ../../src/shiet/renderer_interface.c
+../../src/shiet/polygon/triangle/triangle_stack.c
 "
 
 OUTPUT_FILE="../../bin/rotating_triangle.exe"

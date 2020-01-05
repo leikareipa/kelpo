@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <shiet/polygon/triangle/triangle_stack.h>
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/renderer_interface.h>
 #include <shiet/common/globals.h>
@@ -16,13 +17,14 @@
 
 int main(void)
 {
-    time_t timer = time(NULL); /* Used to toggle between linear and nearest texture filtering.*/
     const struct { unsigned width; unsigned height; } renderResolution = {1024, 768};
+    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
 
     struct shiet_polygon_texture_s texture;
-    struct shiet_polygon_triangle_s triangles[1];
-    struct shiet_polygon_triangle_s transformedTriangles[1];
-    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
+    struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
+    struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(triangles->capacity);
+
+    time_t timer = time(NULL); /* Used to toggle between linear and nearest texture filtering.*/
 
     /* Initialize the renderer.*/
     {
@@ -86,39 +88,46 @@ int main(void)
 
     /* Set up a triangle in the middle of the screen.*/
     {
-        triangles[0].vertex[0].x = -0.5;
-        triangles[0].vertex[0].y = -0.5;
-        triangles[0].vertex[0].z = 0;
-        triangles[0].vertex[0].w = 1;
-        triangles[0].vertex[0].u = 0;
-        triangles[0].vertex[0].v = 0;
+        struct shiet_polygon_triangle_s triangle;
 
-        triangles[0].vertex[1].x = 0.5;
-        triangles[0].vertex[1].y = -0.5;
-        triangles[0].vertex[1].z = 0;
-        triangles[0].vertex[1].w = 1;
-        triangles[0].vertex[1].u = 1;
-        triangles[0].vertex[1].v = 0;
+        triangle.vertex[0].x = -0.5;
+        triangle.vertex[0].y = -0.5;
+        triangle.vertex[0].z = 0;
+        triangle.vertex[0].w = 1;
+        triangle.vertex[0].u = 0;
+        triangle.vertex[0].v = 0;
 
-        triangles[0].vertex[2].x = 0.5;
-        triangles[0].vertex[2].y = 0.5;
-        triangles[0].vertex[2].z = 0;
-        triangles[0].vertex[2].w = 1;
-        triangles[0].vertex[2].u = 1;
-        triangles[0].vertex[2].v = 1;
+        triangle.vertex[1].x = 0.5;
+        triangle.vertex[1].y = -0.5;
+        triangle.vertex[1].z = 0;
+        triangle.vertex[1].w = 1;
+        triangle.vertex[1].u = 1;
+        triangle.vertex[1].v = 0;
+
+        triangle.vertex[2].x = 0.5;
+        triangle.vertex[2].y = 0.5;
+        triangle.vertex[2].z = 0;
+        triangle.vertex[2].w = 1;
+        triangle.vertex[2].u = 1;
+        triangle.vertex[2].v = 1;
         
-        triangles[0].material.texture = &texture;
-        triangles[0].material.baseColor[0] = 128;
-        triangles[0].material.baseColor[1] = 192;
-        triangles[0].material.baseColor[2] = 64;
+        triangle.material.texture = &texture;
+        triangle.material.baseColor[0] = 128;
+        triangle.material.baseColor[1] = 192;
+        triangle.material.baseColor[2] = 64;
+
+        shiet_tristack_push_copy(triangles, &triangle);
     }
 
     /* Render.*/
     while (renderer.window.is_window_open())
     {
-        const uint32_t sceneTriangleCount = trirot_transform_and_rotate_triangles(triangles, 1, transformedTriangles,
-                                                                                  0, 0, 1.5,
-                                                                                  0, 0.01, 0);
+        shiet_tristack_clear(transformedTriangles);
+
+        trirot_transform_and_rotate_triangles(triangles,
+                                              transformedTriangles,
+                                              0, 0, 1.5,
+                                              0, 0.01, 0);
 
         if ((time(NULL) - timer) > 3)
         {
@@ -131,10 +140,13 @@ int main(void)
         }
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles, sceneTriangleCount);
+        renderer.rasterizer.draw_triangles(transformedTriangles->data, transformedTriangles->count);
         renderer.window.update_window();
     }
 
+    shiet_tristack_free(triangles);
+    shiet_tristack_free(transformedTriangles);
     free(texture.pixelArray);
+    
     return 0;
 }

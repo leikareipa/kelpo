@@ -14,7 +14,7 @@ MINGW_PATH=~/compi/mingw441
 BUILD_OPTIONS="
 -shared
 -nostdinc
--s
+-g
 -std=c89
 -pedantic
 -Wall

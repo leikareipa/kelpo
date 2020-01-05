@@ -10,15 +10,17 @@
 
 #include <stdint.h>
 
+struct shiet_polygon_triangle_stack_s;
 struct shiet_polygon_triangle_s;
 
 /* Loads a triangle mesh - along with any associated textures - from the given
- * KAC 1.0 file. Takes in uninitialized (or NULL) pointers to pointers to the
- * destination triangle and texture buffers, which will be initialized by the
- * function call to point to memory holding the data read from the file (and
- * converted into the relevant shiet formats). Returns 1 on success; else 0.*/
-uint32_t shiet_load_kac10_mesh(const char *const kacFilename,
-                               struct shiet_polygon_triangle_s **dstTriangles, uint32_t *numTriangles,
-                               struct shiet_polygon_texture_s **dstTextures, uint32_t *numTextures);
+ * KAC 1.0 file. Triangles will be placed in the given stack. For textures, takes
+ * in an uninitialized (or NULL) pointer-to-pointer that will be initialized by
+ * the function to point to memory allocated to hold the loaded texture data.
+ * Returns 1 on success; else 0.*/
+int shiet_load_kac10_mesh(const char *const kacFilename,
+                          struct shiet_polygon_triangle_stack_s *dstTriangles,
+                          struct shiet_polygon_texture_s **dstTextures,
+                          uint32_t *numTextures);
 
 #endif

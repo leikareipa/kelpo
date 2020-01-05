@@ -17,7 +17,7 @@ MINGW_PATH=~/compi/mingw441
 BUILD_OPTIONS="
 -nostdinc
 -s
--ansi
+-std=c89
 -pedantic
 -Wall
 -march=pentium

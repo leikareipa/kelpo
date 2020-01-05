@@ -6,6 +6,7 @@
 #ifndef SHIET_EXAMPLES_COMMON_TRANSFORM_AND_ROTATE_TRIANGLES_H
 #define SHIET_EXAMPLES_COMMON_TRANSFORM_AND_ROTATE_TRIANGLES_H
 
+struct shiet_polygon_triangle_stack_s;
 struct shiet_polygon_triangle_s;
 
 /* Set up screen-space-related matrices.*/
@@ -14,13 +15,10 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
 /* Transform the given triangles into screen space, translating their origin to
  * the given base XYZ position and rotating them about that origin by the given
  * XYZ amount. The transformed triangles will be placed in the given destination
- * buffer (i.e. the transformation is not in-place). Returns the number of
- * triangles placed in the destination buffer (the value may be less than the
- * original number of triangles if back-face culling or the like is applied).*/
-unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *const triangles,
-                                               const unsigned numTriangles,
-                                               struct shiet_polygon_triangle_s *const dst,
-                                               const float basePosX, const float basePosY, const float basePosZ,
-                                               const float rotX, const float rotY, const float rotZ);
+ * stack (the transformation is not in-place).*/
+void trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_stack_s *const triangles,
+                                           struct shiet_polygon_triangle_stack_s *const dst,
+                                           const float basePosX, const float basePosY, const float basePosZ,
+                                           const float rotX, const float rotY, const float rotZ);
 
 #endif

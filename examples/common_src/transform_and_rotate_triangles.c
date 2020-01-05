@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <shiet/polygon/triangle/triangle_stack.h>
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/polygon/vertex.h>
 #include <shiet/common/globals.h>
@@ -200,14 +201,13 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
     return;
 }
 
-unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *const triangles,
-                                               const unsigned numTriangles,
-                                               struct shiet_polygon_triangle_s *const dst,
-                                               const float basePosX, const float basePosY, const float basePosZ,
-                                               const float rotX, const float rotY, const float rotZ)
+void trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_stack_s *const triangles,
+                                           struct shiet_polygon_triangle_stack_s *const dst,
+                                           const float basePosX, const float basePosY, const float basePosZ,
+                                           const float rotX, const float rotY, const float rotZ)
 {
+    uint32_t i = 0;
     static float rot[3] = {0};
-    unsigned i, numTransformedTriangles = 0;
     struct matrix44_s rotation, transl, worldSpace, clipSpace;
 
     /* We'll produce cumulative rotation.*/
@@ -223,36 +223,33 @@ unsigned trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_s *
     mul_two_mats(&transl, &rotation, &worldSpace);
     mul_two_mats(&PERSP_MAT, &worldSpace, &clipSpace);
 
-    for (i = 0; i < numTriangles; i++)
+    for (i = 0; i < triangles->count; i++)
     {
         int triIsVisible = 1;
-
-        dst[numTransformedTriangles] = triangles[i];
+        struct shiet_polygon_triangle_s transformedTriangle = triangles->data[i];
 
         /* Transform into clip-space.*/
-        transform_vert(&dst[numTransformedTriangles].vertex[0], &clipSpace);
-        transform_vert(&dst[numTransformedTriangles].vertex[1], &clipSpace);
-        transform_vert(&dst[numTransformedTriangles].vertex[2], &clipSpace);
+        transform_vert(&transformedTriangle.vertex[0], &clipSpace);
+        transform_vert(&transformedTriangle.vertex[1], &clipSpace);
+        transform_vert(&transformedTriangle.vertex[2], &clipSpace);
 
         /* Something might happen in clip-space at some point, but not now.*/
 
         /* Transform into screen-space.*/
-        transform_vert(&dst[numTransformedTriangles].vertex[0], &SCREEN_SPACE_MAT);
-        transform_vert(&dst[numTransformedTriangles].vertex[1], &SCREEN_SPACE_MAT);
-        transform_vert(&dst[numTransformedTriangles].vertex[2], &SCREEN_SPACE_MAT);
-        tri_perspective_divide(&dst[numTransformedTriangles]);
+        transform_vert(&transformedTriangle.vertex[0], &SCREEN_SPACE_MAT);
+        transform_vert(&transformedTriangle.vertex[1], &SCREEN_SPACE_MAT);
+        transform_vert(&transformedTriangle.vertex[2], &SCREEN_SPACE_MAT);
+        tri_perspective_divide(&transformedTriangle);
 
         /* Back-face culling would go here.*/
 
         /* Depth clipping would go here.*/
 
-        /* If the triangle is visible, allow it to be drawn. If it's not, the
-         * next triangle, indexed with k, will overwrite this one.*/
         if (triIsVisible)
         {
-            numTransformedTriangles++;
+            shiet_tristack_push_copy(dst, &transformedTriangle);
         }
     }
 
-    return numTransformedTriangles;
+    return;
 }

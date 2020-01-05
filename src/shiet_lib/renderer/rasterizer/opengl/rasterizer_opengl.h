@@ -1,3 +1,10 @@
+/*
+ * 2020 Tarpeeksi Hyvae Soft
+ * 
+ * OpenGL 1.2 rasterizer for the shiet renderer.
+ * 
+ */
+
 #ifndef SHIET_RASTERIZER_OPENGL_H
 #define SHIET_RASTERIZER_OPENGL_H
 

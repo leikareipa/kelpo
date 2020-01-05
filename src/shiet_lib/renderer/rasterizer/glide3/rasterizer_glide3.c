@@ -89,6 +89,7 @@ static GrTexInfo generate_glide_texture_info(const struct shiet_polygon_texture_
 
     switch (texture->width)
     {
+        case 1: info.smallLodLog2 = info.largeLodLog2 = GR_LOD_LOG2_1; break;
         case 2: info.smallLodLog2 = info.largeLodLog2 = GR_LOD_LOG2_2; break;
         case 4: info.smallLodLog2 = info.largeLodLog2 = GR_LOD_LOG2_4; break;
         case 8: info.smallLodLog2 = info.largeLodLog2 = GR_LOD_LOG2_8; break;
@@ -101,7 +102,7 @@ static GrTexInfo generate_glide_texture_info(const struct shiet_polygon_texture_
 
     info.aspectRatioLog2 = GR_ASPECT_LOG2_1x1;
     info.format = GR_TEXFMT_ARGB_1555;
-    info.data = (FxU16*)texture->pixelArray16bit;
+    info.data = (FxU16*)texture->pixelArray;
 
     return info;
 }

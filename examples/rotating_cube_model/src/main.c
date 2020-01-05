@@ -83,7 +83,6 @@ int main(void)
         for (i = 0; i < numTextures; i++)
         {
             free(textures[i].pixelArray);
-            free(textures[i].pixelArray16bit);
         }
 
         free(textures);

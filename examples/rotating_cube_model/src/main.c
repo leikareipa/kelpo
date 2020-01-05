@@ -5,10 +5,9 @@
  * 
  */
 
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+#include <shiet/polygon/triangle/triangle_stack.h>
 #include <shiet/polygon/triangle/triangle.h>
 #include <shiet/renderer_interface.h>
 #include <shiet/common/globals.h>
@@ -18,12 +17,12 @@
 int main(void)
 {
     const struct { unsigned width; unsigned height; } renderResolution = {640, 480};
-    
-    uint32_t numTriangles = 0, numTextures = 0;
-    struct shiet_polygon_texture_s *textures = NULL;
-    struct shiet_polygon_triangle_s *triangles = NULL;
-    struct shiet_polygon_triangle_s *transformedTriangles = NULL;
     struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
+    
+    uint32_t numTextures = 0;
+    struct shiet_polygon_texture_s *textures = NULL;
+    struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
+    struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(1);
 
     /* Initialize the renderer.*/
     {
@@ -43,11 +42,12 @@ int main(void)
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
     }
 
-    /* Load the cube model from a KAC 1.0 mesh file.*/
+    /* Load in the cube model.*/
     {
         uint32_t i = 0;
 
-        if (!shiet_load_kac10_mesh("cube.kac", &triangles, &numTriangles, &textures, &numTextures))
+        if (!shiet_load_kac10_mesh("cube.kac", triangles, &textures, &numTextures) ||
+            !triangles->count)
         {
             fprintf(stderr, "ERROR: Could not load the cube model.\n");
             return 1;
@@ -58,19 +58,37 @@ int main(void)
             renderer.rasterizer.upload_texture(&textures[i]);
         }
 
-        transformedTriangles = malloc(sizeof(struct shiet_polygon_triangle_s) * numTriangles);
+        shiet_tristack_grow(transformedTriangles, triangles->capacity);
     }
 
     /* Render.*/
     while (renderer.window.is_window_open())
     {
-        const uint32_t sceneTriangleCount = trirot_transform_and_rotate_triangles(triangles, numTriangles, transformedTriangles,
-                                                                                  0, 0, 4.7,
-                                                                                  0.0035, 0.006, 0.0035);
+        shiet_tristack_clear(transformedTriangles);
+
+        trirot_transform_and_rotate_triangles(triangles,
+                                              transformedTriangles,
+                                              0, 0, 4.7,
+                                              0.0035, 0.006, 0.0035);
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles, sceneTriangleCount);
+        renderer.rasterizer.draw_triangles(transformedTriangles->data, transformedTriangles->count);
         renderer.window.update_window();
+    }
+
+    /* Release memory.*/
+    {
+        uint32_t i = 0;
+
+        for (i = 0; i < numTextures; i++)
+        {
+            free(textures[i].pixelArray);
+            free(textures[i].pixelArray16bit);
+        }
+
+        free(textures);
+        shiet_tristack_free(triangles);
+        shiet_tristack_free(transformedTriangles);
     }
 
     return 0;

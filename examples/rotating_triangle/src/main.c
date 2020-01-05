@@ -5,7 +5,6 @@
  * 
  */
 
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <shiet/polygon/triangle/triangle_stack.h>

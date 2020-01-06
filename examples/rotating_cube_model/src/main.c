@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <shiet/polygon/triangle/triangle_stack.h>
-#include <shiet/polygon/triangle/triangle.h>
-#include <shiet/interface.h>
-#include <shiet/common/globals.h>
+#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/polygon/triangle/triangle.h>
+#include <shiet_interface/interface.h>
+#include <shiet_interface/common/globals.h>
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
 #include "../../common_src/load_kac_1_0_mesh.h"

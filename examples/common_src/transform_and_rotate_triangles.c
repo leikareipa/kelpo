@@ -50,10 +50,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <shiet/polygon/triangle/triangle_stack.h>
-#include <shiet/polygon/triangle/triangle.h>
-#include <shiet/polygon/vertex.h>
-#include <shiet/common/globals.h>
+#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/polygon/triangle/triangle.h>
+#include <shiet_interface/polygon/vertex.h>
+#include <shiet_interface/common/globals.h>
 #include "transform_and_rotate_triangles.h"
 
 struct matrix44_s

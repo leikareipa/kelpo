@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h>
-#include <shiet/polygon/triangle/triangle.h>
-#include <shiet/polygon/texture.h>
+#include <shiet_interface/polygon/triangle/triangle.h>
+#include <shiet_interface/polygon/texture.h>
 
 #include <gl/gl.h>
 #include <gl/glext.h>

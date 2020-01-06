@@ -9,7 +9,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <shiet_lib/renderer/window/win32/window_win32.h>
-#include <shiet/common/globals.h>
+#include <shiet_interface/common/globals.h>
 
 static char WINDOW_CLASS_NAME[] = "ShietDisplay";
 static char WINDOW_TITLE[64];

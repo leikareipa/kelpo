@@ -1,8 +1,8 @@
 #ifndef SHIET_POLYGON_TRIANGLE_H
 #define SHIET_POLYGON_TRIANGLE_H
 
-#include <shiet/polygon/texture.h>
-#include <shiet/polygon/vertex.h>
+#include <shiet_interface/polygon/texture.h>
+#include <shiet_interface/polygon/vertex.h>
 
 struct shiet_polygon_triangle_s
 {

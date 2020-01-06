@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <shiet/polygon/triangle/triangle.h>
+#include <shiet_interface/polygon/triangle/triangle.h>
 #include "triangle_stack.h"
 
 /* When growing a stack, its new size will be its current allocated size multiplied

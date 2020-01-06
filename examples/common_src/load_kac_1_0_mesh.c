@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet/polygon/triangle/triangle_stack.h>
-#include <shiet/polygon/triangle/triangle.h>
+#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/polygon/triangle/triangle.h>
 #include "kac/import_kac_1_0.h"
 #include "load_kac_1_0_mesh.h"
 

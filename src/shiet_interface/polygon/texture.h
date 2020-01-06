@@ -1,7 +1,7 @@
 #ifndef SHIET_POLYGON_TEXTURE_H_
 #define SHIET_POLYGON_TEXTURE_H_
 
-#include <shiet/common/stdint.h>
+#include <shiet_interface/common/stdint.h>
 
 struct shiet_polygon_texture_s
 {

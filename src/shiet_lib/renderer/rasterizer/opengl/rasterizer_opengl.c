@@ -117,13 +117,10 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
 
     for (i = 0; i < numTriangles; i++)
     {
-        const struct shiet_polygon_texture_s *const texture = triangles[i].material.texture;
-
-        if (texture == NULL)
+        if (!triangles[i].texture)
         {
             glDisable(GL_TEXTURE_2D);
             
-
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)
                 {
@@ -135,7 +132,7 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
         else
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, texture->apiId);
+            glBindTexture(GL_TEXTURE_2D, triangles[i].texture->apiId);
 
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)

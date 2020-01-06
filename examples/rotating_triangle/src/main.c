@@ -16,7 +16,7 @@
 int main(void)
 {
     const struct { unsigned width; unsigned height; } renderResolution = {640, 480};
-    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
+    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("Glide3");
 
     struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
     struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(triangles->capacity);
@@ -73,7 +73,7 @@ int main(void)
         triangle.vertex[2].g = 0;
         triangle.vertex[2].b = 255;
         
-        triangle.material.texture = NULL;
+        triangle.texture = NULL;
 
         shiet_tristack_push_copy(triangles, &triangle);
     }

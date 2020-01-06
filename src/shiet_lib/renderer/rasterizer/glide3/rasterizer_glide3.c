@@ -195,7 +195,6 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
     for (i = 0; i < numTriangles; i++)
     {
         struct glide_vert_s glideVertex[3];
-        const struct shiet_polygon_texture_s *const texture = triangles[i].material.texture;
 
         for (v = 0; v < 3; v++)
         {
@@ -213,7 +212,7 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
     
         /* Set the rendering mode based on whether the triangle has a texture
          * or is solid-filled.*/
-        if (!texture)
+        if (!triangles[i].texture)
         {
             grColorCombine(GR_COMBINE_FUNCTION_LOCAL,
                            GR_COMBINE_FACTOR_NONE,
@@ -223,7 +222,7 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
         }
         else
         {
-            GrTexInfo texInfo = generate_glide_texture_info(texture);
+            GrTexInfo texInfo = generate_glide_texture_info(triangles[i].texture);
 
             for (v = 0; v < 3; v++)
             {
@@ -231,7 +230,7 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
                 glideVertex[v].t = ((triangles[i].vertex[v].v / triangles[i].vertex[v].w) * 256);
             }
 
-            if (texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)
+            if (triangles[i].texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)
             {
                 grTexFilterMode(GR_TMU0,
                                 GR_TEXTUREFILTER_BILINEAR,
@@ -245,10 +244,10 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
             }
 
             grTexMipMapMode(GR_TMU0,
-                            ((texture->numMipLevels > 1)? GR_MIPMAP_NEAREST : GR_MIPMAP_DISABLE),
+                            ((triangles[i].texture->numMipLevels > 1)? GR_MIPMAP_NEAREST : GR_MIPMAP_DISABLE),
                             FXTRUE);
 
-            grTexSource(GR_TMU0, texture->apiId, GR_MIPMAPLEVELMASK_BOTH, &texInfo);
+            grTexSource(GR_TMU0, triangles[i].texture->apiId, GR_MIPMAPLEVELMASK_BOTH, &texInfo);
 
             grColorCombine(GR_COMBINE_FUNCTION_SCALE_OTHER,
                            GR_COMBINE_FACTOR_LOCAL,

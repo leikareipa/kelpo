@@ -133,7 +133,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 shietTriangle.vertex[v].b = (material->color.b * materialColorScale);
             }
 
-            shietTriangle.material.texture = &(*dstTextures)[material->metadata.textureIdx];
+            shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
 
             shiet_tristack_push_copy(dstTriangles, &shietTriangle);
         }

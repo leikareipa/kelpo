@@ -19,7 +19,7 @@ static void initialize_renderer(const unsigned windowWidth,
     return;
 }
 
-void shiet_renderer_opengl__set_function_pointers(struct shiet_interface_s *const interface)
+void import_renderer(struct shiet_interface_s *const interface)
 {
     interface->initialize = initialize_renderer;
 

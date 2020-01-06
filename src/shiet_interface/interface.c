@@ -13,27 +13,25 @@ typedef void *(*dll_init_t)(struct shiet_interface_s *const);
 
 struct shiet_interface_s shiet_create_interface(const char *const rasterizerName)
 {
-    dll_init_t set_interface_pointers = NULL;
+    dll_init_t import_renderer = NULL;
     struct shiet_interface_s renderer = {NULL};
 
     if (strcmp("OpenGL", rasterizerName) == 0)
     {
-        set_interface_pointers = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_opengl.dll",
-                                                              "shiet_renderer_opengl__set_function_pointers");
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_opengl.dll", "import_renderer");
     }
     else if (strcmp("Glide3", rasterizerName) == 0)
     {
-        set_interface_pointers = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_glide3.dll",
-                                                              "shiet_renderer_glide3__set_function_pointers");
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_glide3.dll", "import_renderer");
     }
     else
     {
         assert(0 && "Unrecognized renderer.");
     }
 
-    assert(set_interface_pointers && "Failed to load the renderer library.");
+    assert(import_renderer && "Failed to load the renderer library.");
 
-    set_interface_pointers(&renderer);
+    import_renderer(&renderer);
 
     return renderer;
 }

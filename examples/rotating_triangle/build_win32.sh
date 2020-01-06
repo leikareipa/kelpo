@@ -4,6 +4,7 @@
 SRC_FILES="
 src/main.c
 ../common_src/transform_and_rotate_triangles.c
+../common_src/parse_command_line.c
 ../../src/shiet/renderer_interface.c
 ../../src/shiet/polygon/triangle/triangle_stack.c
 "

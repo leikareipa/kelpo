@@ -127,31 +127,20 @@ static GrTexInfo generate_glide_texture_info(const struct shiet_polygon_texture_
     return info;
 }
 
-void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *const texture)
+/* Uploads the given texture's data to the graphics device. The data will be
+ * placed in the Glide texture memory address specified by the texture's 'apiId'
+ * property, which must be properly initialized prior to calling this function.*/
+static void upload_texture_data(struct shiet_polygon_texture_s *const texture,
+                                GrTexInfo *const textureInfo)
 {
-    uint32_t m = 0;
-    FxU32 textureSize = 0;
-    GrTexInfo texInfo = {0};
-
-    if (!texture)
-    {
-        return;
-    }
-
-    texInfo = generate_glide_texture_info(texture);
-    textureSize = grTexTextureMemRequired(GR_MIPMAPLEVELMASK_BOTH, &texInfo);
-
-    assert(((CURRENT_TEXTURE_ADDRESS + textureSize) <= grTexMaxAddress(GR_TMU0)) &&
-           "Glide 3.x renderer: Not enough texture memory to store the given texture.");
-
-    texture->apiId = CURRENT_TEXTURE_ADDRESS;
-
     if (texture->numMipLevels > 1)
     {
+        uint32_t m = 0;
+
         for (m = 0; m < texture->numMipLevels; m++)
         {
             grTexDownloadMipMapLevel(GR_TMU0,
-                                     CURRENT_TEXTURE_ADDRESS,
+                                     texture->apiId,
                                      lod_for_size(texture->width / pow(2, m)),
                                      lod_for_size(texture->width),
                                      GR_ASPECT_LOG2_1x1,
@@ -162,26 +151,48 @@ void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *con
     }
     else
     {
-        grTexDownloadMipMap(GR_TMU0, CURRENT_TEXTURE_ADDRESS, GR_MIPMAPLEVELMASK_BOTH, &texInfo);
+        grTexDownloadMipMap(GR_TMU0, texture->apiId, GR_MIPMAPLEVELMASK_BOTH, textureInfo);
     }
+
+    return;
+}
+
+void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *const texture)
+{
+    FxU32 textureSize = 0;
+    GrTexInfo textureInfo = {0};
+
+    if (!texture)
+    {
+        return;
+    }
+
+    textureInfo = generate_glide_texture_info(texture);
+    textureSize = grTexTextureMemRequired(GR_MIPMAPLEVELMASK_BOTH, &textureInfo);
+
+    assert(((CURRENT_TEXTURE_ADDRESS + textureSize) <= grTexMaxAddress(GR_TMU0)) &&
+           "Glide 3.x renderer: Not enough texture memory to store the given texture.");
+
+    texture->apiId = CURRENT_TEXTURE_ADDRESS;
+    upload_texture_data(texture, &textureInfo);
 
     CURRENT_TEXTURE_ADDRESS += textureSize;
 
     return;
 }
 
-void shiet_rasterizer_glide3__update_texture(const struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_glide3__update_texture(struct shiet_polygon_texture_s *const texture)
 {
-    GrTexInfo texInfo;
+    GrTexInfo textureInfo = {0};
     
     if (!texture)
     {
         return;
     }
 
-    texInfo = generate_glide_texture_info(texture);
+    textureInfo = generate_glide_texture_info(texture);
 
-    grTexDownloadMipMap(GR_TMU0, texture->apiId, GR_MIPMAPLEVELMASK_BOTH, &texInfo);
+    upload_texture_data(texture, &textureInfo);
 
     return;
 }

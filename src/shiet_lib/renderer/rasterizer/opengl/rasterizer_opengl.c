@@ -37,19 +37,17 @@ void shiet_rasterizer_opengl__clear_frame(void)
     return;
 }
 
-void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *const texture)
+/* Uploads the given texture's data to the graphics device. An entry for this
+ * texture must already have been created with glGenTextures() prior to calling
+ * this function; the corresponding texture id must be stored in the texture's
+ * 'apiId' property.*/
+static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
 {
     uint32_t m = 0;
 
-    if (!texture)
-    {
-        return;
-    }
+    assert(texture &&
+           "OpenGL 1.2 renderer: Attempting to process a NULL texture");
 
-    assert(!glIsTexture(texture->apiId) &&
-           "Attempting to upload a texture that has already been uploaded.");
-
-    glGenTextures(1, (GLuint*)&texture->apiId);
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -71,41 +69,31 @@ void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *con
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
     }
+
+    return;
+}
+
+void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *const texture)
+{
+    assert(!glIsTexture(texture->apiId) &&
+           "OpenGL 1.2 renderer: This texture has already been registered. Use update_texture() instead.");
+
+    glGenTextures(1, (GLuint*)&texture->apiId);
+
+    upload_texture_data(texture);
     
     return;
 }
 
-void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *const texture)
 {
-    uint32_t m = 0;
+    assert(texture &&
+           "OpenGL 1.2 renderer: Attempting to update a NULL texture");
 
-    if (!texture ||
-        !glIsTexture(texture->apiId))
-    {
-        return;
-    }
-    
-    glBindTexture(GL_TEXTURE_2D, texture->apiId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    assert(glIsTexture(texture->apiId) &&
+           "OpenGL 1.2 renderer: This texture has not yet been registered. Use upload_texture() instead.");
 
-    if (texture->numMipLevels > 1)
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-
-        for (m = 0; m < texture->numMipLevels; m++)
-        {
-            const unsigned resDiv = (pow(2, m));
-            glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, (texture->width / resDiv), (texture->height / resDiv), 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[m]);
-        }
-    }
-    else
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
-    }
+    upload_texture_data(texture);
 
     return;
 }

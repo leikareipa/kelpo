@@ -20,7 +20,7 @@ struct shiet_renderer_interface_s
     {
         void (*clear_frame)(void);
         void (*upload_texture)(struct shiet_polygon_texture_s *const);
-        void (*update_texture)(const struct shiet_polygon_texture_s *const);
+        void (*update_texture)(struct shiet_polygon_texture_s *const);
         void (*draw_triangles)(const struct shiet_polygon_triangle_s *const, const unsigned);
         /*release*/
         /*framebuffer*/

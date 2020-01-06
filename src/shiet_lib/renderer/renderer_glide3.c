@@ -2,7 +2,7 @@
 #include <shiet_lib/renderer/rasterizer/glide3/surface_glide3_win32.h>
 #include <shiet_lib/renderer/rasterizer/glide3/rasterizer_glide3.h>
 #include <shiet_lib/renderer/window/win32/window_win32.h>
-#include <shiet/renderer_interface.h>
+#include <shiet/interface.h>
 
 static const char RENDERER_NAME[] = "Glide 3.x";
 static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/
@@ -17,7 +17,7 @@ static void initialize_renderer(const unsigned windowWidth,
     return;
 }
 
-void shiet_renderer_glide3__set_function_pointers(struct shiet_renderer_interface_s *const interface)
+void shiet_renderer_glide3__set_function_pointers(struct shiet_interface_s *const interface)
 {
     interface->initialize = initialize_renderer;
 

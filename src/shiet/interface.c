@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <string.h>
-#include "shiet/renderer_interface.h"
+#include "shiet/interface.h"
 
 #if _WIN32
     #include <windows.h>
@@ -9,12 +9,12 @@
     #error "Unknown platform."
 #endif
 
-typedef void *(*dll_init_t)(struct shiet_renderer_interface_s *const);
+typedef void *(*dll_init_t)(struct shiet_interface_s *const);
 
-struct shiet_renderer_interface_s shiet_create_renderer_interface(const char *const rasterizerName)
+struct shiet_interface_s shiet_create_interface(const char *const rasterizerName)
 {
     dll_init_t set_interface_pointers = NULL;
-    struct shiet_renderer_interface_s renderer = {NULL};
+    struct shiet_interface_s renderer = {NULL};
 
     if (strcmp("OpenGL", rasterizerName) == 0)
     {

@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <shiet/polygon/triangle/triangle_stack.h>
 #include <shiet/polygon/triangle/triangle.h>
-#include <shiet/renderer_interface.h>
+#include <shiet/interface.h>
 #include <shiet/common/globals.h>
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
@@ -19,7 +19,7 @@
 int main(int argc, char *argv[])
 {
     struct { unsigned width; unsigned height; } renderResolution = {640, 480};
-    struct shiet_renderer_interface_s renderer = shiet_create_renderer_interface("OpenGL");
+    struct shiet_interface_s renderer = shiet_create_interface("OpenGL");
     
     uint32_t numTextures = 0;
     struct shiet_polygon_texture_s *textures = NULL;
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
             {
                 case 'r':
                 {
-                    renderer = shiet_create_renderer_interface(shiet_cliparse_optarg());
+                    renderer = shiet_create_interface(shiet_cliparse_optarg());
                     break;
                 }
                 case 'w':

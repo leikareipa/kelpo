@@ -8,7 +8,7 @@ src/main.c
 ../common_src/parse_command_line.c
 ../common_src/kac/import_kac_1_0.c
 ../../src/shiet/polygon/triangle/triangle_stack.c
-../../src/shiet/renderer_interface.c
+../../src/shiet/interface.c
 "
 
 OUTPUT_FILE="../../bin/rotating_cube_model.exe"

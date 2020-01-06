@@ -33,6 +33,9 @@ struct shiet_interface_s shiet_create_interface(const char *const rasterizerName
 
     import_renderer(&renderer);
 
+    assert((renderer.metadata.rendererVersionMajor == SHIET_INTERFACE_VERSION_MAJOR) &&
+           "The renderer library's version is incompatible with this version of shiet.");
+
     return renderer;
 }
 

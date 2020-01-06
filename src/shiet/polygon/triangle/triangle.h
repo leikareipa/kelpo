@@ -1,8 +1,8 @@
-#ifndef SHIET_POLYGON_TRIANGLE_H_
-#define SHIET_POLYGON_TRIANGLE_H_
+#ifndef SHIET_POLYGON_TRIANGLE_H
+#define SHIET_POLYGON_TRIANGLE_H
 
-#include "shiet/polygon/material.h"
-#include "shiet/polygon/vertex.h"
+#include <shiet/polygon/material.h>
+#include <shiet/polygon/vertex.h>
 
 struct shiet_polygon_triangle_s
 {

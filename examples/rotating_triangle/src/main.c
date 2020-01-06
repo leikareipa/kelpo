@@ -49,6 +49,9 @@ int main(void)
         triangle.vertex[0].w = 1;
         triangle.vertex[0].u = 0;
         triangle.vertex[0].v = 0;
+        triangle.vertex[0].r = 255;
+        triangle.vertex[0].g = 0;
+        triangle.vertex[0].b = 0;
 
         triangle.vertex[1].x = 0.5;
         triangle.vertex[1].y = -0.5;
@@ -56,6 +59,9 @@ int main(void)
         triangle.vertex[1].w = 1;
         triangle.vertex[1].u = 1;
         triangle.vertex[1].v = 0;
+        triangle.vertex[1].r = 0;
+        triangle.vertex[1].g = 255;
+        triangle.vertex[1].b = 0;
 
         triangle.vertex[2].x = 0.5;
         triangle.vertex[2].y = 0.5;
@@ -63,11 +69,11 @@ int main(void)
         triangle.vertex[2].w = 1;
         triangle.vertex[2].u = 1;
         triangle.vertex[2].v = 1;
+        triangle.vertex[2].r = 0;
+        triangle.vertex[2].g = 0;
+        triangle.vertex[2].b = 255;
         
         triangle.material.texture = NULL;
-        triangle.material.baseColor[0] = 128;
-        triangle.material.baseColor[1] = 192;
-        triangle.material.baseColor[2] = 64;
 
         shiet_tristack_push_copy(triangles, &triangle);
     }

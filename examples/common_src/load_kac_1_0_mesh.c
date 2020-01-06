@@ -103,47 +103,37 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
         for (i = 0; i < numTriangles; i++)
         {
             struct shiet_polygon_triangle_s shietTriangle;
+            uint32_t v = 0;
+            const struct kac_1_0_material_s *material = &kacMaterials[kacTriangles[i].materialIdx];
 
-            /* Assign vertices.*/
+            for (v = 0; v < 3; v++)
             {
-                uint32_t v = 0;
+                /* We'll use div/mul instead of a bit shift to upscale KAC's 4-bit
+                * polygon colors into 8-bit, for potentially better dynamic range.*/
+                const float materialColorScale = (255 / 15.0);
 
-                for (v = 0; v < 3; v++)
-                {
-                    const struct kac_1_0_vertex_coordinates_s *vertex = &kacVertexCoords[kacTriangles[i].vertices[v].vertexCoordinatesIdx];
-                    const struct kac_1_0_uv_coordinates_s *uv = &kacUVCoords[kacTriangles[i].vertices[v].uvIdx];
-                    const struct kac_1_0_normal_s *normal = &kacNormals[kacTriangles[i].vertices[v].normalIdx];
+                const struct kac_1_0_vertex_coordinates_s *vertex = &kacVertexCoords[kacTriangles[i].vertices[v].vertexCoordinatesIdx];
+                const struct kac_1_0_uv_coordinates_s *uv = &kacUVCoords[kacTriangles[i].vertices[v].uvIdx];
+                const struct kac_1_0_normal_s *normal = &kacNormals[kacTriangles[i].vertices[v].normalIdx];
 
-                    shietTriangle.vertex[v].x = vertex->x;
-                    shietTriangle.vertex[v].y = vertex->y;
-                    shietTriangle.vertex[v].z = vertex->z;
-                    shietTriangle.vertex[v].w = 1;
+                shietTriangle.vertex[v].x = vertex->x;
+                shietTriangle.vertex[v].y = vertex->y;
+                shietTriangle.vertex[v].z = vertex->z;
+                shietTriangle.vertex[v].w = 1;
 
-                    shietTriangle.vertex[v].nx = normal->x;
-                    shietTriangle.vertex[v].ny = normal->y;
-                    shietTriangle.vertex[v].nz = normal->z;
+                shietTriangle.vertex[v].nx = normal->x;
+                shietTriangle.vertex[v].ny = normal->y;
+                shietTriangle.vertex[v].nz = normal->z;
 
-                    shietTriangle.vertex[v].u = uv->u;
-                    shietTriangle.vertex[v].v = uv->v;
-                }
+                shietTriangle.vertex[v].u = uv->u;
+                shietTriangle.vertex[v].v = uv->v;
+
+                shietTriangle.vertex[v].r = (material->color.r * materialColorScale);
+                shietTriangle.vertex[v].g = (material->color.g * materialColorScale);
+                shietTriangle.vertex[v].b = (material->color.b * materialColorScale);
             }
 
-            /* Assign materials.*/
-            {
-                const struct kac_1_0_material_s *material = &kacMaterials[kacTriangles[i].materialIdx];
-
-                /* Use div/mul instead of bit shift to upscale 5-bit color
-                 * into 8-bit, for potentially better dynamic range.*/
-                const float scale = (255 / 15.0);
-
-                shietTriangle.material.texture = &(*dstTextures)[material->metadata.textureIdx];
-
-                /* KAC 1.0 polygon colors are in the RGBA 4444 format.*/
-                shietTriangle.material.baseColor[0] = (material->color.r * scale);
-                shietTriangle.material.baseColor[1] = (material->color.g * scale);
-                shietTriangle.material.baseColor[2] = (material->color.b * scale);
-                shietTriangle.material.baseColor[3] = (material->color.a * scale);
-            }
+            shietTriangle.material.texture = &(*dstTextures)[material->metadata.textureIdx];
 
             shiet_tristack_push_copy(dstTriangles, &shietTriangle);
         }

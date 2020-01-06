@@ -199,9 +199,9 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
 
         for (v = 0; v < 3; v++)
         {
-            glideVertex[v].r = triangles[i].material.baseColor[0];
-            glideVertex[v].g = triangles[i].material.baseColor[1];
-            glideVertex[v].b = triangles[i].material.baseColor[2];
+            glideVertex[v].r = triangles[i].vertex[v].r;
+            glideVertex[v].g = triangles[i].vertex[v].g;
+            glideVertex[v].b = triangles[i].vertex[v].b;
 
             glideVertex[v].x = triangles[i].vertex[v].x;
             glideVertex[v].y = triangles[i].vertex[v].y;

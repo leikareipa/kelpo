@@ -113,7 +113,7 @@ void shiet_rasterizer_opengl__update_texture(const struct shiet_polygon_texture_
 void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
-    unsigned i = 0;
+    unsigned i = 0, v = 0;
 
     for (i = 0; i < numTriangles; i++)
     {
@@ -122,24 +122,20 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
         if (texture == NULL)
         {
             glDisable(GL_TEXTURE_2D);
-            glColor4ub(triangles[i].material.baseColor[0],
-                       triangles[i].material.baseColor[1],
-                       triangles[i].material.baseColor[2],
-                       triangles[i].material.baseColor[3]);
+            
 
             glBegin(GL_TRIANGLES);
-                glVertex2f(triangles[i].vertex[0].x, -triangles[i].vertex[0].y);
-                glVertex2f(triangles[i].vertex[1].x, -triangles[i].vertex[1].y);
-                glVertex2f(triangles[i].vertex[2].x, -triangles[i].vertex[2].y);
+                for (v = 0; v < 3; v++)
+                {
+                    glColor3ub(triangles[i].vertex[v].r, triangles[i].vertex[v].g, triangles[i].vertex[v].b);
+                    glVertex2f(triangles[i].vertex[v].x, -triangles[i].vertex[v].y);
+                }
             glEnd();
         }
         else
         {
-            unsigned v = 0;
-
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, texture->apiId);
-            glColor4ub(255, 255, 255, 255);
 
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)
@@ -148,6 +144,7 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
                                  (triangles[i].vertex[v].v / triangles[i].vertex[v].w),
                                  0, (1 / triangles[i].vertex[v].w));
                     glNormal3f(triangles[i].vertex[v].nx, triangles[i].vertex[v].ny, triangles[i].vertex[v].nz);
+                    glColor3ub(triangles[i].vertex[v].r, triangles[i].vertex[v].g, triangles[i].vertex[v].b);
                     glVertex3f(triangles[i].vertex[v].x, -triangles[i].vertex[v].y, -triangles[i].vertex[v].z);
                 }
             glEnd();

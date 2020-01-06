@@ -5,7 +5,9 @@
 #include <shiet_interface/interface.h>
 
 static const char RENDERER_NAME[] = "Glide 3.x";
-static const unsigned RENDERER_VERSION[3] = {0, 0, 1}; /* Major, minor, patch.*/
+static const unsigned RENDERER_VERSION[3] = {0,
+                                             1,   /* Minor.*/
+                                             0};  /* Patch.*/
 
 static void initialize_renderer(const unsigned windowWidth,
                                 const unsigned windowHeight,
@@ -31,9 +33,9 @@ void shiet_renderer_glide3__set_function_pointers(struct shiet_interface_s *cons
     interface->rasterizer.update_texture = shiet_rasterizer_glide3__update_texture;
 
     interface->metadata.rendererName = RENDERER_NAME;
-    interface->metadata.rendererMajorVersion = RENDERER_VERSION[0];
-    interface->metadata.rendererMinorVersion = RENDERER_VERSION[1];
-    interface->metadata.rendererPatchVersion = RENDERER_VERSION[2];
+    interface->metadata.rendererVersionMajor = RENDERER_VERSION[0];
+    interface->metadata.rendererVersionMinor = RENDERER_VERSION[1];
+    interface->metadata.rendererVersionPatch = RENDERER_VERSION[2];
 
     return;
 }

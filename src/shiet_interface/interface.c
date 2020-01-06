@@ -35,10 +35,6 @@ struct shiet_interface_s shiet_create_interface(const char *const rasterizerName
 
     set_interface_pointers(&renderer);
 
-    renderer.metadata.shietMajorVersion = 0;
-    renderer.metadata.shietMinorVersion = 0;
-    renderer.metadata.shietPatchVersion = 1;
-
     return renderer;
 }
 

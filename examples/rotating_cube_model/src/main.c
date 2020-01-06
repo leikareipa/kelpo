@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
         char windowTitle[128];
 
         sprintf(windowTitle, "shiet %d.%d.%d / %s renderer %d.%d.%d",
-                renderer.metadata.shietMajorVersion,
-                renderer.metadata.shietMinorVersion,
-                renderer.metadata.shietPatchVersion,
+                SHIET_INTERFACE_VERSION_MAJOR,
+                SHIET_INTERFACE_VERSION_MINOR,
+                SHIET_INTERFACE_VERSION_PATCH,
                 renderer.metadata.rendererName,
-                renderer.metadata.rendererMajorVersion,
-                renderer.metadata.rendererMinorVersion,
-                renderer.metadata.rendererPatchVersion);
+                renderer.metadata.rendererVersionMajor,
+                renderer.metadata.rendererVersionMinor,
+                renderer.metadata.rendererVersionPatch);
 
         renderer.initialize(renderResolution.width, renderResolution.height, windowTitle);
 

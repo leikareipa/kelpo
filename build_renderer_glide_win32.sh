@@ -1,15 +1,20 @@
 # Build shiet's Glide 3.x renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
 
+OUTPUT_FILE="bin/shiet_renderer_glide_3.dll"
+
+MINGW441_BASE_PATH=~/compi/mingw441
+
+# Glide 3.0 SDK.
+# Expects include files in ./include/glide/*
+# Expects lib files in ./lib/*
+GLIDE3_BASE_PATH=~/sdk/glide3
+
 SRC_FILES="
 src/shiet_lib/renderer/renderer_glide_3.c
 src/shiet_lib/renderer/rasterizer/glide_3/rasterizer_glide_3.c
 src/shiet_lib/renderer/rasterizer/glide_3/surface_glide_3_win32.c
 src/shiet_lib/renderer/window/win32/window_win32.c
 "
-
-OUTPUT_FILE="bin/shiet_renderer_glide_3.dll"
-
-MINGW_PATH=~/compi/mingw441
 
 BUILD_OPTIONS="
 -shared
@@ -20,8 +25,10 @@ BUILD_OPTIONS="
 -Wall
 -march=pentium
 -I ./src/
--isystem $MINGW_PATH/lib/gcc/mingw32/4.4.1/include
--isystem $MINGW_PATH/include
+-I $GLIDE3_BASE_PATH/include
+-isystem $MINGW441_BASE_PATH/lib/gcc/mingw32/4.4.1/include
+-isystem $MINGW441_BASE_PATH/include
+-L$GLIDE3_BASE_PATH/lib
 "
 
-wine "$MINGW_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE $SRC_FILES -lm -lgdi32 -lglide/glide3x
+wine "$MINGW441_BASE_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE $SRC_FILES -lm -lgdi32 -lglide3x

@@ -50,11 +50,7 @@ void shiet_rasterizer_glide3__initialize(void)
 
     /* Texturing.*/
     {
-        grTexClampMode(GR_TMU0,
-                       GR_TEXTURECLAMP_WRAP,
-                       GR_TEXTURECLAMP_WRAP);
-
-        /* Set up for decal texturing.*/
+        /* Decal texturing.*/
         grTexCombine(GR_TMU0,
                      GR_COMBINE_FUNCTION_LOCAL,
                      GR_COMBINE_FACTOR_NONE,
@@ -217,12 +213,7 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
             glideVertex[v].y = triangles[i].vertex[v].y;
             glideVertex[v].q = (1 / triangles[i].vertex[v].w);
         }
-
-        /* TODO: Reduce state-switching (e.g. grTexFilterMode()) - batch the
-         * polygons by material etc.*/
     
-        /* Set the rendering mode based on whether the triangle has a texture
-         * or is solid-filled.*/
         if (!triangles[i].texture)
         {
             grColorCombine(GR_COMBINE_FUNCTION_LOCAL,
@@ -233,6 +224,8 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
         }
         else
         {
+            /* TODO: Reduce state-switching - batch the polygons by material etc.*/
+
             GrTexInfo texInfo = generate_glide_texture_info(triangles[i].texture);
 
             for (v = 0; v < 3; v++)
@@ -241,18 +234,13 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
                 glideVertex[v].t = ((triangles[i].vertex[v].v / triangles[i].vertex[v].w) * 256);
             }
 
-            if (triangles[i].texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)
-            {
-                grTexFilterMode(GR_TMU0,
-                                GR_TEXTUREFILTER_BILINEAR,
-                                GR_TEXTUREFILTER_BILINEAR);
-            }
-            else
-            {
-                grTexFilterMode(GR_TMU0,
-                                GR_TEXTUREFILTER_POINT_SAMPLED,
-                                GR_TEXTUREFILTER_POINT_SAMPLED);
-            }
+            grTexFilterMode(GR_TMU0,
+                            (triangles[i].texture->flags.noFiltering? GR_TEXTUREFILTER_POINT_SAMPLED : GR_TEXTUREFILTER_BILINEAR),
+                            (triangles[i].texture->flags.noFiltering? GR_TEXTUREFILTER_POINT_SAMPLED : GR_TEXTUREFILTER_BILINEAR));
+
+            grTexClampMode(GR_TMU0,
+                           (triangles[i].texture->flags.clamped? GR_TEXTURECLAMP_CLAMP : GR_TEXTURECLAMP_WRAP),
+                           (triangles[i].texture->flags.clamped? GR_TEXTURECLAMP_CLAMP : GR_TEXTURECLAMP_WRAP));
 
             grTexMipMapMode(GR_TMU0,
                             ((triangles[i].texture->numMipLevels > 1)? GR_MIPMAP_NEAREST : GR_MIPMAP_DISABLE),

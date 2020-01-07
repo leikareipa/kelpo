@@ -259,7 +259,10 @@ uint32_t kac10_reader__read_textures(struct kac_1_0_texture_s **textures)
             fread((char*)&parameters, sizeof(parameters), 1, INPUT_FILE);
             fread((char*)pixelHash, sizeof(pixelHash), 1, INPUT_FILE);
 
-            (*textures)[i].metadata.sideLength = (parameters & 0xffff);
+            (*textures)[i].metadata.sideLength     = ((parameters >>  0) & 0xffff);
+            (*textures)[i].metadata.sampleLinearly = ((parameters >> 16) & 0x1);
+            (*textures)[i].metadata.clampUV        = ((parameters >> 17) & 0x1);
+
             memcpy((*textures)[i].metadata.pixelHash, pixelHash, sizeof(pixelHash));
         }
 
@@ -333,8 +336,7 @@ uint32_t kac10_reader__read_materials(struct kac_1_0_material_s **materials)
 
         (*materials)[i].metadata.textureIdx          = ((metadata >>  0) & 0x1fff);
         (*materials)[i].metadata.hasTexture          = ((metadata >> 16) & 0x1);
-        (*materials)[i].metadata.hasTextureFiltering = ((metadata >> 17) & 0x1);
-        (*materials)[i].metadata.hasSmoothShading    = ((metadata >> 18) & 0x1);
+        (*materials)[i].metadata.hasSmoothShading    = ((metadata >> 17) & 0x1);
     }
 
     return (kac10_reader__input_stream_is_valid()? numMaterials : 0);

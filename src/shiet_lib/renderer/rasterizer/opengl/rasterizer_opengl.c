@@ -49,13 +49,13 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
            "OpenGL 1.2 renderer: Attempting to process a NULL texture");
 
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
 
     if (texture->numMipLevels > 1)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
 
         for (m = 0; m < texture->numMipLevels; m++)
         {
@@ -65,8 +65,8 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
     }
     else
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ((texture->filtering == SHIET_TEXTURE_FILTER_LINEAR)? GL_LINEAR : GL_NEAREST));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
     }
 
@@ -102,6 +102,7 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;
+    GLuint lastBoundTexture = 0; /* Assumes OpenGL never generates texture id 0.*/
 
     for (i = 0; i < numTriangles; i++)
     {
@@ -120,7 +121,11 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
         else
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, triangles[i].texture->apiId);
+
+            if (triangles[i].texture->apiId != lastBoundTexture)
+            {
+                glBindTexture(GL_TEXTURE_2D, triangles[i].texture->apiId);
+            }
 
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)

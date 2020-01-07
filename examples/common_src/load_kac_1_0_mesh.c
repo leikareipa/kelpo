@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include <shiet_interface/polygon/triangle/triangle_stack.h>
@@ -55,23 +56,23 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
-        {
-            shiet_tristack_grow(dstTriangles, numTriangles);
-
-            /* Note: The code may rely on unallocated pointers being NULL, so we
-             * use calloc() instead of malloc().*/
-            *dstTextures = calloc(*numTextures, sizeof(struct shiet_polygon_texture_s));
-        }
+        shiet_tristack_grow(dstTriangles, numTriangles);
+        *dstTextures = malloc(*numTextures * sizeof(struct shiet_polygon_texture_s));
 
         /* Convert the KAC textures into shiet's internal format.*/
         for (i = 0; i < *numTextures; i++)
         {
             uint32_t p = 0, m = 0;
 
+            /* The code may rely on bit fields or unallocated pointers being 0,
+             * so let's accommodate.*/
+            memset(&(*dstTextures)[i], 0, sizeof(struct shiet_polygon_texture_s));
+
             (*dstTextures)[i].width = kacTextures[i].metadata.sideLength;
             (*dstTextures)[i].height = kacTextures[i].metadata.sideLength;
-            (*dstTextures)[i].filtering = SHIET_TEXTURE_FILTER_LINEAR;
             (*dstTextures)[i].numMipLevels = kacTextures[i].numMipLevels;
+            (*dstTextures)[i].flags.clamped = kacTextures[i].metadata.clampUV;
+            (*dstTextures)[i].flags.noFiltering = !kacTextures[i].metadata.sampleLinearly;
 
             /* Get the pixels for all levels of mipmapping, starting at level 0 and
              * progressively halving the resolution until we're down to 1 x 1.*/
@@ -106,10 +107,14 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
             uint32_t v = 0;
             const struct kac_1_0_material_s *material = &kacMaterials[kacTriangles[i].materialIdx];
 
+            /* The code may rely on bit fields or the like being initialized to 0,
+             * so let's accommodate.*/
+            memset(&shietTriangle, 0, sizeof(struct shiet_polygon_triangle_s));
+
             for (v = 0; v < 3; v++)
             {
                 /* We'll use div/mul instead of a bit shift to upscale KAC's 4-bit
-                * polygon colors into 8-bit, for potentially better dynamic range.*/
+                 * polygon colors into 8-bit, for potentially better dynamic range.*/
                 const float materialColorScale = (255 / 15.0);
 
                 const struct kac_1_0_vertex_coordinates_s *vertex = &kacVertexCoords[kacTriangles[i].vertices[v].vertexCoordinatesIdx];
@@ -133,7 +138,10 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 shietTriangle.vertex[v].b = (material->color.b * materialColorScale);
             }
 
-            shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
+            if (material->metadata.hasTexture)
+            {
+                shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
+            }
 
             shiet_tristack_push_copy(dstTriangles, &shietTriangle);
         }

@@ -34,7 +34,9 @@ struct kac_1_0_texture_s
     struct kac_1_0_texture_metadata_s
     {
         unsigned sideLength : 16;
-        unsigned padding : 16;
+        unsigned sampleLinearly : 1;
+        unsigned clampUV : 1;
+        unsigned padding : 14;
         uint8_t pixelHash[16]; /* 128 bits of a hash of the texture's pixel data.*/
     } metadata;
 
@@ -63,9 +65,8 @@ struct kac_1_0_material_s
     {
         unsigned textureIdx : 16;
         unsigned hasTexture : 1;
-        unsigned hasTextureFiltering : 1;
         unsigned hasSmoothShading : 1;
-        unsigned padding : 13;
+        unsigned padding : 14;
     } metadata;
 };
 

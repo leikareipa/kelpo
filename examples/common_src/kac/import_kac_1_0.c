@@ -274,7 +274,7 @@ uint32_t kac10_reader__read_textures(struct kac_1_0_texture_s **textures)
 
                 if (mipLevelSideLength < KAC_1_0_MIN_TEXTURE_SIDE_LENGTH)
                 {
-                    /* All textures must have at least one level of mipmapping (the base level).*/
+                    /* All textures must have at least the base mip level.*/
                     if (!m)
                     {
                         return 0;
@@ -320,19 +320,21 @@ uint32_t kac10_reader__read_materials(struct kac_1_0_material_s **materials)
     *materials = calloc(numMaterials, sizeof(struct kac_1_0_material_s));
     for (i = 0; i < numMaterials; i++)
     {
-        uint32_t material = 0;
+        uint16_t packedColor = 0;
+        uint32_t metadata = 0;
 
-        fread((char*)&material, sizeof(material), 1, INPUT_FILE);
+        fread((char*)&packedColor, sizeof(packedColor), 1, INPUT_FILE);
+        fread((char*)&metadata, sizeof(metadata), 1, INPUT_FILE);
 
-        (*materials)[i].color.r = ((material >> 0) & 0xf);
-        (*materials)[i].color.g = ((material >> 4) & 0xf);
-        (*materials)[i].color.b = ((material >> 8) & 0xf);
-        (*materials)[i].color.a = ((material >> 12) & 0xf);
+        (*materials)[i].color.r = ((packedColor >> 0) & 0xf);
+        (*materials)[i].color.g = ((packedColor >> 4) & 0xf);
+        (*materials)[i].color.b = ((packedColor >> 8) & 0xf);
+        (*materials)[i].color.a = ((packedColor >> 12) & 0xf);
 
-        (*materials)[i].metadata.textureIdx          = ((material >> 16) & 0x1ff);
-        (*materials)[i].metadata.hasTexture          = ((material >> 25) & 0x1);
-        (*materials)[i].metadata.hasTextureFiltering = ((material >> 26) & 0x1);
-        (*materials)[i].metadata.hasSmoothShading    = ((material >> 27) & 0x1);
+        (*materials)[i].metadata.textureIdx          = ((metadata >>  0) & 0x1fff);
+        (*materials)[i].metadata.hasTexture          = ((metadata >> 16) & 0x1);
+        (*materials)[i].metadata.hasTextureFiltering = ((metadata >> 17) & 0x1);
+        (*materials)[i].metadata.hasSmoothShading    = ((metadata >> 18) & 0x1);
     }
 
     return (kac10_reader__input_stream_is_valid()? numMaterials : 0);

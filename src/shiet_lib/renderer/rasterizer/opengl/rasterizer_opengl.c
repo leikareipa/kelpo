@@ -98,7 +98,7 @@ void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *con
     return;
 }
 
-void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle_s *const triangles,
+void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;
@@ -130,11 +130,11 @@ void shiet_rasterizer_opengl__draw_triangles(const struct shiet_polygon_triangle
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)
                 {
-                    glTexCoord4f((triangles[i].vertex[v].u / triangles[i].vertex[v].w),
-                                 (triangles[i].vertex[v].v / triangles[i].vertex[v].w),
-                                 0, (1 / triangles[i].vertex[v].w));
+                    glTexCoord4f((triangles[i].vertex[v].u * triangles[i].vertex[v].w),
+                                 (triangles[i].vertex[v].v * triangles[i].vertex[v].w),
+                                 0, triangles[i].vertex[v].w);
                     glNormal3f(triangles[i].vertex[v].nx, triangles[i].vertex[v].ny, triangles[i].vertex[v].nz);
-                    glColor3ub(triangles[i].vertex[v].r, triangles[i].vertex[v].g, triangles[i].vertex[v].b);
+                    glColor4ub(triangles[i].vertex[v].r, triangles[i].vertex[v].g, triangles[i].vertex[v].b, triangles[i].vertex[v].a);
                     glVertex3f(triangles[i].vertex[v].x, -triangles[i].vertex[v].y, -triangles[i].vertex[v].z);
                 }
             glEnd();

@@ -23,25 +23,15 @@ static const unsigned MIN_TEXTURE_SIZE = 2;
  * placed. This will be increased as more textures are loaded.*/
 static FxU32 CURRENT_TEXTURE_ADDRESS = 0;
 
-/* The vertex structure we want Glide to use. This matches the parameters and
- * their order we give via grVertexLayout() in shiet_rasterizer_glide3__initialize().*/
-struct glide_vert_s
-{
-    FxFloat x, y;
-    FxFloat q;
-    FxFloat r, g, b;
-    FxFloat s, t;
-};
-
 void shiet_rasterizer_glide3__initialize(void)
 {
     grColorMask(FXTRUE, FXFALSE);
 
-    /* Vertex data layout. Matches with the glide_vert_s struct.*/
+    /* Vertex data layout. Matches with the shiet_polygon_vertex_s struct.*/
     grVertexLayout(GR_PARAM_XY, 0, GR_PARAM_ENABLE);
-    grVertexLayout(GR_PARAM_Q, 8, GR_PARAM_ENABLE); 
-    grVertexLayout(GR_PARAM_RGB, 12, GR_PARAM_ENABLE);
-    grVertexLayout(GR_PARAM_ST0, 24, GR_PARAM_ENABLE);
+    grVertexLayout(GR_PARAM_Q, 12, GR_PARAM_ENABLE); /* Corresponds to 1/w in shiet_polygon_vertex_s.*/
+    grVertexLayout(GR_PARAM_ST0, 28, GR_PARAM_ENABLE);
+    grVertexLayout(GR_PARAM_PARGB, 36, GR_PARAM_ENABLE);
 
     /* Depth testing.*/
     grDepthBufferMode(GR_DEPTHBUFFER_WBUFFER);
@@ -194,26 +184,13 @@ void shiet_rasterizer_glide3__update_texture(struct shiet_polygon_texture_s *con
 }
 
 
-void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle_s *const triangles,
+void shiet_rasterizer_glide3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;
 
     for (i = 0; i < numTriangles; i++)
     {
-        struct glide_vert_s glideVertex[3];
-
-        for (v = 0; v < 3; v++)
-        {
-            glideVertex[v].r = triangles[i].vertex[v].r;
-            glideVertex[v].g = triangles[i].vertex[v].g;
-            glideVertex[v].b = triangles[i].vertex[v].b;
-
-            glideVertex[v].x = triangles[i].vertex[v].x;
-            glideVertex[v].y = triangles[i].vertex[v].y;
-            glideVertex[v].q = (1 / triangles[i].vertex[v].w);
-        }
-    
         if (!triangles[i].texture)
         {
             grColorCombine(GR_COMBINE_FUNCTION_LOCAL,
@@ -230,8 +207,8 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
 
             for (v = 0; v < 3; v++)
             {
-                glideVertex[v].s = ((triangles[i].vertex[v].u / triangles[i].vertex[v].w) * 256);
-                glideVertex[v].t = ((triangles[i].vertex[v].v / triangles[i].vertex[v].w) * 256);
+                triangles[i].vertex[v].u = ((triangles[i].vertex[v].u * triangles[i].vertex[v].w) * 256);
+                triangles[i].vertex[v].v = ((triangles[i].vertex[v].v * triangles[i].vertex[v].w) * 256);
             }
 
             grTexFilterMode(GR_TMU0,
@@ -255,7 +232,9 @@ void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle
                            FXFALSE);
         }
 
-        grDrawTriangle(&glideVertex[0], &glideVertex[1], &glideVertex[2]);
+        grDrawTriangle(&triangles[i].vertex[0],
+                       &triangles[i].vertex[1],
+                       &triangles[i].vertex[2]);
     }
 
     return;

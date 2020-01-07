@@ -188,6 +188,7 @@ static void tri_perspective_divide(struct shiet_polygon_triangle_s *const t)
         t->vertex[i].x /= t->vertex[i].w;
         t->vertex[i].y /= t->vertex[i].w;
         t->vertex[i].z /= t->vertex[i].w;
+        t->vertex[i].w = (1 / t->vertex[i].w);
     }
 
     return;

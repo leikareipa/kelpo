@@ -136,6 +136,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 shietTriangle.vertex[v].r = (material->color.r * materialColorScale);
                 shietTriangle.vertex[v].g = (material->color.g * materialColorScale);
                 shietTriangle.vertex[v].b = (material->color.b * materialColorScale);
+                shietTriangle.vertex[v].a = (material->color.a * materialColorScale);
             }
 
             if (material->metadata.hasTexture)

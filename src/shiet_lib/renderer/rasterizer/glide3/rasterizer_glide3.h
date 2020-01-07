@@ -19,7 +19,7 @@ void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *con
 
 void shiet_rasterizer_glide3__update_texture(struct shiet_polygon_texture_s *const texture);
 
-void shiet_rasterizer_glide3__draw_triangles(const struct shiet_polygon_triangle_s *const triangles,
+void shiet_rasterizer_glide3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles);
 
 #endif

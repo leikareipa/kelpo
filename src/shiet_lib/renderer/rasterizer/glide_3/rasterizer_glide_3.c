@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_lib/renderer/rasterizer/glide3/rasterizer_glide3.h>
+#include <shiet_lib/renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
 
@@ -23,7 +23,7 @@ static const unsigned MIN_TEXTURE_SIZE = 2;
  * placed. This will be increased as more textures are loaded.*/
 static FxU32 CURRENT_TEXTURE_ADDRESS = 0;
 
-void shiet_rasterizer_glide3__initialize(void)
+void shiet_rasterizer_glide_3__initialize(void)
 {
     grColorMask(FXTRUE, FXFALSE);
 
@@ -57,7 +57,7 @@ void shiet_rasterizer_glide3__initialize(void)
     return;
 }
 
-void shiet_rasterizer_glide3__clear_frame(void)
+void shiet_rasterizer_glide_3__clear_frame(void)
 {
     grBufferClear(0, 0, ~0u);
 
@@ -143,7 +143,7 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture,
     return;
 }
 
-void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_glide_3__upload_texture(struct shiet_polygon_texture_s *const texture)
 {
     FxU32 textureSize = 0;
     GrTexInfo textureInfo = {0};
@@ -167,7 +167,7 @@ void shiet_rasterizer_glide3__upload_texture(struct shiet_polygon_texture_s *con
     return;
 }
 
-void shiet_rasterizer_glide3__update_texture(struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_glide_3__update_texture(struct shiet_polygon_texture_s *const texture)
 {
     GrTexInfo textureInfo = {0};
     
@@ -184,7 +184,7 @@ void shiet_rasterizer_glide3__update_texture(struct shiet_polygon_texture_s *con
 }
 
 
-void shiet_rasterizer_glide3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
+void shiet_rasterizer_glide_3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;

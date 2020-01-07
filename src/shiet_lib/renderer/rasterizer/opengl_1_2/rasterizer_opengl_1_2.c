@@ -9,14 +9,14 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.h>
+#include <shiet_lib/renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
 
 #include <gl/gl.h>
 #include <gl/glext.h>
 
-void shiet_rasterizer_opengl__initialize(void)
+void shiet_rasterizer_opengl_1_2__initialize(void)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
@@ -30,7 +30,7 @@ void shiet_rasterizer_opengl__initialize(void)
     return;
 }
 
-void shiet_rasterizer_opengl__clear_frame(void)
+void shiet_rasterizer_opengl_1_2__clear_frame(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -73,7 +73,7 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
     return;
 }
 
-void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_opengl_1_2__upload_texture(struct shiet_polygon_texture_s *const texture)
 {
     assert(!glIsTexture(texture->apiId) &&
            "OpenGL 1.2 renderer: This texture has already been registered. Use update_texture() instead.");
@@ -85,7 +85,7 @@ void shiet_rasterizer_opengl__upload_texture(struct shiet_polygon_texture_s *con
     return;
 }
 
-void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *const texture)
+void shiet_rasterizer_opengl_1_2__update_texture(struct shiet_polygon_texture_s *const texture)
 {
     assert(texture &&
            "OpenGL 1.2 renderer: Attempting to update a NULL texture");
@@ -98,7 +98,7 @@ void shiet_rasterizer_opengl__update_texture(struct shiet_polygon_texture_s *con
     return;
 }
 
-void shiet_rasterizer_opengl__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
+void shiet_rasterizer_opengl_1_2__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;

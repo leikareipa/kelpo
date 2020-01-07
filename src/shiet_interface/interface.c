@@ -18,11 +18,11 @@ struct shiet_interface_s shiet_create_interface(const char *const rasterizerName
 
     if (strcmp("OpenGL", rasterizerName) == 0)
     {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_opengl.dll", "import_renderer");
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_opengl_1_2.dll", "import_renderer");
     }
     else if (strcmp("Glide3", rasterizerName) == 0)
     {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_glide3.dll", "import_renderer");
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_glide_3.dll", "import_renderer");
     }
     else
     {

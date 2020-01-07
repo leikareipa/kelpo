@@ -1,13 +1,13 @@
 # Build shiet's OpenGL renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
 
 SRC_FILES="
-src/shiet_lib/renderer/renderer_opengl.c
-src/shiet_lib/renderer/rasterizer/opengl/rasterizer_opengl.c
-src/shiet_lib/renderer/rasterizer/opengl/surface_opengl_win32.c
+src/shiet_lib/renderer/renderer_opengl_1_2.c
+src/shiet_lib/renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.c
+src/shiet_lib/renderer/rasterizer/opengl_1_2/surface_opengl_1_2_win32.c
 src/shiet_lib/renderer/window/win32/window_win32.c
 "
 
-OUTPUT_FILE="bin/shiet_renderer_opengl.dll"
+OUTPUT_FILE="bin/shiet_renderer_opengl_1_2.dll"
 
 MINGW_PATH=~/compi/mingw441
 

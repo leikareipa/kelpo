@@ -1,5 +1,5 @@
-#ifndef SHIET_POLYGON_VERTEX_H_
-#define SHIET_POLYGON_VERTEX_H_
+#ifndef SHIET_POLYGON_VERTEX_H
+#define SHIET_POLYGON_VERTEX_H
 
 #include <shiet_interface/common/stdint.h>
 

@@ -18,6 +18,8 @@ static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static int WINDOW_ACTIVE = 0;
 
+LRESULT (*CUSTOM_WINDOW_PROC)(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 int shiet_window_win32__is_window_open(void)
 {
     return (WINDOW_HANDLE != NULL);
@@ -25,37 +27,40 @@ int shiet_window_win32__is_window_open(void)
 
 static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
+    if (!CUSTOM_WINDOW_PROC ||
+        !CUSTOM_WINDOW_PROC(hWnd, message, wParam, lParam))
     {
-        case WM_ACTIVATE:
+        switch (message)
         {
-            WINDOW_ACTIVE = !HIWORD(wParam);
-            
-            break;
+            case WM_ACTIVATE:
+            {
+                WINDOW_ACTIVE = !HIWORD(wParam);
+                
+                break;
+            }
+
+            case WM_DESTROY:
+            {
+                PostQuitMessage(0);
+                WINDOW_HANDLE = NULL;
+
+                break;
+            }
+
+            default: return DefWindowProc(hWnd, message, wParam, lParam);
         }
-
-        case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            WINDOW_HANDLE = NULL;
-
-            break;
-        }
-
-        default: return DefWindowProc(hWnd, message, wParam, lParam);
     }
 
     return 0;
 }
 
-void shiet_window_win32__get_window_handle(void **handle)
+uint32_t shiet_window_win32__get_window_handle(void)
 {
-    *handle = WINDOW_HANDLE;
-
-    return;
+    return (uint32_t)WINDOW_HANDLE;
 }
 
-void shiet_window_win32__create_window(const unsigned width, const unsigned height, const char *const title)
+void shiet_window_win32__create_window(const unsigned width, const unsigned height, const char *const title,
+                                       LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM))
 {
     const DWORD dwStyle = (WS_CAPTION | WS_BORDER | WS_SYSMENU);
     const HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -65,6 +70,7 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
+    CUSTOM_WINDOW_PROC = customWindowProc;
 
     assert((strlen(title) < NUM_ARRAY_ELEMENTS(WINDOW_TITLE)) && "The given window title is too long.");
     sprintf(WINDOW_TITLE, "%s", title);

@@ -1,6 +1,8 @@
 #ifndef SHIET_INTERFACE_H
 #define SHIET_INTERFACE_H
 
+#include <shiet_interface/common/stdint.h>
+
 #define SHIET_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
 #define SHIET_INTERFACE_VERSION_MINOR 1 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define SHIET_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
@@ -14,7 +16,7 @@ struct shiet_interface_s
 
     struct shiet_interface_window_s
     {
-        void (*get_handle)(void**);
+        uint32_t (*get_handle)(void);
         void (*update_window)(void);
         int (*is_window_open)(void);
         /*size*/

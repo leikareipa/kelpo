@@ -185,7 +185,7 @@ void shiet_rasterizer_glide_3__update_texture(struct shiet_polygon_texture_s *co
 
 
 void shiet_rasterizer_glide_3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
-                                             const unsigned numTriangles)
+                                              const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;
 

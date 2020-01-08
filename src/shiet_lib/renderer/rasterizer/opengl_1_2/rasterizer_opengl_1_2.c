@@ -99,7 +99,7 @@ void shiet_rasterizer_opengl_1_2__update_texture(struct shiet_polygon_texture_s 
 }
 
 void shiet_rasterizer_opengl_1_2__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
-                                             const unsigned numTriangles)
+                                                 const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;
     GLuint lastBoundTexture = 0; /* Assumes OpenGL never generates texture id 0.*/

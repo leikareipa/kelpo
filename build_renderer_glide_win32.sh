@@ -28,7 +28,7 @@ BUILD_OPTIONS="
 -I $GLIDE3_BASE_PATH/include
 -isystem $MINGW441_BASE_PATH/lib/gcc/mingw32/4.4.1/include
 -isystem $MINGW441_BASE_PATH/include
--L$GLIDE3_BASE_PATH/lib
+-L $GLIDE3_BASE_PATH/lib
 "
 
 wine "$MINGW441_BASE_PATH/bin/gcc.exe" $BUILD_OPTIONS -o $OUTPUT_FILE $SRC_FILES -lm -lgdi32 -lglide3x

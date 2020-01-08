@@ -102,8 +102,8 @@ void shiet_surface_opengl_win32__create_surface(const unsigned width,
         0, 0, 0
     };
 
-    shiet_window_win32__create_window(width, height, windowTitle);
-    shiet_window_win32__get_window_handle((void*)&WINDOW_HANDLE);
+    shiet_window_win32__create_window(width, height, windowTitle, NULL);
+    WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;

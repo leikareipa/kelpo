@@ -10,15 +10,14 @@
 #include <shiet_lib/renderer/window/win32/window_win32.h>
 
 #include <windows.h>
-#include <glide/glide.h>
+#include <glide.h>
 
+static GrContext_t GLIDE_RENDER_CONTEXT = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
-static HDC WINDOW_DC = 0;
 static HWND WINDOW_HANDLE = 0;
-static GrContext_t GLIDE_RENDER_CONTEXT = 0;
 
-void shiet_surface_glide3_win32__release_surface(void)
+void shiet_surface_glide_3_win32__release_surface(void)
 {
     assert(GLIDE_RENDER_CONTEXT &&
            "Glide 3.x renderer: Can't release a NULL render context.");
@@ -28,7 +27,7 @@ void shiet_surface_glide3_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_glide3_win32__update_surface(void)
+void shiet_surface_glide_3_win32__update_surface(void)
 {
     MSG m;
 
@@ -45,9 +44,9 @@ void shiet_surface_glide3_win32__update_surface(void)
     return;
 }
 
-void shiet_surface_glide3_win32__create_surface(const unsigned width,
-                                                const unsigned height,
-                                                const char *const windowTitle)
+void shiet_surface_glide_3_win32__create_surface(const unsigned width,
+                                                 const unsigned height,
+                                                 const char *const windowTitle)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
     GrScreenRefresh_t glideRefreshRate = GR_REFRESH_60Hz;
@@ -67,12 +66,11 @@ void shiet_surface_glide3_win32__create_surface(const unsigned width,
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
     else assert(0 && "Glide 3.x renderer: Unsupported resolution.");
 
-    shiet_window_win32__create_window(width, height, windowTitle);
-    shiet_window_win32__get_window_handle((void*)&WINDOW_HANDLE);
+    shiet_window_win32__create_window(width, height, windowTitle, NULL);
+    WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
-    WINDOW_DC = GetDC(WINDOW_HANDLE);
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
     SetForegroundWindow(WINDOW_HANDLE);

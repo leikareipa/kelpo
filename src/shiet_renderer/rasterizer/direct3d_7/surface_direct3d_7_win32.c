@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <stdio.h>
 #include <shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 
@@ -16,6 +17,7 @@ static RECT                 SCREEN_RECT;
 static LPDIRECTDRAW7        DIRECTDRAW_7  = NULL;
 static LPDIRECTDRAWSURFACE7 SURFACE_FRONT = NULL;
 static LPDIRECTDRAWSURFACE7 SURFACE_BACK  = NULL;
+static LPDIRECTDRAWSURFACE7 Z_BUFFER      = NULL;
 static LPDIRECT3D7          DIRECT3D_7    = NULL;
 LPDIRECT3DDEVICE7           D3DDEVICE_7   = NULL; /* This will be accessed by the rasterizer.*/
 
@@ -23,10 +25,26 @@ static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static HWND WINDOW_HANDLE = 0;
 
-/*
- * ADAPTED FROM SAMPLE CODE DISTRIBUTED BY MICROSOFT WITH THE DIRECTX 7 SDK.
+/* Used in conjunction with IDirect3D7_EnumZBufferFormats(); matches the first
+ * pixel format that supports a Z buffer, and copies it into 'dest'.*/
+static HRESULT WINAPI enumerate_zbuffer_pixel_formats(DDPIXELFORMAT* pddpf,
+                                                      VOID* dest)
+{
+    if (pddpf->dwFlags == DDPF_ZBUFFER)
+    {
+        memcpy(dest, pddpf, sizeof(DDPIXELFORMAT));
+		return D3DENUMRET_CANCEL;
+    }
+
+    return D3DENUMRET_OK;
+}
+
+/* Sets up a Direct3D renderer along with a DirectDraw surface to render into.
+ *
+ * Adapted from sample code provided by Microsoft with the DirectX 7 SDK. Comments
+ * are largely kept as in the original.
  */
-static HRESULT initialize_direct3d_surface(void)
+static HRESULT initialize_direct3d(void)
 {
 	HRESULT hr;
     DDSURFACEDESC2 ddsd;
@@ -91,8 +109,8 @@ static HRESULT initialize_direct3d_surface(void)
          * offscreen plain surface with dimensions equal to our window size.
          * The DDSCAPS_3DDEVICE is needed so we can later query this surface
          * for an IDirect3DDevice interface.*/
-        ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-        ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_3DDEVICE;
+        ddsd.dwFlags = (DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS);
+        ddsd.ddsCaps.dwCaps = (DDSCAPS_OFFSCREENPLAIN | DDSCAPS_3DDEVICE);
 
         /* Set the dimensions of the backbuffer. Note that if our window changes
          * size, we need to destroy this surface and create a new one.*/
@@ -109,9 +127,6 @@ static HRESULT initialize_direct3d_surface(void)
         {
             return hr;
         }
-
-        /* Note: if using a z-buffer, the zbuffer surface creation would go around
-         * here. However, z-buffer usage is the topic of a subsequent tutorial.*/
 
         /* Create a clipper object which handles all our clipping for cases when
          * our window is partially obscured by other windows. This is not needed
@@ -134,13 +149,53 @@ static HRESULT initialize_direct3d_surface(void)
     {
         /* Query DirectDraw for access to Direct3D*/
 #ifdef __cplusplus
-        IDirectDraw7_QueryInterface(DIRECTDRAW_7, IID_IDirect3D7, (void**)&DIRECT3D_7);
+        if (FAILED(hr = IDirectDraw7_QueryInterface(DIRECTDRAW_7, IID_IDirect3D7, (void**)&DIRECT3D_7)))
 #else
-        IDirectDraw7_QueryInterface(DIRECTDRAW_7, &IID_IDirect3D7, (void**)&DIRECT3D_7);
+        if (FAILED(hr = IDirectDraw7_QueryInterface(DIRECTDRAW_7, &IID_IDirect3D7, (void**)&DIRECT3D_7)))
 #endif
         if (FAILED(hr))
         {
             return hr;
+        }
+
+        /* Create a Z buffer.*/
+        {
+            DDPIXELFORMAT ddpfZBuffer;
+
+            IDirect3D7_EnumZBufferFormats(DIRECT3D_7,
+#ifdef __cplusplus
+                                          IID_IDirect3DHALDevice,
+#else
+                                          &IID_IDirect3DHALDevice,
+#endif
+                                          enumerate_zbuffer_pixel_formats, (VOID*)&ddpfZBuffer);
+
+            /* If we found a good zbuffer format, then the dwSize field will be
+             * properly set during enumeration. Else, we have a problem and will exit.*/
+            if (sizeof(DDPIXELFORMAT) != ddpfZBuffer.dwSize)
+            {
+                return E_FAIL;
+            }
+
+            ddsd.dwFlags = (DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT | DDSD_PIXELFORMAT);
+            ddsd.ddsCaps.dwCaps = (DDSCAPS_ZBUFFER | DDSCAPS_VIDEOMEMORY);
+            ddsd.dwWidth = WINDOW_WIDTH;
+            ddsd.dwHeight = WINDOW_HEIGHT;
+            memcpy(&ddsd.ddpfPixelFormat, &ddpfZBuffer, sizeof(DDPIXELFORMAT));
+
+            /* Create and attach a z-buffer. Real apps should be able to handle an
+             * error here (DDERR_OUTOFVIDEOMEMORY may be encountered). For this 
+             * tutorial, though, we are simply going to exit ungracefully.*/
+            if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &Z_BUFFER, NULL)))
+            {
+                return hr;
+            }
+
+            /* Attach the z-buffer to the back buffer.*/
+            if (FAILED(hr = IDirectDrawSurface7_AddAttachedSurface(SURFACE_BACK, Z_BUFFER)))
+            {
+                return hr;
+            }
         }
 
         /* Before creating the device, check that we are NOT in a palettized
@@ -160,7 +215,7 @@ static HRESULT initialize_direct3d_surface(void)
 #ifdef __cplusplus
         hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7);
 #else
-    hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7);
+        hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7);
 #endif
         if (FAILED(hr))
         {
@@ -201,7 +256,12 @@ static HRESULT initialize_direct3d_surface(void)
 
 void shiet_surface_direct3d_7_win32__release_surface(void)
 {
-    /* TODO.*/
+    if (SURFACE_FRONT) IDirectDrawSurface7_Release(SURFACE_FRONT);
+    if (SURFACE_BACK)  IDirectDrawSurface7_Release(SURFACE_BACK);
+    if (Z_BUFFER)      IDirectDrawSurface7_Release(Z_BUFFER);
+    if (DIRECTDRAW_7)  IDirectDraw7_Release(DIRECTDRAW_7);
+    if (DIRECT3D_7)    IDirect3D7_Release(DIRECT3D_7);
+    if (D3DDEVICE_7)   IDirect3DDevice7_Release(D3DDEVICE_7);
 
     return;
 }
@@ -258,7 +318,7 @@ void shiet_surface_direct3d_7_win32__create_surface(const unsigned width,
     SetFocus(WINDOW_HANDLE);
     UpdateWindow(WINDOW_HANDLE);
 
-	if (FAILED(initialize_direct3d_surface()))
+	if (FAILED(initialize_direct3d()))
 	{
 		assert(0 && "Direct3D 7 renderer: Failed to initialize the renderer.");
 	}

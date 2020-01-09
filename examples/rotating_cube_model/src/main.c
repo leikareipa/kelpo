@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     {
         char windowTitle[128];
 
-        sprintf(windowTitle, "shiet %d.%d.%d / %s renderer %d.%d.%d",
+        sprintf(windowTitle, "shiet %d.%d.%d / %s (%d.%d.%d)",
                 SHIET_INTERFACE_VERSION_MAJOR,
                 SHIET_INTERFACE_VERSION_MINOR,
                 SHIET_INTERFACE_VERSION_PATCH,

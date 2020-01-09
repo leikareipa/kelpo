@@ -18,7 +18,7 @@
 int main(int argc, char *argv[])
 {
     struct { unsigned width; unsigned height; } renderResolution = {640, 480};
-    struct shiet_interface_s renderer = shiet_create_interface("OpenGL");
+    struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
 
     struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
     struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(triangles->capacity);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     {
         char windowTitle[128];
 
-        sprintf(windowTitle, "shiet %d.%d.%d / %s renderer %d.%d.%d",
+        sprintf(windowTitle, "shiet %d.%d.%d / %s (%d.%d.%d)",
                 SHIET_INTERFACE_VERSION_MAJOR,
                 SHIET_INTERFACE_VERSION_MINOR,
                 SHIET_INTERFACE_VERSION_PATCH,

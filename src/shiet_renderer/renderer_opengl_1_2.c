@@ -4,7 +4,7 @@
 #include <shiet_renderer/window/win32/window_win32.h>
 #include <shiet_interface/interface.h>
 
-static const char RENDERER_NAME[] = "OpenGL";
+static const char RENDERER_NAME[] = "OpenGL 1.2";
 static const unsigned RENDERER_VERSION[3] = {SHIET_INTERFACE_VERSION_MAJOR,
                                              1,   /* Minor.*/
                                              0};  /* Patch.*/

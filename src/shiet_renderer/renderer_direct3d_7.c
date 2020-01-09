@@ -7,7 +7,7 @@
 static const char RENDERER_NAME[] = "Direct3D 7";
 static const unsigned RENDERER_VERSION[3] = {SHIET_INTERFACE_VERSION_MAJOR,
                                              0,   /* Minor.*/
-                                             0};  /* Patch.*/
+                                             1};  /* Patch.*/
 
 static void initialize_renderer(const unsigned windowWidth,
                                 const unsigned windowHeight,

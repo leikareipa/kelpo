@@ -8,8 +8,8 @@
  */
 
 #include <assert.h>
-#include <shiet_lib/renderer/rasterizer/opengl_1_2/surface_opengl_1_2_win32.h>
-#include <shiet_lib/renderer/window/win32/window_win32.h>
+#include <shiet_renderer/rasterizer/opengl_1_2/surface_opengl_1_2_win32.h>
+#include <shiet_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <gl/glu.h>

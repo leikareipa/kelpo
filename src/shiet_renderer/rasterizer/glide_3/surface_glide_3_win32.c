@@ -6,11 +6,11 @@
  */
 
 #include <assert.h>
-#include <shiet_lib/renderer/rasterizer/glide_3/surface_glide_3_win32.h>
-#include <shiet_lib/renderer/window/win32/window_win32.h>
+#include <shiet_renderer/rasterizer/glide_3/surface_glide_3_win32.h>
+#include <shiet_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
-#include <glide.h>
+#include <glide/glide.h>
 
 static GrContext_t GLIDE_RENDER_CONTEXT = 0;
 static unsigned WINDOW_WIDTH = 0;

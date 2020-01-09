@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_lib/renderer/rasterizer/glide_3/rasterizer_glide_3.h>
+#include <shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
 

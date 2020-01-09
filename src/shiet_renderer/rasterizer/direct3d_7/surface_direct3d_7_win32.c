@@ -6,8 +6,8 @@
  */
 
 #include <assert.h>
-#include <shiet_lib/renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
-#include <shiet_lib/renderer/window/win32/window_win32.h>
+#include <shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
+#include <shiet_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <d3d.h>

@@ -11,10 +11,10 @@ MINGW441_BASE_PATH=~/compi/mingw441
 DX7_BASE_PATH=~/sdk/directx7
 
 SRC_FILES="
-src/shiet_lib/renderer/renderer_direct3d_7.c
-src/shiet_lib/renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.c
-src/shiet_lib/renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.c
-src/shiet_lib/renderer/window/win32/window_win32.c
+src/shiet_renderer/renderer_direct3d_7.c
+src/shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.c
+src/shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.c
+src/shiet_renderer/window/win32/window_win32.c
 "
 
 BUILD_OPTIONS="

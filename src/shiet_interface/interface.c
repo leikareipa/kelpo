@@ -16,15 +16,15 @@ struct shiet_interface_s shiet_create_interface(const char *const rasterizerName
     dll_init_t import_renderer = NULL;
     struct shiet_interface_s renderer = {NULL};
 
-    if (strcmp("OpenGL", rasterizerName) == 0)
+    if (strcmp("opengl_1_2", rasterizerName) == 0)
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_opengl_1_2.dll", "import_renderer");
     }
-    else if (strcmp("Glide3", rasterizerName) == 0)
+    else if (strcmp("glide_3", rasterizerName) == 0)
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_glide_3.dll", "import_renderer");
     }
-    else if (strcmp("Direct3D7", rasterizerName) == 0)
+    else if (strcmp("direct3d_7", rasterizerName) == 0)
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_direct3d_7.dll", "import_renderer");
     }

@@ -19,7 +19,7 @@
 int main(int argc, char *argv[])
 {
     struct { unsigned width; unsigned height; } renderResolution = {640, 480};
-    struct shiet_interface_s renderer = shiet_create_interface("OpenGL");
+    struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
     
     uint32_t numTextures = 0;
     struct shiet_polygon_texture_s *textures = NULL;

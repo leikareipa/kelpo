@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
+#include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw7_devices.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
@@ -44,7 +45,7 @@ static HRESULT WINAPI enumerate_zbuffer_pixel_formats(DDPIXELFORMAT* pddpf,
  * Adapted from sample code provided by Microsoft with the DirectX 7 SDK. Comments
  * are largely kept as in the original.
  */
-static HRESULT initialize_direct3d(void)
+static HRESULT initialize_direct3d(GUID *const deviceGUID)
 {
 	HRESULT hr;
     DDSURFACEDESC2 ddsd;
@@ -61,11 +62,12 @@ static HRESULT initialize_direct3d(void)
          * to be explicity specified . (Note: these guids are normally obtained
          * from enumeration, which is convered in a subsequent tutorial.)*/
 #ifdef __cplusplus
-        if (FAILED(hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(deviceGUID, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
 #else
-        if (FAILED(hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(deviceGUID, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
 #endif
         {
+            fprintf(stderr, "A call to DirectDrawCreateEx() failed.\n");
             return hr;
         }
 
@@ -79,6 +81,7 @@ static HRESULT initialize_direct3d(void)
          * already controls a fullscreen, exclusive mode.*/
         if (FAILED(hr = IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, DDSCL_NORMAL)))
         {
+            fprintf(stderr, "A call to IDirectDraw7_SetCooperativeLevel() failed.\n");
             return hr;
         }
     }
@@ -99,6 +102,7 @@ static HRESULT initialize_direct3d(void)
         /* Create the primary surface.*/
         if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_FRONT, NULL)))
         {
+            fprintf(stderr, "A call to IDirectDraw7_CreateSurface() failed.\n");
             return hr;
         }
 
@@ -121,6 +125,7 @@ static HRESULT initialize_direct3d(void)
          * out of video memory. (A more sophisticated app should handle this.)*/
         if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_BACK, NULL)))
         {
+            fprintf(stderr, "A call to IDirectDraw7_CreateSurface() failed.\n");
             return hr;
         }
 
@@ -129,6 +134,7 @@ static HRESULT initialize_direct3d(void)
          * for apps running in fullscreen mode.*/
         if (FAILED(hr = IDirectDraw7_CreateClipper(DIRECTDRAW_7, 0, &pcClipper, NULL)))
         {
+            fprintf(stderr, "A call to IDirectDraw7_CreateClipper() failed.\n");
             return hr;
         }
 
@@ -149,6 +155,7 @@ static HRESULT initialize_direct3d(void)
         if (FAILED(hr = IDirectDraw7_QueryInterface(DIRECTDRAW_7, &IID_IDirect3D7, (void**)&DIRECT3D_7)))
 #endif
         {
+            fprintf(stderr, "A call to IDirectDraw7_QueryInterface() failed.\n");
             return hr;
         }
 
@@ -182,12 +189,14 @@ static HRESULT initialize_direct3d(void)
              * tutorial, though, we are simply going to exit ungracefully.*/
             if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &Z_BUFFER, NULL)))
             {
+                fprintf(stderr, "A call to IDirectDraw7_CreateSurface() failed.\n");
                 return hr;
             }
 
             /* Attach the z-buffer to the back buffer.*/
             if (FAILED(hr = IDirectDrawSurface7_AddAttachedSurface(SURFACE_BACK, Z_BUFFER)))
             {
+                fprintf(stderr, "A call to IDirectDrawSurface7_AddAttachedSurface() failed.\n");
                 return hr;
             }
         }
@@ -202,16 +211,15 @@ static HRESULT initialize_direct3d(void)
             return DDERR_INVALIDMODE;
         }
 
-        /* Create the device. The GUID is hardcoded for now, but should come from
-         * device enumeration, which is the topic of a future tutorial. The device
-         * is created off of our back buffer, which becomes the render target for
-         * the newly created device.*/
+        /* Create the device. The device is created off of our back buffer, which
+         * becomes the render target for the newly created device.*/
 #ifdef __cplusplus
         if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #else
         if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #endif
         {
+            fprintf(stderr, "A call to IDirect3D7_CreateDevice() failed.\n");
             return hr;
             
             /* This call could fail for many reasons. The most likely cause is
@@ -238,6 +246,7 @@ static HRESULT initialize_direct3d(void)
 
         if (FAILED(hr = IDirect3DDevice7_SetViewport(D3DDEVICE_7, &vp)))
         {
+            fprintf(stderr, "A call to IDirect3DDevice7_SetViewport() failed.\n");
             return hr;
         }
     }
@@ -267,6 +276,7 @@ void shiet_surface_direct3d_7_win32__update_surface(void)
         DispatchMessage(&m);
     }
 
+    /* For windowed mode.*/
     IDirectDraw7_WaitForVerticalBlank(DIRECTDRAW_7, DDWAITVB_BLOCKBEGIN, NULL);
     IDirectDrawSurface7_Blt(SURFACE_FRONT, &SCREEN_RECT, SURFACE_BACK, NULL, DDBLT_WAIT, NULL);
 
@@ -277,7 +287,7 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 {
     switch (message)
     {
-        /* Update blit region with the window's new position.*/
+        /* For windowed mode. Update the blit region with the window's new position.*/
         case WM_MOVE:
         {
             const unsigned x = LOWORD(lParam);
@@ -309,7 +319,7 @@ void shiet_surface_direct3d_7_win32__create_surface(const unsigned width,
     SetFocus(WINDOW_HANDLE);
     UpdateWindow(WINDOW_HANDLE);
 
-	if (FAILED(initialize_direct3d()))
+	if (FAILED(initialize_direct3d(shiet_guid_of_directdraw7_device(0))))
 	{
 		assert(0 && "Direct3D 7 renderer: Failed to initialize the renderer.");
 	}

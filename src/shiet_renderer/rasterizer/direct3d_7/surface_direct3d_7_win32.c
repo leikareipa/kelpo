@@ -61,11 +61,10 @@ static HRESULT initialize_direct3d(void)
          * to be explicity specified . (Note: these guids are normally obtained
          * from enumeration, which is convered in a subsequent tutorial.)*/
 #ifdef __cplusplus
-        hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL);
+        if (FAILED(hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
 #else
-        hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL);
+        if (FAILED(hr = DirectDrawCreateEx(NULL, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
 #endif
-        if (FAILED(hr))
         {
             return hr;
         }
@@ -78,8 +77,7 @@ static HRESULT initialize_direct3d(void)
          * hint to DirectX to optomize floating points calculations. See the docs
          * for more info on this. Note: this call could fail if another application
          * already controls a fullscreen, exclusive mode.*/
-        hr = IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, DDSCL_NORMAL);
-        if (FAILED(hr))
+        if (FAILED(hr = IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, DDSCL_NORMAL)))
         {
             return hr;
         }
@@ -99,8 +97,7 @@ static HRESULT initialize_direct3d(void)
         ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
         /* Create the primary surface.*/
-        hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_FRONT, NULL);
-        if (FAILED(hr))
+        if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_FRONT, NULL)))
         {
             return hr;
         }
@@ -122,8 +119,7 @@ static HRESULT initialize_direct3d(void)
 
         /* Create the backbuffer. The most likely reason for failure is running
          * out of video memory. (A more sophisticated app should handle this.)*/
-        hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_BACK, NULL);
-        if (FAILED(hr))
+        if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &ddsd, &SURFACE_BACK, NULL)))
         {
             return hr;
         }
@@ -131,8 +127,7 @@ static HRESULT initialize_direct3d(void)
         /* Create a clipper object which handles all our clipping for cases when
          * our window is partially obscured by other windows. This is not needed
          * for apps running in fullscreen mode.*/
-        hr = IDirectDraw7_CreateClipper(DIRECTDRAW_7, 0, &pcClipper, NULL);
-        if (FAILED(hr))
+        if (FAILED(hr = IDirectDraw7_CreateClipper(DIRECTDRAW_7, 0, &pcClipper, NULL)))
         {
             return hr;
         }
@@ -153,7 +148,6 @@ static HRESULT initialize_direct3d(void)
 #else
         if (FAILED(hr = IDirectDraw7_QueryInterface(DIRECTDRAW_7, &IID_IDirect3D7, (void**)&DIRECT3D_7)))
 #endif
-        if (FAILED(hr))
         {
             return hr;
         }
@@ -213,11 +207,10 @@ static HRESULT initialize_direct3d(void)
          * is created off of our back buffer, which becomes the render target for
          * the newly created device.*/
 #ifdef __cplusplus
-        hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7);
+        if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #else
-        hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7);
+        if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DHALDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #endif
-        if (FAILED(hr))
         {
             return hr;
             
@@ -229,11 +222,10 @@ static HRESULT initialize_direct3d(void)
              * to check that). In any case, let's simply try again with the RGB
              * software rasterizer.*/
 #ifdef __cplusplus
-            hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DRGBDevice, SURFACE_BACK, &D3DDEVICE_7);
+            if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, IID_IDirect3DRGBDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #else
-            hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DRGBDevice, SURFACE_BACK, &D3DDEVICE_7);
+            if (FAILED(hr = IDirect3D7_CreateDevice(DIRECT3D_7, &IID_IDirect3DRGBDevice, SURFACE_BACK, &D3DDEVICE_7)))
 #endif
-            if (FAILED(hr))
             {
                 return hr;
             }
@@ -244,8 +236,7 @@ static HRESULT initialize_direct3d(void)
     {
         D3DVIEWPORT7 vp = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1};
 
-        hr = IDirect3DDevice7_SetViewport(D3DDEVICE_7, &vp);
-        if (FAILED(hr))
+        if (FAILED(hr = IDirect3DDevice7_SetViewport(D3DDEVICE_7, &vp)))
         {
             return hr;
         }

@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include <shiet_interface/polygon/texture.h>
 
 #include <windows.h>
@@ -34,7 +35,9 @@ static HRESULT CALLBACK texture_search_callback_argb_1555(DDPIXELFORMAT* pddpf, 
 LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct shiet_polygon_texture_s *const texture,
                                                                    LPDIRECT3DDEVICE7 d3dDevice)
 {
+    uint32_t m = 0;
     LPDIRECTDRAWSURFACE7 d3dTexture = NULL;
+    LPDIRECTDRAWSURFACE7 mipSurface = NULL;
 
     assert(d3dDevice && "Unknown Direct3D device.");
 
@@ -66,8 +69,9 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
         ZeroMemory(&surfaceDescription, sizeof(DDSURFACEDESC2));
         surfaceDescription.dwSize = sizeof(DDSURFACEDESC2);
         surfaceDescription.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT| DDSD_TEXTURESTAGE);
-        surfaceDescription.ddsCaps.dwCaps = DDSCAPS_TEXTURE;
+        surfaceDescription.ddsCaps.dwCaps = (DDSCAPS_TEXTURE | ((texture->numMipLevels <= 1)? 0 : (DDSCAPS_MIPMAP | DDSCAPS_COMPLEX)));
         surfaceDescription.ddsCaps.dwCaps2 = DDSCAPS2_TEXTUREMANAGE;
+        surfaceDescription.dwMipMapCount = 0; /* Shiet textures with mipmapping are expected to have levels down to 1 x 1.*/
         surfaceDescription.dwWidth = texture->width;
         surfaceDescription.dwHeight = texture->height;
         IDirect3DDevice_EnumTextureFormats(d3dDevice, texture_search_callback_argb_1555, &surfaceDescription.ddpfPixelFormat);
@@ -87,19 +91,22 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
     }
 
     /* Copy the shiet texture's pixel data into the Direct3D texture.*/
+    mipSurface = d3dTexture;
+    for (m = 0; m < texture->numMipLevels; m++)
     {
         HDC hdcTexture = 0;
 
-        if (SUCCEEDED(IDirectDrawSurface7_GetDC(d3dTexture, &hdcTexture)))
+        if (SUCCEEDED(IDirectDrawSurface7_GetDC(mipSurface, &hdcTexture)))
         {
+            const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Shiet textures are expected to be square.*/
             HDC hdcBitmap = 0;
             HBITMAP map = 0;
             BITMAPINFO bmInfo;
             BITMAPINFOHEADER bmiHead;
 
             bmiHead.biSize = sizeof(BITMAPINFOHEADER);
-            bmiHead.biWidth = texture->width;
-            bmiHead.biHeight = texture->height;
+            bmiHead.biWidth = mipLevelSideLength;
+            bmiHead.biHeight = mipLevelSideLength;
             bmiHead.biPlanes = 1;
             bmiHead.biBitCount = 16;
             bmiHead.biCompression = BI_RGB;
@@ -112,14 +119,21 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
             bmInfo.bmiHeader = bmiHead;
             /*TODO bmInfo.bmiColors = 0;*/
 
-            if (!(map = CreateCompatibleBitmap(hdcTexture, texture->width, texture->height)))
+            if (!(map = CreateCompatibleBitmap(hdcTexture, mipLevelSideLength, mipLevelSideLength)))
             {
+                IDirectDrawSurface7_Release(d3dTexture);
                 DeleteObject(map);
 
                 return NULL;
             }
 
-            SetDIBits(NULL, map, 0, texture->height, texture->mipLevel[0], &bmInfo, DIB_RGB_COLORS);
+            if (!SetDIBits(NULL, map, 0, mipLevelSideLength, texture->mipLevel[m], &bmInfo, DIB_RGB_COLORS))
+            {
+                IDirectDrawSurface7_Release(d3dTexture);
+                DeleteObject(map);
+                
+                return NULL;
+            }
 
             if (!(hdcBitmap = CreateCompatibleDC(NULL)))
             {
@@ -131,15 +145,38 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
             }
 
             SelectObject(hdcBitmap, map);
-            BitBlt(hdcTexture, 0, 0, texture->width, texture->height, hdcBitmap, 0, 0, SRCCOPY);
+            BitBlt(hdcTexture, 0, 0, mipLevelSideLength, mipLevelSideLength, hdcBitmap, 0, 0, SRCCOPY);
 
-            IDirectDrawSurface7_ReleaseDC(d3dTexture, hdcTexture);
+            IDirectDrawSurface7_ReleaseDC(mipSurface, hdcTexture);
             DeleteDC(hdcBitmap);
             DeleteObject(map);
         }
         else
         {
             return NULL;
+        }
+
+        /* Move onto the next surface in the mip chain.*/
+        if ((texture->numMipLevels > 1) &&
+            (m < (texture->numMipLevels - 1)))
+        {
+            DDSCAPS2 ddsCaps;
+
+            ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
+            ddsCaps.dwCaps2 = 0;
+            ddsCaps.dwCaps3 = 0;
+            ddsCaps.dwCaps4 = 0;
+
+            if (SUCCEEDED(IDirectDrawSurface7_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+            {
+                IDirectDrawSurface7_Release(mipSurface);
+            }
+            else
+            {
+                IDirectDrawSurface7_ReleaseDC(d3dTexture, hdcTexture);
+
+                return NULL;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-# Build shiet's Glide 3.x renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
+# Build shiet's Glide 3.x renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
 
 OUTPUT_FILE="bin/shiet_renderer_glide_3.dll"
 

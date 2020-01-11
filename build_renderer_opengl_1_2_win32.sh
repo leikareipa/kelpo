@@ -1,4 +1,4 @@
-# Build shiet's OpenGL renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
+# Build shiet's OpenGL renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
 
 OUTPUT_FILE="bin/shiet_renderer_opengl_1_2.dll"
 

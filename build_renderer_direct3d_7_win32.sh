@@ -1,4 +1,4 @@
-# Build shiet's Direct3D 7 renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine in Linux.
+# Build shiet's Direct3D 7 renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
 # Unlike the rest of shiet, which is C89, the Direct3D headers require compilation with C++.
 
 OUTPUT_FILE="bin/shiet_renderer_direct3d_7.dll"

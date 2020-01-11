@@ -69,8 +69,7 @@ void shiet_surface_opengl_1_2_win32__flip_surface(void)
 }
 
 void shiet_surface_opengl_1_2_win32__create_surface(const unsigned width,
-                                                    const unsigned height,
-                                                    const char *const windowTitle)
+                                                    const unsigned height)
 {
     PIXELFORMATDESCRIPTOR pfd =
     {
@@ -92,7 +91,7 @@ void shiet_surface_opengl_1_2_win32__create_surface(const unsigned width,
         0, 0, 0
     };
 
-    shiet_window_win32__create_window(width, height, windowTitle, NULL);
+    shiet_window_win32__create_window(width, height, "", NULL);
     WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
 
     WINDOW_WIDTH = width;

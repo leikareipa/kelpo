@@ -12,7 +12,7 @@ struct shiet_polygon_texture_s;
 
 struct shiet_interface_s
 {
-    void (*initialize)(const unsigned, const unsigned, const char *const);
+    void (*initialize)(const unsigned, const unsigned);
 
     struct shiet_interface_window_s
     {

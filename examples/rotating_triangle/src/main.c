@@ -15,6 +15,8 @@
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
 
+#include <windows.h>
+
 int main(int argc, char *argv[])
 {
     struct { unsigned width; unsigned height; } renderResolution = {640, 480};
@@ -65,7 +67,8 @@ int main(int argc, char *argv[])
                 renderer.metadata.rendererVersionMinor,
                 renderer.metadata.rendererVersionPatch);
 
-        renderer.initialize(renderResolution.width, renderResolution.height, windowTitle);
+        renderer.initialize(renderResolution.width, renderResolution.height);
+        SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);
 
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
     }

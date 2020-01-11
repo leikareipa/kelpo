@@ -35,8 +35,7 @@ void shiet_surface_glide_3_win32__flip_surface(void)
 }
 
 void shiet_surface_glide_3_win32__create_surface(const unsigned width,
-                                                 const unsigned height,
-                                                 const char *const windowTitle)
+                                                 const unsigned height)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
     GrScreenRefresh_t glideRefreshRate = GR_REFRESH_60Hz;
@@ -56,7 +55,7 @@ void shiet_surface_glide_3_win32__create_surface(const unsigned width,
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
     else assert(0 && "Glide 3.x renderer: Unsupported resolution.");
 
-    shiet_window_win32__create_window(width, height, windowTitle, NULL);
+    shiet_window_win32__create_window(width, height, "", NULL);
     WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
 
     WINDOW_WIDTH = width;

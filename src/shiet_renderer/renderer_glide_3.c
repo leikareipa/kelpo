@@ -10,10 +10,9 @@ static const unsigned RENDERER_VERSION[3] = {SHIET_INTERFACE_VERSION_MAJOR,
                                              0};  /* Patch.*/
 
 static void initialize_renderer(const unsigned windowWidth,
-                                const unsigned windowHeight,
-                                const char *const windowTitle)
+                                const unsigned windowHeight)
 {
-    shiet_surface_glide_3_win32__create_surface(windowWidth, windowHeight, windowTitle);
+    shiet_surface_glide_3_win32__create_surface(windowWidth, windowHeight);
     shiet_rasterizer_glide_3__initialize();
 
     return;

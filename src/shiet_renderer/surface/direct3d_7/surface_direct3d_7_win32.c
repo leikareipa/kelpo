@@ -297,10 +297,9 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 void shiet_surface_direct3d_7_win32__create_surface(const unsigned width,
-                                                    const unsigned height,
-                                                    const char *const windowTitle)
+                                                    const unsigned height)
 {
-    shiet_window_win32__create_window(width, height, windowTitle, window_proc);
+    shiet_window_win32__create_window(width, height, "", window_proc);
     WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
 
     WINDOW_WIDTH = width;

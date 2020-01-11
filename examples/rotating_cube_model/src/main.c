@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
         for (i = 0; i < numTextures; i++)
         {
-            for (i = 0; i < textures[i].numMipLevels; i++)
+            for (m = 0; m < textures[i].numMipLevels; m++)
             {
                 free(textures[i].mipLevel[m]);
             }

@@ -62,11 +62,8 @@ uint32_t shiet_window_win32__get_window_handle(void)
 void shiet_window_win32__create_window(const unsigned width, const unsigned height, const char *const title,
                                        LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM))
 {
-    const DWORD dwStyle = (WS_CAPTION | WS_BORDER | WS_SYSMENU);
     const HINSTANCE hInstance = GetModuleHandle(NULL);
-
     WNDCLASSA wc;
-    RECT rc;
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
@@ -76,7 +73,7 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     sprintf(WINDOW_TITLE, "%s", title);
 
     memset(&wc, 0, sizeof(wc));
-    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.style = 0;
     wc.lpszClassName = WINDOW_CLASS_NAME;
     wc.lpfnWndProc = window_message_handler;
     wc.hInstance = hInstance;
@@ -85,23 +82,18 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     RegisterClassA(&wc);
 
-    rc.left = 0;
-    rc.top = 0;
-    rc.right = WINDOW_WIDTH;
-    rc.bottom = WINDOW_HEIGHT;
-    AdjustWindowRect(&rc, dwStyle, FALSE);
-
-    WINDOW_HANDLE = CreateWindowA(WINDOW_CLASS_NAME,
-                                  WINDOW_TITLE,
-                                  dwStyle,
-                                  CW_USEDEFAULT,
-                                  CW_USEDEFAULT,
-                                  rc.right - rc.left,
-                                  rc.bottom - rc.top,
-                                  NULL,
-                                  NULL,
-                                  hInstance,
-                                  NULL);
+    WINDOW_HANDLE = CreateWindowEx(WS_EX_TOPMOST,
+                                   WINDOW_CLASS_NAME,
+                                   WINDOW_TITLE,
+                                   WS_POPUP,
+                                   0,
+                                   0,
+                                   WINDOW_WIDTH,
+                                   WINDOW_HEIGHT,
+                                   NULL,
+                                   NULL,
+                                   hInstance,
+                                   NULL);
 
     assert((WINDOW_HANDLE != NULL) &&
            "Failed to create a window for the program. Can't continue.");

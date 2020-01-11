@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/opengl_1_2/surface_opengl_1_2_win32.h>
+#include <shiet_renderer/surface/opengl_1_2/surface_opengl_1_2_win32.h>
 #include <shiet_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 #include <shiet_interface/interface.h>

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
+#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
 #include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 #include <shiet_interface/interface.h>

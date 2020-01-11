@@ -7,7 +7,7 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/surface_direct3d_7_win32.h>
+#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
 #include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw7_devices.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 

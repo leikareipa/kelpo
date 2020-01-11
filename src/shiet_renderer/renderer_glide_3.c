@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/glide_3/surface_glide_3_win32.h>
+#include <shiet_renderer/surface/glide_3/surface_glide_3_win32.h>
 #include <shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <shiet_renderer/window/win32/window_win32.h>
 #include <shiet_interface/interface.h>

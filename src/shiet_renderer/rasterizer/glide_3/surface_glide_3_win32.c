@@ -27,18 +27,8 @@ void shiet_surface_glide_3_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_glide_3_win32__update_surface(void)
+void shiet_surface_glide_3_win32__flip_surface(void)
 {
-    MSG m;
-
-    InvalidateRect(WINDOW_HANDLE, NULL, FALSE);
-
-    while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
-    {
-        TranslateMessage(&m);
-        DispatchMessage(&m);
-    }
-
     grBufferSwap(1);
 
     return;

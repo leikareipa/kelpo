@@ -10,7 +10,7 @@
 
 void shiet_surface_direct3d_7_win32__release_surface(void);
 
-void shiet_surface_direct3d_7_win32__update_surface(void);
+void shiet_surface_direct3d_7_win32__flip_surface(void);
 
 void shiet_surface_direct3d_7_win32__create_surface(const unsigned width,
                                                     const unsigned height,

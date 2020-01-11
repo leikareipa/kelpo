@@ -11,6 +11,8 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
 
 void shiet_window_win32__get_window_size(void);
 
+void shiet_window_win32__process_window_events(void);
+
 int shiet_window_win32__is_window_open(void);
 
 #endif

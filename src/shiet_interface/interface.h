@@ -17,7 +17,8 @@ struct shiet_interface_s
     struct shiet_interface_window_s
     {
         uint32_t (*get_handle)(void);
-        void (*update_window)(void);
+        void (*process_events)(void);
+        void (*flip_surface)(void);
         int (*is_window_open)(void);
         /*size*/
     } window;

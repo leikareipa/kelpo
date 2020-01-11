@@ -24,7 +24,8 @@ void import_renderer(struct shiet_interface_s *const interface)
     interface->initialize = initialize_renderer;
 
     interface->window.is_window_open = shiet_window_win32__is_window_open;
-    interface->window.update_window = shiet_surface_glide_3_win32__update_surface;
+    interface->window.process_events = shiet_window_win32__process_window_events;
+    interface->window.flip_surface = shiet_surface_glide_3_win32__flip_surface;
     interface->window.get_handle = shiet_window_win32__get_window_handle;
 
     interface->rasterizer.clear_frame = shiet_rasterizer_glide_3__clear_frame;

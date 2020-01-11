@@ -56,31 +56,21 @@ static void set_gl_vsync(const int vsyncOn)
     return;
 }
 
-void shiet_surface_opengl_win32__release_surface(void)
+void shiet_surface_opengl_1_2_win32__release_surface(void)
 {
     return;
 }
 
-void shiet_surface_opengl_win32__update_surface(void)
+void shiet_surface_opengl_1_2_win32__flip_surface(void)
 {
-    MSG m;
-
-    InvalidateRect(WINDOW_HANDLE, NULL, FALSE);
-
-    while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
-    {
-        TranslateMessage(&m);
-        DispatchMessage(&m);
-    }
-
     SwapBuffers(WINDOW_DC);
 
     return;
 }
 
-void shiet_surface_opengl_win32__create_surface(const unsigned width,
-                                                const unsigned height,
-                                                const char *const windowTitle)
+void shiet_surface_opengl_1_2_win32__create_surface(const unsigned width,
+                                                    const unsigned height,
+                                                    const char *const windowTitle)
 {
     PIXELFORMATDESCRIPTOR pfd =
     {

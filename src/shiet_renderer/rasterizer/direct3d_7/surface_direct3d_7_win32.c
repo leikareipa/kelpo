@@ -266,16 +266,8 @@ void shiet_surface_direct3d_7_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_direct3d_7_win32__update_surface(void)
+void shiet_surface_direct3d_7_win32__flip_surface(void)
 {
-    MSG m;
-
-    while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
-    {
-        TranslateMessage(&m);
-        DispatchMessage(&m);
-    }
-
     /* For windowed mode.*/
     IDirectDraw7_WaitForVerticalBlank(DIRECTDRAW_7, DDWAITVB_BLOCKBEGIN, NULL);
     IDirectDrawSurface7_Blt(SURFACE_FRONT, &SCREEN_RECT, SURFACE_BACK, NULL, DDBLT_WAIT, NULL);

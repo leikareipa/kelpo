@@ -95,16 +95,19 @@ int main(int argc, char *argv[])
     /* Render.*/
     while (renderer.window.is_window_open())
     {
-        shiet_tristack_clear(transformedTriangles);
+        renderer.window.process_events();
 
+        shiet_tristack_clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
                                               0, 0, 4.7,
                                               0.0035, 0.006, 0.0035);
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles->data, transformedTriangles->count);
-        renderer.window.update_window();
+        renderer.rasterizer.draw_triangles(transformedTriangles->data,
+                                           transformedTriangles->count);
+
+        renderer.window.flip_surface();
     }
 
     /* Release memory.*/

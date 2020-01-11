@@ -109,6 +109,21 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     return;
 }
 
+void shiet_window_win32__process_window_events(void)
+{
+    MSG m;
+
+    InvalidateRect(WINDOW_HANDLE, NULL, FALSE);
+
+    while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&m);
+        DispatchMessage(&m);
+    }
+
+    return;
+}
+
 void shiet_window_win32__get_window_size(void)
 {
     return;

@@ -69,7 +69,7 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
         LPDIRECTDRAW7 directDrawInterface = NULL;
         DDSURFACEDESC2 surfaceDescription;
 
-        ZeroMemory(&surfaceDescription, sizeof(DDSURFACEDESC2));
+        memset(&surfaceDescription, 0, sizeof(DDSURFACEDESC2));
         surfaceDescription.dwSize = sizeof(DDSURFACEDESC2);
         surfaceDescription.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT| DDSD_TEXTURESTAGE);
         surfaceDescription.ddsCaps.dwCaps = (DDSCAPS_TEXTURE | ((texture->numMipLevels <= 1)? 0 : (DDSCAPS_MIPMAP | DDSCAPS_COMPLEX)));
@@ -97,66 +97,57 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
     mipSurface = d3dTexture;
     for (m = 0; m < texture->numMipLevels; m++)
     {
-        HDC hdcTexture = 0;
-
-        if (SUCCEEDED(IDirectDrawSurface7_GetDC(mipSurface, &hdcTexture)))
+        DDSURFACEDESC2 ddrawSurface;
+        const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Shiet textures are expected to be square.*/
+        
+        /* Copy the texture's mip level pixel data into the DirectDraw surface.*/
         {
-            const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Shiet textures are expected to be square.*/
-            HDC hdcBitmap = 0;
-            HBITMAP map = 0;
-            BITMAPINFO bmInfo;
-            BITMAPINFOHEADER bmiHead;
+            /* Expected pixel color format: ARGB 1555 (16 bits).*/
+            const unsigned bytesPerPixel = 2;
+            uint16_t *dstPixels = NULL;
 
-            bmiHead.biSize = sizeof(BITMAPINFOHEADER);
-            bmiHead.biWidth = mipLevelSideLength;
-            bmiHead.biHeight = mipLevelSideLength;
-            bmiHead.biPlanes = 1;
-            bmiHead.biBitCount = 16;
-            bmiHead.biCompression = BI_RGB;
-            bmiHead.biSizeImage = 0;
-            bmiHead.biXPelsPerMeter = 0;
-            bmiHead.biYPelsPerMeter = 0;
-            bmiHead.biClrUsed = 0;
-            bmiHead.biClrImportant = 0;
-
-            bmInfo.bmiHeader = bmiHead;
-            /*TODO bmInfo.bmiColors = 0;*/
-
-            if (!(map = CreateCompatibleBitmap(hdcTexture, mipLevelSideLength, mipLevelSideLength)))
+            ddrawSurface.dwSize = sizeof(ddrawSurface);
+            if (FAILED(IDirectDrawSurface7_Lock(mipSurface, NULL, &ddrawSurface, DDLOCK_WAIT, NULL)))
             {
-                IDirectDrawSurface7_Release(d3dTexture);
-                DeleteObject(map);
-
+                fprintf(stderr, "DirectDraw 7: Failed to lock a texture surface.");
                 return NULL;
             }
 
-            if (!SetDIBits(NULL, map, 0, mipLevelSideLength, texture->mipLevel[m], &bmInfo, DIB_RGB_COLORS))
+            assert(((ddrawSurface.dwWidth == mipLevelSideLength) &&
+                    (ddrawSurface.dwHeight == mipLevelSideLength)) &&
+                    "DirectDraw 7: Invalid texture surface dimensions.");
+
+            assert(((ddrawSurface.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
+                    (ddrawSurface.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
+                    (ddrawSurface.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
+                    (ddrawSurface.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
+                    "DirectDraw 7: Invalid pixel format for a texture surface. Expected ARGB 1555.");
+
+            dstPixels = (uint16_t*)ddrawSurface.lpSurface;
+
+            /* If the surface's pitch indicates no padding bytes are needed, we
+             * can copy the pixel data directly.*/
+            if (ddrawSurface.lPitch == (mipLevelSideLength * bytesPerPixel))
             {
-                IDirectDrawSurface7_Release(d3dTexture);
-                DeleteObject(map);
-                
-                return NULL;
+                memcpy(dstPixels, texture->mipLevel[m], (mipLevelSideLength * mipLevelSideLength * bytesPerPixel));
+            }
+            /* Otherwise, each horizontal line needs to be padded to fit the pitch.*/
+            else
+            {
+                unsigned q = 0;
+
+                for (q = 0; q < mipLevelSideLength /*texture height*/; q++)
+                {
+                    memcpy(dstPixels, &texture->mipLevel[m][q * mipLevelSideLength], (mipLevelSideLength * bytesPerPixel));
+                    dstPixels += (ddrawSurface.lPitch / bytesPerPixel);
+                }
             }
 
-            if (!(hdcBitmap = CreateCompatibleDC(NULL)))
+            if (FAILED(IDirectDrawSurface7_Unlock(mipSurface, NULL)))
             {
-                IDirectDrawSurface7_Release(d3dTexture);
-                DeleteDC(hdcBitmap);
-                DeleteObject(map);
-
+                fprintf(stderr, "DirectDraw 7: Failed to unlock a texture surface.");
                 return NULL;
             }
-
-            SelectObject(hdcBitmap, map);
-            BitBlt(hdcTexture, 0, 0, mipLevelSideLength, mipLevelSideLength, hdcBitmap, 0, 0, SRCCOPY);
-
-            IDirectDrawSurface7_ReleaseDC(mipSurface, hdcTexture);
-            DeleteDC(hdcBitmap);
-            DeleteObject(map);
-        }
-        else
-        {
-            return NULL;
         }
 
         /* Move onto the next surface in the mip chain.*/
@@ -176,8 +167,6 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
             }
             else
             {
-                IDirectDrawSurface7_ReleaseDC(d3dTexture, hdcTexture);
-
                 return NULL;
             }
         }

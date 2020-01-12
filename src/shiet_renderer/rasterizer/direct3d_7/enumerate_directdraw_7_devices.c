@@ -1,10 +1,13 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
+ * Note: The Direct3D 7 headers basically force the use of a C++ compiler -
+ * hence, the code here might not conform to C89 like the rest of shiet.
+ * 
  */
 
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw7_devices.h>
+#include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.h>
  
 /* Called by DirectDrawEnumerateEx() for each DirectDraw 7 device on the system.
  * Appends the device's info to the device list.*/
@@ -46,7 +49,7 @@ shiet_directdraw7_device_list_s shiet_enumerate_directdraw7_devices(void)
     return deviceList;
 }
 
-GUID* shiet_guid_of_directdraw7_device(unsigned deviceIdx)
+GUID* shiet_directdraw7_device_guid(unsigned deviceIdx)
 {
     struct shiet_directdraw7_device_list_s deviceList = shiet_enumerate_directdraw7_devices();
     struct shiet_directdraw7_device_list_entry_s *it = deviceList.root;

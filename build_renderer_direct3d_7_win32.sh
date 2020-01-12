@@ -1,5 +1,5 @@
 # Build shiet's Direct3D 7 renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
-# Unlike the rest of shiet, which is C89, the Direct3D headers require compilation with C++.
+# Unlike the rest of shiet, which is C89, the Direct3D 7 headers require compilation with C++.
 
 OUTPUT_FILE="bin/shiet_renderer_direct3d_7.dll"
 
@@ -12,10 +12,11 @@ DX7_BASE_PATH=~/sdk/directx7
 
 SRC_FILES="
 src/shiet_renderer/renderer_direct3d_7.c
-src/shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw7_devices.c
-src/shiet_renderer/rasterizer/direct3d_7/create_directdraw7_surface_from_texture.c
+src/shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.c
+src/shiet_renderer/rasterizer/direct3d_7/create_directdraw_7_surface_from_texture.c
 src/shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.c
 src/shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.c
+src/shiet_renderer/surface/directdraw_7/surface_directdraw_7_win32.c
 src/shiet_renderer/window/win32/window_win32.c
 "
 

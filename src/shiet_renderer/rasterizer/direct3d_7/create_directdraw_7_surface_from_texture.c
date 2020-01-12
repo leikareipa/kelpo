@@ -3,7 +3,10 @@
  * 
  * Software: shiet renderer
  * 
- * Creates a DirectDraw7 surface out of a shiet texture's data.
+ * Creates a DirectDraw 7 surface out of a shiet texture's data.
+ * 
+ * Note: The Direct3D 7 headers basically force the use of a C++ compiler -
+ * hence, the code here might not conform to C89 like the rest of shiet.
  * 
  */
 

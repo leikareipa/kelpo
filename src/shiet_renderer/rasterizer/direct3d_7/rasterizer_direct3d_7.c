@@ -3,12 +3,15 @@
  * 
  * Direct3D 7 rasterizer for the shiet renderer.
  * 
+ * Note: The Direct3D 7 headers basically force the use of a C++ compiler -
+ * hence, the code here might not conform to C89 like the rest of shiet.
+ * 
  */
 
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/create_directdraw7_surface_from_texture.h>
+#include <shiet_renderer/rasterizer/direct3d_7/create_directdraw_7_surface_from_texture.h>
 #include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
 #include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
@@ -45,7 +48,7 @@ void shiet_rasterizer_direct3d_7__upload_texture(struct shiet_polygon_texture_s 
 {
     LPDIRECTDRAWSURFACE7 d3dTexture = shiet_create_directdraw7_surface_from_texture(texture, D3DDEVICE_7);
 
-    assert(d3dTexture && "Direct3D 7 renderer: Failed to create a Direct3D texture.");
+    assert(d3dTexture && "Direct3D 7: Failed to create a Direct3D texture.");
 
     texture->apiId = (uint32_t)d3dTexture;
 
@@ -63,7 +66,7 @@ void shiet_rasterizer_direct3d_7__update_texture(struct shiet_polygon_texture_s 
     }
     else
     {
-        assert(0 && "Direct3D 7 renderer: Failed to update the texture.");
+        assert(0 && "Direct3D 7: Failed to update the texture.");
     }
     
     return;

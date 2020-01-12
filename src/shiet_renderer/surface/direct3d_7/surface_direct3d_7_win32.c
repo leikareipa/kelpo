@@ -41,7 +41,7 @@ static HRESULT WINAPI enumerate_zbuffer_pixel_formats(DDPIXELFORMAT *pddpf,
 
 /* Sets up a hardware Direct3D rasterizer along with a DirectDraw surface to
  * render into.*/
-static HRESULT setup_direct3d(GUID *deviceGUID)
+static HRESULT setup_direct3d(GUID deviceGUID)
 {
 	HRESULT hr = 0;
     D3DVIEWPORT7 vp = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1};

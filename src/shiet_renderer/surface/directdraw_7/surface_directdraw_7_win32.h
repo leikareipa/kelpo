@@ -24,7 +24,7 @@ void shiet_surface_directdraw_7_win32__flip_surface(void);
 HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned width,
                                                              const unsigned height,
                                                              const HWND windowHandle,
-                                                             GUID *deviceGUID);
+                                                             GUID deviceGUID);
 
 /* Creates and attaches a Z buffer of the given pixel format to the current back
  * buffer. The Z buffer will inherit the back buffer's dimensions. The D3D device

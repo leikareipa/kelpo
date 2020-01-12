@@ -15,8 +15,8 @@
 
 struct shiet_directdraw7_device_list_entry_s
 {
-    GUID *guid;
-    char description[SHIET_DIRECTDRAW7_DEVICE_LIST_ENTRY_STRING_LENGTH];
+    GUID guid;
+    char description[SHIET_DIRECTDRAW7_DEVICE_LIST_ENTRY_STRING_LENGTH + 1]; /* +1 for \0.*/
 
     struct shiet_directdraw7_device_list_entry_s *next;
 };
@@ -38,9 +38,7 @@ struct shiet_directdraw7_device_list_s
 /* Returns a list of all DirectDraw 7 devices on this PC.*/
 shiet_directdraw7_device_list_s shiet_enumerate_directdraw7_devices(void);
 
-/* Returns the GUID of the idx'th DirectDraw 7 device on this PC; or NULL if a
- * device of that index could not be found. NULL may also be returned for index
- * 0, which in DirectDraw signifies the primary display device.*/
-GUID* shiet_directdraw7_device_guid(unsigned deviceIdx);
+/* Returns the GUID of the idx'th DirectDraw 7 device on this PC.*/
+GUID shiet_directdraw7_device_guid(unsigned deviceIdx);
 
 #endif

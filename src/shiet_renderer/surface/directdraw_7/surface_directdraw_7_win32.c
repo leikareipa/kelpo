@@ -62,7 +62,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(LPDIRE
     if (FAILED(hr = IDirectDraw7_QueryInterface(DIRECTDRAW_7, &IID_IDirect3D7, d3d)))
 #endif
     {
-        fprintf(stderr, "DirectDraw 7: Failed to establish a Direct3D interface.\n");
+        fprintf(stderr, "DirectDraw 7: Failed to establish a Direct3D interface (error 0x%x).\n", hr);
         return hr;
     }
 
@@ -72,7 +72,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(LPDIRE
     if (FAILED(hr = IDirect3D7_CreateDevice(*d3d, &IID_IDirect3DHALDevice, BACK_BUFFER, d3dDevice)))
 #endif
     {
-        fprintf(stderr, "DirectDraw 7: Failed to create a Direct3D device.\n");
+        fprintf(stderr, "DirectDraw 7: Failed to create a Direct3D device (error 0x%x).\n", hr);
         return hr;
     }
 
@@ -103,19 +103,19 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT
     memcpy(&zBufferSurfaceDesc.ddpfPixelFormat, pixelFormat, sizeof(pixelFormat[0]));
     if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &zBufferSurfaceDesc, &Z_BUFFER, NULL)))
     {
-        fprintf(stderr, "DirectDraw 7: Failed to create the Z buffer.\n");
+        fprintf(stderr, "DirectDraw 7: Failed to create the Z buffer (error 0x%x).\n", hr);
         return hr;
     }
 
     if (FAILED(hr = IDirectDrawSurface7_AddAttachedSurface(BACK_BUFFER, Z_BUFFER)))
     {
-        fprintf(stderr, "DirectDraw 7: Failed to attach the Z buffer.\n");
+        fprintf(stderr, "DirectDraw 7: Failed to attach the Z buffer (error 0x%x).\n", hr);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice7_SetRenderTarget(d3dDevice, BACK_BUFFER, 0)))
     {
-        fprintf(stderr, "DirectDraw 7: A call to IDirect3DDevice7_SetRenderTarget() failed.\n");
+        fprintf(stderr, "DirectDraw 7: A call to IDirect3DDevice7_SetRenderTarget() failed (error 0x%x).\n", hr);
         return hr;
     }
     
@@ -125,7 +125,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT
 HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned width,
                                                              const unsigned height,
                                                              const HWND windowHandle,
-                                                             GUID *deviceGUID)
+                                                             GUID deviceGUID)
 {
     HRESULT hr = 0;
     WINDOW_HANDLE = windowHandle;
@@ -148,24 +148,24 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned widt
         const DWORD cooperativeLevel = (DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT);
 
 #ifdef __cplusplus
-        if (FAILED(hr = DirectDrawCreateEx(deviceGUID, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(&deviceGUID, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
 #else
-        if (FAILED(hr = DirectDrawCreateEx(deviceGUID, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(&deviceGUID, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
 #endif
         {
-            fprintf(stderr, "DirectDraw 7: A call to DirectDrawCreateEx() failed.\n");
+            fprintf(stderr, "DirectDraw 7: A call to DirectDrawCreateEx() failed (error 0x%x).\n", hr);
             return hr;
         }
 
         if (FAILED(hr = IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, cooperativeLevel)))
         {
-            fprintf(stderr, "DirectDraw 7: A call to IDirectDraw7_SetCooperativeLevel() failed.\n");
+            fprintf(stderr, "DirectDraw 7: A call to IDirectDraw7_SetCooperativeLevel() failed (error 0x%x).\n", hr);
             return hr;
         }
 
         if (FAILED(hr = IDirectDraw7_SetDisplayMode(DIRECTDRAW_7, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BIT_DEPTH, 0, 0)))
         {
-            fprintf(stderr, "DirectDraw 7: A call to IDirectDraw7_SetDisplayMode() failed.\n");
+            fprintf(stderr, "DirectDraw 7: A call to IDirectDraw7_SetDisplayMode() failed (error 0x%x).\n", hr);
             return hr;
         }
     }
@@ -186,13 +186,13 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned widt
 
         if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &frontBufferSurfaceDesc, &FRONT_BUFFER, NULL)))
         {
-            fprintf(stderr, "DirectDraw 7: Failed to create a front buffer.\n");
+            fprintf(stderr, "DirectDraw 7: Failed to create a front buffer (error 0x%x).\n", hr);
             return hr;
         }
 
         if (FAILED(hr = IDirectDrawSurface7_GetAttachedSurface(FRONT_BUFFER, &backBufferCaps, &BACK_BUFFER)))
         {
-            fprintf(stderr, "DirectDraw 7: Failed to create a back buffer.\n");
+            fprintf(stderr, "DirectDraw 7: Failed to create a back buffer (error 0x%x).\n", hr);
             return hr;
         }
     }

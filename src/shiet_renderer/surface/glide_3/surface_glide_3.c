@@ -6,8 +6,8 @@
  */
 
 #include <assert.h>
-#include <shiet_renderer/surface/glide_3/surface_glide_3_win32.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/surface/glide_3/surface_glide_3.h>
+#include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
 #include <glide/glide.h>
@@ -17,7 +17,7 @@ static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static HWND WINDOW_HANDLE = 0;
 
-void shiet_surface_glide_3_win32__release_surface(void)
+void shiet_surface_glide_3__release_surface(void)
 {
     assert(GLIDE_RENDER_CONTEXT &&
            "Glide 3.x renderer: Can't release a NULL render context.");
@@ -27,14 +27,14 @@ void shiet_surface_glide_3_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_glide_3_win32__flip_surface(void)
+void shiet_surface_glide_3__flip_surface(void)
 {
     grBufferSwap(1);
 
     return;
 }
 
-void shiet_surface_glide_3_win32__create_surface(const unsigned width,
+void shiet_surface_glide_3__create_surface(const unsigned width,
                                                  const unsigned height)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
@@ -55,8 +55,8 @@ void shiet_surface_glide_3_win32__create_surface(const unsigned width,
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
     else assert(0 && "Glide 3.x renderer: Unsupported resolution.");
 
-    shiet_window_win32__create_window(width, height, "", NULL);
-    WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
+    shiet_window__create_window(width, height, "", NULL);
+    WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;

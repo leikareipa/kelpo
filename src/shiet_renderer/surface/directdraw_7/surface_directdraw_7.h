@@ -56,39 +56,39 @@
 
 #include <d3d.h>
 
-HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned width,
+HRESULT shiet_surface_directdraw_7__initialize_surface(const unsigned width,
                                                              const unsigned height,
                                                              const HWND windowHandle,
                                                              GUID directDrawDeviceGUID);
 
-void shiet_surface_directdraw_7_win32__release_surface(void);
+void shiet_surface_directdraw_7__release_surface(void);
 
-void shiet_surface_directdraw_7_win32__flip_surface(void);
+void shiet_surface_directdraw_7__flip_surface(void);
 
 /* TODO.
-void shiet_surface_directdraw_7_win32__resize_surface(void);*/
+void shiet_surface_directdraw_7__resize_surface(void);*/
 
 /* Locks the surface's back buffer, which allows direct pixel manipulation to
  * be performed. Takes in a pointer to an allocated surface descriptor, whose
  * fields will be initialized by the call to match the properties of the back
  * buffer (a pointer to the buffer's raw pixel data will be in .lpSurface).
  * Returns 1 if the call succeeds; 0 otherwise.*/
-int shiet_surface_directdraw_7_win32__lock_surface(LPDDSURFACEDESC2 surfaceDesc);
+int shiet_surface_directdraw_7__lock_surface(LPDDSURFACEDESC2 surfaceDesc);
 
 /* Unlocks the surface's back buffer, which allows DirectDraw to operate on it.
  * No direct modification of the surface's pixel data is allowed while unlocked.
  * Returns 1 if the call succeeds; 0 otherwise.*/
-int shiet_surface_directdraw_7_win32__unlock_surface(void);
+int shiet_surface_directdraw_7__unlock_surface(void);
 
 /* Initializes a hardware Direct3D interface to the current DirectDraw surface,
  * and assigns the given pointers-to-pointers to point to the interface.*/
-HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
+HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
                                                                           LPDIRECT3DDEVICE7 *d3dDevice);
 
 /* Creates and attaches a Z buffer of the given pixel format to the current back
  * buffer. The Z buffer will inherit the back buffer's dimensions. The Direct3D
  * device is obtained from __initialize_direct3d_7_interface().*/
-HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
+HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
                                                                         LPDDPIXELFORMAT pixelFormat);
 
 #endif

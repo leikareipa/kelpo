@@ -12,8 +12,8 @@ GLIDE3_BASE_PATH=~/sdk/glide3
 SRC_FILES="
 src/shiet_renderer/renderer_glide_3.c
 src/shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.c
-src/shiet_renderer/surface/glide_3/surface_glide_3_win32.c
-src/shiet_renderer/window/win32/window_win32.c
+src/shiet_renderer/surface/glide_3/surface_glide_3.c
+src/shiet_renderer/window/window_win32.c
 "
 
 BUILD_OPTIONS="

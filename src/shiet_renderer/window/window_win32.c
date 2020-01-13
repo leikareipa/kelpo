@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/window/window_win32.h>
 #include <shiet_interface/common/globals.h>
 
 static char WINDOW_CLASS_NAME[] = "ShietDisplay";
@@ -20,7 +20,7 @@ static int WINDOW_ACTIVE = 0;
 
 LRESULT (*CUSTOM_WINDOW_PROC)(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-int shiet_window_win32__is_window_open(void)
+int shiet_window__is_window_open(void)
 {
     return (WINDOW_HANDLE != NULL);
 }
@@ -54,12 +54,12 @@ static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM w
     return 0;
 }
 
-uint32_t shiet_window_win32__get_window_handle(void)
+uint32_t shiet_window__get_window_handle(void)
 {
     return (uint32_t)WINDOW_HANDLE;
 }
 
-void shiet_window_win32__create_window(const unsigned width, const unsigned height, const char *const title,
+void shiet_window__create_window(const unsigned width, const unsigned height, const char *const title,
                                        LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM))
 {
     const HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -101,7 +101,7 @@ void shiet_window_win32__create_window(const unsigned width, const unsigned heig
     return;
 }
 
-void shiet_window_win32__process_window_events(void)
+void shiet_window__process_window_events(void)
 {
     MSG m;
 
@@ -116,7 +116,7 @@ void shiet_window_win32__process_window_events(void)
     return;
 }
 
-void shiet_window_win32__get_window_size(void)
+void shiet_window__get_window_size(void)
 {
     return;
 }

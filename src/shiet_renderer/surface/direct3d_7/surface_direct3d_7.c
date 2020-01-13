@@ -11,9 +11,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.h>
-#include <shiet_renderer/surface/directdraw_7/surface_directdraw_7_win32.h>
-#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/surface/directdraw_7/surface_directdraw_7.h>
+#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
+#include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -49,9 +49,9 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     assert(WINDOW_HANDLE &&
            "Direct3D 7: Attempting to initialize without a valid window handle.");
 
-    shiet_surface_directdraw_7_win32__initialize_surface(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_HANDLE, deviceGUID);
+    shiet_surface_directdraw_7__initialize_surface(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_HANDLE, deviceGUID);
 
-    if (FAILED(hr = shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(&DIRECT3D_7, &D3DDEVICE_7)))
+    if (FAILED(hr = shiet_surface_directdraw_7__initialize_direct3d_7_interface(&DIRECT3D_7, &D3DDEVICE_7)))
     {
         fprintf(stderr, "Direct3D 7: Failed to create the Direct3D interface.");
         return hr;
@@ -86,15 +86,15 @@ static HRESULT setup_direct3d(GUID deviceGUID)
             return E_FAIL;
         }
 
-        shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(D3DDEVICE_7, &zBufferPixelFormat);
+        shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(D3DDEVICE_7, &zBufferPixelFormat);
     }
 
 	return S_OK;
 }
 
-void shiet_surface_direct3d_7_win32__release_surface(void)
+void shiet_surface_direct3d_7__release_surface(void)
 {
-    shiet_surface_directdraw_7_win32__release_surface();
+    shiet_surface_directdraw_7__release_surface();
 
     if (DIRECT3D_7) IDirect3D7_Release(DIRECT3D_7);
     if (D3DDEVICE_7) IDirect3DDevice7_Release(D3DDEVICE_7);
@@ -102,9 +102,9 @@ void shiet_surface_direct3d_7_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_direct3d_7_win32__flip_surface(void)
+void shiet_surface_direct3d_7__flip_surface(void)
 {
-    shiet_surface_directdraw_7_win32__flip_surface();
+    shiet_surface_directdraw_7__flip_surface();
 
     return;
 }
@@ -119,11 +119,11 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
     return 0;
 }
 
-void shiet_surface_direct3d_7_win32__create_surface(const unsigned width,
+void shiet_surface_direct3d_7__create_surface(const unsigned width,
                                                     const unsigned height)
 {
-    shiet_window_win32__create_window(width, height, "", window_proc);
-    WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
+    shiet_window__create_window(width, height, "", window_proc);
+    WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;

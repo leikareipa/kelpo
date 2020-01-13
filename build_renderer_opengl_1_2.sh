@@ -7,8 +7,8 @@ MINGW441_BASE_PATH=~/compi/mingw441
 SRC_FILES="
 src/shiet_renderer/renderer_opengl_1_2.c
 src/shiet_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.c
-src/shiet_renderer/surface/opengl_1_2/surface_opengl_1_2_win32.c
-src/shiet_renderer/window/win32/window_win32.c
+src/shiet_renderer/surface/opengl_1_2/surface_opengl_1_2.c
+src/shiet_renderer/window/window_win32.c
 "
 
 BUILD_OPTIONS="

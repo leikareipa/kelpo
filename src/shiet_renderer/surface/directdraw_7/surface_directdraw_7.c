@@ -14,8 +14,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.h>
-#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
+#include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -30,7 +30,7 @@ static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static HWND WINDOW_HANDLE = 0;
 
-int shiet_surface_directdraw_7_win32__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
+int shiet_surface_directdraw_7__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
 {
     assert(surfaceDesc &&
            "DirectDraw 7: Expected a non-null pointer to a surface descriptor struct.");
@@ -46,7 +46,7 @@ int shiet_surface_directdraw_7_win32__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
     return 1;
 }
 
-int shiet_surface_directdraw_7_win32__unlock_surface(void)
+int shiet_surface_directdraw_7__unlock_surface(void)
 {
     if (FAILED(IDirectDrawSurface7_Unlock(BACK_BUFFER, NULL)))
     {
@@ -56,7 +56,7 @@ int shiet_surface_directdraw_7_win32__unlock_surface(void)
     return 1;
 }
 
-void shiet_surface_directdraw_7_win32__release_surface(void)
+void shiet_surface_directdraw_7__release_surface(void)
 {
     if (FRONT_BUFFER) IDirectDrawSurface7_Release(FRONT_BUFFER);
     if (BACK_BUFFER) IDirectDrawSurface7_Release(BACK_BUFFER);
@@ -66,14 +66,14 @@ void shiet_surface_directdraw_7_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_directdraw_7_win32__flip_surface(void)
+void shiet_surface_directdraw_7__flip_surface(void)
 {
     IDirectDrawSurface7_Flip(FRONT_BUFFER, NULL, DDFLIP_WAIT);
 
     return;
 }
 
-HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
+HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
                                                                           LPDIRECT3DDEVICE7 *d3dDevice)
 {
     HRESULT hr = 0;
@@ -105,7 +105,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_interface(LPDIRE
     return S_OK;
 }
 
-HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
+HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
                                                                         LPDDPIXELFORMAT pixelFormat)
 {
     HRESULT hr = 0;
@@ -148,7 +148,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT
     return S_OK;
 }
 
-HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned width,
+HRESULT shiet_surface_directdraw_7__initialize_surface(const unsigned width,
                                                              const unsigned height,
                                                              const HWND windowHandle,
                                                              GUID directDrawDeviceGUID)

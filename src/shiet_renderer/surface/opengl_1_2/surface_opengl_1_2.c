@@ -7,8 +7,8 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_renderer/surface/opengl_1_2/surface_opengl_1_2_win32.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/surface/opengl_1_2/surface_opengl_1_2.h>
+#include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
 #include <gl/glu.h>
@@ -58,7 +58,7 @@ static void set_opengl_vsync_enabled(const int vsyncOn)
     return;
 }
 
-void shiet_surface_opengl_1_2_win32__release_surface(void)
+void shiet_surface_opengl_1_2__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
@@ -77,7 +77,7 @@ void shiet_surface_opengl_1_2_win32__release_surface(void)
     return;
 }
 
-void shiet_surface_opengl_1_2_win32__flip_surface(void)
+void shiet_surface_opengl_1_2__flip_surface(void)
 {
     SwapBuffers(WINDOW_DC);
 
@@ -102,7 +102,7 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
     return 0;
 }
 
-void shiet_surface_opengl_1_2_win32__create_surface(const unsigned width,
+void shiet_surface_opengl_1_2__create_surface(const unsigned width,
                                                     const unsigned height)
 {
     PIXELFORMATDESCRIPTOR pfd =
@@ -146,9 +146,9 @@ void shiet_surface_opengl_1_2_win32__create_surface(const unsigned width,
         }
     }
 
-    shiet_window_win32__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
+    shiet_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
 
-    WINDOW_HANDLE = (HWND)shiet_window_win32__get_window_handle();
+    WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
     WINDOW_DC = GetDC(WINDOW_HANDLE);
 
     if (!WINDOW_HANDLE ||

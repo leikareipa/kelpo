@@ -15,9 +15,9 @@ src/shiet_renderer/renderer_direct3d_7.c
 src/shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.c
 src/shiet_renderer/rasterizer/direct3d_7/create_directdraw_7_surface_from_texture.c
 src/shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.c
-src/shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.c
-src/shiet_renderer/surface/directdraw_7/surface_directdraw_7_win32.c
-src/shiet_renderer/window/win32/window_win32.c
+src/shiet_renderer/surface/direct3d_7/surface_direct3d_7.c
+src/shiet_renderer/surface/directdraw_7/surface_directdraw_7.c
+src/shiet_renderer/window/window_win32.c
 "
 
 BUILD_OPTIONS="

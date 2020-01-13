@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7_win32.h>
+#include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
-#include <shiet_renderer/window/win32/window_win32.h>
+#include <shiet_renderer/window/window_win32.h>
 #include <shiet_interface/interface.h>
 
 static const char RENDERER_NAME[] = "Direct3D 7";
@@ -12,7 +12,7 @@ static const unsigned RENDERER_VERSION[3] = {SHIET_INTERFACE_VERSION_MAJOR,
 static void initialize_renderer(const unsigned windowWidth,
                                 const unsigned windowHeight)
 {
-    shiet_surface_direct3d_7_win32__create_surface(windowWidth, windowHeight);
+    shiet_surface_direct3d_7__create_surface(windowWidth, windowHeight);
     shiet_rasterizer_direct3d_7__initialize();
 
     return;
@@ -27,10 +27,10 @@ void import_renderer(struct shiet_interface_s *const interface)
 {
     interface->initialize = initialize_renderer;
 
-    interface->window.is_window_open = shiet_window_win32__is_window_open;
-    interface->window.process_events = shiet_window_win32__process_window_events;
-    interface->window.flip_surface = shiet_surface_direct3d_7_win32__flip_surface;
-    interface->window.get_handle = shiet_window_win32__get_window_handle;
+    interface->window.is_window_open = shiet_window__is_window_open;
+    interface->window.process_events = shiet_window__process_window_events;
+    interface->window.flip_surface = shiet_surface_direct3d_7__flip_surface;
+    interface->window.get_handle = shiet_window__get_window_handle;
 
     interface->rasterizer.clear_frame = shiet_rasterizer_direct3d_7__clear_frame;
     interface->rasterizer.draw_triangles = shiet_rasterizer_direct3d_7__draw_triangles;

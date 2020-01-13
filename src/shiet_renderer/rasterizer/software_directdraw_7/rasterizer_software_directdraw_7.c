@@ -8,8 +8,8 @@
  * 
  */
 
-#include <shiet_renderer/surface/directdraw_7/surface_directdraw_7_win32.h>
-#include <shiet_renderer/rasterizer/software/rasterizer_software_directdraw_7.h>
+#include <shiet_renderer/surface/directdraw_7/surface_directdraw_7.h>
+#include <shiet_renderer/rasterizer/software_directdraw_7/rasterizer_software_directdraw_7.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
 
@@ -30,7 +30,7 @@ void shiet_rasterizer_software_directdraw_7__clear_frame(void)
     {
         DDSURFACEDESC2 surfaceDesc;
 
-        if (!shiet_surface_directdraw_7_win32__lock_surface(&surfaceDesc) ||
+        if (!shiet_surface_directdraw_7__lock_surface(&surfaceDesc) ||
             !surfaceDesc.lpSurface)
         {
             return;
@@ -43,7 +43,7 @@ void shiet_rasterizer_software_directdraw_7__clear_frame(void)
 
     memset(pixels, 0, (surfaceWidth * surfaceHeight * sizeof(pixels[0])));
 
-    shiet_surface_directdraw_7_win32__unlock_surface();
+    shiet_surface_directdraw_7__unlock_surface();
 
     return;
 }
@@ -73,7 +73,7 @@ void shiet_rasterizer_software_directdraw_7__draw_triangles(struct shiet_polygon
     {
         DDSURFACEDESC2 surfaceDesc;
 
-        if (!shiet_surface_directdraw_7_win32__lock_surface(&surfaceDesc) ||
+        if (!shiet_surface_directdraw_7__lock_surface(&surfaceDesc) ||
             !surfaceDesc.lpSurface)
         {
             return;
@@ -93,7 +93,7 @@ void shiet_rasterizer_software_directdraw_7__draw_triangles(struct shiet_polygon
         }
     }
 
-    shiet_surface_directdraw_7_win32__unlock_surface();
+    shiet_surface_directdraw_7__unlock_surface();
 
     return;
 }

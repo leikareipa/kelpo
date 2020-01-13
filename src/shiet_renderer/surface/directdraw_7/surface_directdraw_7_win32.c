@@ -6,7 +6,7 @@
  * Not intended for use as a standalone surface, but as an intermediary for
  * other surfaces that require a DirectDraw 7 backend.
  * 
- * Note: The Direct3D 7 headers basically force the use of a C++ compiler -
+ * Note: The DirectX 7 headers basically force the use of a C++ compiler -
  * hence, the code here might not conform to C89 like the rest of shiet.
  * 
  */
@@ -29,6 +29,32 @@ const static unsigned WINDOW_BIT_DEPTH = 16;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static HWND WINDOW_HANDLE = 0;
+
+int shiet_surface_directdraw_7_win32__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
+{
+    assert(surfaceDesc &&
+           "DirectDraw 7: Expected a non-null pointer to a surface descriptor struct.");
+
+    surfaceDesc->dwSize = sizeof(surfaceDesc[0]);
+
+    if (FAILED(IDirectDrawSurface7_Lock(BACK_BUFFER, NULL, surfaceDesc, DDLOCK_WAIT, NULL)))
+    {
+        memset(surfaceDesc, 0, sizeof(surfaceDesc[0]));
+        return 0;
+    }
+
+    return 1;
+}
+
+int shiet_surface_directdraw_7_win32__unlock_surface(void)
+{
+    if (FAILED(IDirectDrawSurface7_Unlock(BACK_BUFFER, NULL)))
+    {
+        return 0;
+    }
+    
+    return 1;
+}
 
 void shiet_surface_directdraw_7_win32__release_surface(void)
 {
@@ -125,7 +151,7 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_direct3d_7_zbuffer(LPDIRECT
 HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned width,
                                                              const unsigned height,
                                                              const HWND windowHandle,
-                                                             GUID deviceGUID)
+                                                             GUID directDrawDeviceGUID)
 {
     HRESULT hr = 0;
     WINDOW_HANDLE = windowHandle;
@@ -148,9 +174,9 @@ HRESULT shiet_surface_directdraw_7_win32__initialize_surface(const unsigned widt
         const DWORD cooperativeLevel = (DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT);
 
 #ifdef __cplusplus
-        if (FAILED(hr = DirectDrawCreateEx(&deviceGUID, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(&directDrawDeviceGUID, (VOID**)&DIRECTDRAW_7, IID_IDirectDraw7, NULL)))
 #else
-        if (FAILED(hr = DirectDrawCreateEx(&deviceGUID, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
+        if (FAILED(hr = DirectDrawCreateEx(&directDrawDeviceGUID, (VOID**)&DIRECTDRAW_7, &IID_IDirectDraw7, NULL)))
 #endif
         {
             fprintf(stderr, "DirectDraw 7: A call to DirectDrawCreateEx() failed (error 0x%x).\n", hr);

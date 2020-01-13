@@ -28,6 +28,10 @@ struct shiet_interface_s shiet_create_interface(const char *const rasterizerName
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_direct3d_7.dll", "import_renderer");
     }
+    else if (strcmp("software_directdraw_7", rasterizerName) == 0)
+    {
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("shiet_renderer_software_directdraw_7.dll", "import_renderer");
+    }
     else
     {
         assert(0 && "Unrecognized renderer.");

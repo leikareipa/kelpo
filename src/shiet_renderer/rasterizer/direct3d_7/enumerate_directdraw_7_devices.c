@@ -1,7 +1,7 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * Note: The Direct3D 7 headers basically force the use of a C++ compiler -
+ * Note: The DirectX 7 headers basically force the use of a C++ compiler -
  * hence, the code here might not conform to C89 like the rest of shiet.
  * 
  */

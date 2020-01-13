@@ -11,7 +11,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/create_directdraw_7_surface_from_texture.h>
+#include <shiet_renderer/surface/directdraw_7/create_directdraw_7_surface_from_texture.h>
 #include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
 #include <shiet_interface/polygon/triangle/triangle.h>

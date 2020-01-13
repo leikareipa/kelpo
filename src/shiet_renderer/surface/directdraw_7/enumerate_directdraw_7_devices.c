@@ -8,7 +8,7 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_renderer/rasterizer/direct3d_7/enumerate_directdraw_7_devices.h>
+#include <shiet_renderer/surface/directdraw_7/enumerate_directdraw_7_devices.h>
  
 /* Called by DirectDrawEnumerateEx() for each DirectDraw 7 device on the system.
  * Appends the device's info to the device list.*/

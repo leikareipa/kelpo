@@ -8,6 +8,8 @@
  * 
  */
 
+#include <assert.h>
+#include <stdio.h>
 #include <shiet_renderer/surface/directdraw_7/surface_directdraw_7.h>
 #include <shiet_renderer/rasterizer/software_directdraw_7/rasterizer_software_directdraw_7.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
@@ -62,12 +64,43 @@ void shiet_rasterizer_software_directdraw_7__update_texture(struct shiet_polygon
     return;
 }
 
-void shiet_rasterizer_software_directdraw_7__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
-                                               const unsigned numTriangles)
+enum
 {
-    unsigned i = 0;
-    uint16_t *pixels = NULL; /* Expected pixel format: ARGB 1555 (16-bit).*/
+    SHIET_COLOR_FMT_UNKNOWN = 0,
+    SHIET_COLOR_FMT_RGBA_8888,
+    SHIET_COLOR_FMT_RGB_565,
+    SHIET_COLOR_FMT_RGB_555
+};
+
+static unsigned determine_pixel_color_format(const LPDDPIXELFORMAT pixelFormat)
+{
+    /* We'll assume that DirectDraw is allowed to have only these three types of
+     * color formats in 16/32-bit color modes.*/
+    if (pixelFormat->dwGBitMask == 0x7e0) return SHIET_COLOR_FMT_RGB_565;
+    if (pixelFormat->dwGBitMask == 0x3e0) return SHIET_COLOR_FMT_RGB_555;
+    if (pixelFormat->dwRBitMask == 0xff0000) return SHIET_COLOR_FMT_RGBA_8888;
+
+    assert(0 && "Software w/ DirectDraw 7: Unknown back buffer pixel format.");
+}
+
+void shiet_rasterizer_software_directdraw_7__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
+                                                            const unsigned numTriangles)
+{
+    uint8_t *pixels = NULL; /* Pointer to back buffer's pixel data.*/
+    unsigned i = 0, v = 0;
     unsigned surfaceWidth = 0;
+    unsigned colorFormat = SHIET_COLOR_FMT_UNKNOWN; /* Color format of back buffer's pixels.*/
+
+    #define PUT_PIXEL(x, y, r, g, b)\
+    {\
+        switch (colorFormat)\
+        {\
+            case SHIET_COLOR_FMT_RGBA_8888: ((uint32_t*)pixels)[(x) + (y) * (surfaceWidth / 4)] = (((r) << 16) | ((g) << 8) | (b)); break;\
+            case SHIET_COLOR_FMT_RGB_555:   ((uint16_t*)pixels)[(x) + (y) * (surfaceWidth / 2)] = (((r) << 10) | ((g) << 5) | (b)); break;\
+            case SHIET_COLOR_FMT_RGB_565:   ((uint16_t*)pixels)[(x) + (y) * (surfaceWidth / 2)] = (((r) << 11) | ((g) << 5) | (b)); break;\
+            default: assert(0 && "Software w/ DirectDraw 7: Unknown pixel format.");\
+        }\
+    }
 
     /* Lock the render surface to allow direct pixel manipulation.*/
     {
@@ -79,21 +112,24 @@ void shiet_rasterizer_software_directdraw_7__draw_triangles(struct shiet_polygon
             return;
         }
 
-        pixels = (uint16_t*)surfaceDesc.lpSurface;
-        surfaceWidth = (surfaceDesc.lPitch / sizeof(pixels[0]));
+        pixels = (uint8_t*)surfaceDesc.lpSurface;
+        surfaceWidth = surfaceDesc.lPitch;
+        colorFormat = determine_pixel_color_format(&surfaceDesc.ddpfPixelFormat);
     }
 
     for (i = 0; i < numTriangles; i++)
     {
-        unsigned v = 0;
-
         for (v = 0; v < 3; v++)
         {
-            pixels[(int)triangles[i].vertex[v].x + (int)triangles[i].vertex[v].y * surfaceWidth] = 0xffe0;
+            PUT_PIXEL((int)triangles[i].vertex[v].x,
+                      (int)triangles[i].vertex[v].y,
+                      255, 255, 0);
         }
     }
 
     shiet_surface_directdraw_7__unlock_surface();
+
+    #undef PUT_PIXEL
 
     return;
 }

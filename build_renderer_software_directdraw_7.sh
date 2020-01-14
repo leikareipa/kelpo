@@ -14,6 +14,7 @@ SRC_FILES="
 src/shiet_renderer/renderer_software_directdraw_7.c
 src/shiet_renderer/surface/directdraw_7/enumerate_directdraw_7_devices.c
 src/shiet_renderer/rasterizer/software_directdraw_7/rasterizer_software_directdraw_7.c
+src/shiet_renderer/rasterizer/software/triangle_filler.c
 src/shiet_renderer/surface/software_directdraw_7/surface_software_directdraw_7.c
 src/shiet_renderer/surface/directdraw_7/surface_directdraw_7.c
 src/shiet_renderer/window/window_win32.c

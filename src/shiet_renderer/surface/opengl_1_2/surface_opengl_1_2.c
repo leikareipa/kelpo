@@ -30,7 +30,7 @@ static void resize_opengl_display(GLsizei width, GLsizei height)
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
+    glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 0, 1);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();

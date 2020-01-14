@@ -57,9 +57,10 @@
 #include <d3d.h>
 
 HRESULT shiet_surface_directdraw_7__initialize_surface(const unsigned width,
-                                                             const unsigned height,
-                                                             const HWND windowHandle,
-                                                             GUID directDrawDeviceGUID);
+                                                       const unsigned height,
+                                                       const unsigned bpp,
+                                                       const HWND windowHandle,
+                                                       GUID directDrawDeviceGUID);
 
 void shiet_surface_directdraw_7__release_surface(void);
 
@@ -83,12 +84,12 @@ int shiet_surface_directdraw_7__unlock_surface(void);
 /* Initializes a hardware Direct3D interface to the current DirectDraw surface,
  * and assigns the given pointers-to-pointers to point to the interface.*/
 HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
-                                                                          LPDIRECT3DDEVICE7 *d3dDevice);
+                                                                    LPDIRECT3DDEVICE7 *d3dDevice);
 
 /* Creates and attaches a Z buffer of the given pixel format to the current back
  * buffer. The Z buffer will inherit the back buffer's dimensions. The Direct3D
  * device is obtained from __initialize_direct3d_7_interface().*/
 HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
-                                                                        LPDDPIXELFORMAT pixelFormat);
+                                                                  LPDDPIXELFORMAT pixelFormat);
 
 #endif

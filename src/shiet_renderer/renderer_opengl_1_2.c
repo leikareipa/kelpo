@@ -10,9 +10,11 @@ static const unsigned RENDERER_VERSION[3] = {SHIET_INTERFACE_VERSION_MAJOR,
                                              0};  /* Patch.*/
 
 static void initialize_renderer(const unsigned windowWidth,
-                                const unsigned windowHeight)
+                                const unsigned windowHeight,
+                                const unsigned bpp,
+                                const unsigned deviceID)
 {
-    shiet_surface_opengl_1_2__create_surface(windowWidth, windowHeight);
+    shiet_surface_opengl_1_2__create_surface(windowWidth, windowHeight, bpp, deviceID);
     shiet_rasterizer_opengl_1_2__initialize();
 
     return;

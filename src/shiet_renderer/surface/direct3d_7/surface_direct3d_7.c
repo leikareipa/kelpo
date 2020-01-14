@@ -20,6 +20,7 @@
 
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
+static unsigned WINDOW_BIT_DEPTH = 0;
 static HWND WINDOW_HANDLE = 0;
 
 static LPDIRECT3D7 DIRECT3D_7 = NULL;
@@ -49,7 +50,11 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     assert(WINDOW_HANDLE &&
            "Direct3D 7: Attempting to initialize without a valid window handle.");
 
-    shiet_surface_directdraw_7__initialize_surface(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_HANDLE, deviceGUID);
+    shiet_surface_directdraw_7__initialize_surface(WINDOW_WIDTH,
+                                                   WINDOW_HEIGHT,
+                                                   WINDOW_BIT_DEPTH,
+                                                   WINDOW_HANDLE,
+                                                   deviceGUID);
 
     if (FAILED(hr = shiet_surface_directdraw_7__initialize_direct3d_7_interface(&DIRECT3D_7, &D3DDEVICE_7)))
     {
@@ -120,20 +125,23 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 void shiet_surface_direct3d_7__create_surface(const unsigned width,
-                                                    const unsigned height)
+                                              const unsigned height,
+                                              const unsigned bpp,
+                                              const unsigned deviceIdx)
 {
-    shiet_window__create_window(width, height, "", window_proc);
-    WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
-
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
+    WINDOW_BIT_DEPTH = bpp;
+
+    shiet_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
+    WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
     SetForegroundWindow(WINDOW_HANDLE);
     SetFocus(WINDOW_HANDLE);
     UpdateWindow(WINDOW_HANDLE);
 
-	if (FAILED(setup_direct3d(shiet_directdraw7_device_guid(0))))
+	if (FAILED(setup_direct3d(shiet_directdraw7_device_guid(deviceIdx))))
 	{
 		assert(0 && "Direct3D 7: Failed to initialize the Direct3D surface.");
 	}

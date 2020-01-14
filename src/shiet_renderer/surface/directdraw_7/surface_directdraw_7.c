@@ -25,9 +25,9 @@ static LPDIRECTDRAWSURFACE7 FRONT_BUFFER = NULL;
 static LPDIRECTDRAWSURFACE7 BACK_BUFFER = NULL;
 static LPDIRECTDRAWSURFACE7 Z_BUFFER = NULL;
 
-const static unsigned WINDOW_BIT_DEPTH = 16;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
+static unsigned WINDOW_BIT_DEPTH = 0;
 static HWND WINDOW_HANDLE = 0;
 
 int shiet_surface_directdraw_7__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
@@ -149,14 +149,16 @@ HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVI
 }
 
 HRESULT shiet_surface_directdraw_7__initialize_surface(const unsigned width,
-                                                             const unsigned height,
-                                                             const HWND windowHandle,
-                                                             GUID directDrawDeviceGUID)
+                                                       const unsigned height,
+                                                       const unsigned bpp,
+                                                       const HWND windowHandle,
+                                                       GUID directDrawDeviceGUID)
 {
     HRESULT hr = 0;
     WINDOW_HANDLE = windowHandle;
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
+    WINDOW_BIT_DEPTH = bpp;
 
     assert((WINDOW_HANDLE &&
             WINDOW_WIDTH &&

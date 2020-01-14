@@ -12,24 +12,37 @@ struct shiet_polygon_texture_s;
 
 struct shiet_interface_s
 {
-    void (*initialize)(const unsigned, const unsigned);
+    void (*initialize)(const unsigned width,
+                       const unsigned height,
+                       const unsigned bpp,
+                       const unsigned deviceID);
 
     struct shiet_interface_window_s
     {
         uint32_t (*get_handle)(void);
+
         void (*process_events)(void);
+
         void (*flip_surface)(void);
+
         int (*is_window_open)(void);
+
         /*size*/
     } window;
 
     struct shiet_interface_rasterizer_s
     {
         void (*clear_frame)(void);
-        void (*upload_texture)(struct shiet_polygon_texture_s *const);
-        void (*update_texture)(struct shiet_polygon_texture_s *const);
-        void (*draw_triangles)(struct shiet_polygon_triangle_s *const, const unsigned);
+
+        void (*upload_texture)(struct shiet_polygon_texture_s *const texture);
+
+        void (*update_texture)(struct shiet_polygon_texture_s *const texture);
+
+        void (*draw_triangles)(struct shiet_polygon_triangle_s *const triangles,
+                               const unsigned numTriangles);
+
         /*release*/
+
         /*framebuffer*/
     } rasterizer;
 

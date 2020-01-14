@@ -15,12 +15,13 @@
 static GrContext_t GLIDE_RENDER_CONTEXT = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
+static const unsigned WINDOW_BIT_DEPTH = 16;
 static HWND WINDOW_HANDLE = 0;
 
 void shiet_surface_glide_3__release_surface(void)
 {
     assert(GLIDE_RENDER_CONTEXT &&
-           "Glide 3.x renderer: Can't release a NULL render context.");
+           "Glide 3.x: Can't release a NULL render context.");
 
     grSstWinClose(GLIDE_RENDER_CONTEXT);
 
@@ -35,13 +36,22 @@ void shiet_surface_glide_3__flip_surface(void)
 }
 
 void shiet_surface_glide_3__create_surface(const unsigned width,
-                                                 const unsigned height)
+                                           const unsigned height,
+                                           const unsigned bpp,
+                                           const unsigned deviceIdx)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
     GrScreenRefresh_t glideRefreshRate = GR_REFRESH_60Hz;
 
+    assert((bpp == 16) &&
+           "Glide 3.x: The render window must have 16-bit color.");
+
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
+    /* The window bit depth is ignored; must always be 16.*/
+
     assert(!GLIDE_RENDER_CONTEXT &&
-           "Glide 3.x renderer: A render context already exists.");
+           "Glide 3.x: A render context already exists.");
 
     if      ((width == 320)  && (height == 200))  glideResolution = GR_RESOLUTION_320x200;
     else if ((width == 320)  && (height == 240))  glideResolution = GR_RESOLUTION_320x240;
@@ -53,20 +63,17 @@ void shiet_surface_glide_3__create_surface(const unsigned width,
     else if ((width == 1024) && (height == 768))  glideResolution = GR_RESOLUTION_1024x768;
     else if ((width == 1280) && (height == 1024)) glideResolution = GR_RESOLUTION_1280x1024;
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
-    else assert(0 && "Glide 3.x renderer: Unsupported resolution.");
+    else assert(0 && "Glide 3.x: Unsupported resolution.");
 
-    shiet_window__create_window(width, height, "", NULL);
+    shiet_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", NULL);
     WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
-
-    WINDOW_WIDTH = width;
-    WINDOW_HEIGHT = height;
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
     SetForegroundWindow(WINDOW_HANDLE);
     SetFocus(WINDOW_HANDLE);
 
     grGlideInit();
-    grSstSelect(0);
+    grSstSelect(deviceIdx);
     GLIDE_RENDER_CONTEXT = grSstWinOpen((FxU32)WINDOW_HANDLE,
                                         glideResolution,
                                         glideRefreshRate,
@@ -76,7 +83,7 @@ void shiet_surface_glide_3__create_surface(const unsigned width,
                                         1);
     
     assert(GLIDE_RENDER_CONTEXT &&
-           "Glide 3.x renderer: Failed to initialize the renderer.");
+           "Glide 3.x: Failed to initialize the renderer.");
 
     return;
 }

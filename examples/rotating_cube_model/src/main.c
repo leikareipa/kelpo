@@ -20,7 +20,11 @@
 
 int main(int argc, char *argv[])
 {
-    struct { unsigned width; unsigned height; } renderResolution = {640, 480};
+    /* An index in an enumeration of API-compatible devices on the system,
+     * identifying the devide to be used in rendering.*/
+    unsigned renderDeviceIdx = 0;
+
+    struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
     struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
     
     uint32_t numTextures = 0;
@@ -52,6 +56,20 @@ int main(int argc, char *argv[])
                     assert((renderResolution.height != 0u) && "Invalid render height.");
                     break;
                 }
+                case 'b':
+                {
+                    renderResolution.bpp = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    assert((renderResolution.bpp != 0u) && "Invalid render bit depth.");
+                    break;
+                }
+                case 'd':
+                {
+                    /* The device index is expected to be 1-indexed (device #1 is 1).*/
+                    renderDeviceIdx = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    assert((renderDeviceIdx != 0u) && "Invalid render device index.");
+                    renderDeviceIdx--;
+                    break;
+                }
                 default: break;
             }
         }
@@ -70,7 +88,11 @@ int main(int argc, char *argv[])
                 renderer.metadata.rendererVersionMinor,
                 renderer.metadata.rendererVersionPatch);
 
-        renderer.initialize(renderResolution.width, renderResolution.height);
+        renderer.initialize(renderResolution.width,
+                            renderResolution.height,
+                            renderResolution.bpp,
+                            renderDeviceIdx);
+                            
         SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);
 
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);

@@ -13,6 +13,8 @@ void shiet_surface_glide_3__release_surface(void);
 void shiet_surface_glide_3__flip_surface(void);
 
 void shiet_surface_glide_3__create_surface(const unsigned width,
-                                                 const unsigned height);
+                                           const unsigned height,
+                                           const unsigned bpp,
+                                           const unsigned deviceIdx);
 
 #endif

@@ -16,6 +16,8 @@ void shiet_surface_direct3d_7__release_surface(void);
 void shiet_surface_direct3d_7__flip_surface(void);
 
 void shiet_surface_direct3d_7__create_surface(const unsigned width,
-                                                    const unsigned height);
+                                              const unsigned height,
+                                              const unsigned bpp,
+                                              const unsigned deviceIdx);
 
 #endif

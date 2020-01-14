@@ -19,6 +19,7 @@ static HGLRC RENDER_CONTEXT = 0;
 static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
+static unsigned WINDOW_BIT_DEPTH = 0;
 
 /* Call this function whenever the size of the OpenGL window changes.*/
 static void resize_opengl_display(GLsizei width, GLsizei height)
@@ -103,30 +104,24 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 void shiet_surface_opengl_1_2__create_surface(const unsigned width,
-                                                    const unsigned height)
+                                              const unsigned height,
+                                              const unsigned bpp,
+                                              const unsigned deviceIdx)
 {
-    PIXELFORMATDESCRIPTOR pfd =
-    {
-        sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-        PFD_TYPE_RGBA,
-        16,
-        0, 0, 0, 0, 0, 0,
-        0,
-        0,
-        0,
-        0, 0, 0, 0,
-        16,
-        0,
-        0,
-        PFD_MAIN_PLANE,
-        0,
-        0, 0, 0
-    };
+    PIXELFORMATDESCRIPTOR pfd;
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
+    WINDOW_BIT_DEPTH = bpp;
+    
+    memset(&pfd, 0, sizeof(pfd));
+    pfd.nSize = sizeof(pfd);
+    pfd.nVersion = 1;
+    pfd.dwFlags = (PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER);
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = WINDOW_BIT_DEPTH;
+    pfd.cDepthBits = WINDOW_BIT_DEPTH;
+    pfd.iLayerType = PFD_MAIN_PLANE;
 
     /* Enter fullscreen.*/
     {
@@ -136,7 +131,7 @@ void shiet_surface_opengl_1_2__create_surface(const unsigned width,
         dmScreenSettings.dmSize = sizeof(dmScreenSettings);
         dmScreenSettings.dmPelsWidth = WINDOW_WIDTH;
         dmScreenSettings.dmPelsHeight = WINDOW_HEIGHT;
-        dmScreenSettings.dmBitsPerPel = 16;
+        dmScreenSettings.dmBitsPerPel = WINDOW_BIT_DEPTH;
         dmScreenSettings.dmFields = (DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT);
 
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)

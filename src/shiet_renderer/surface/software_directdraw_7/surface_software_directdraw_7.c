@@ -17,6 +17,7 @@
 static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
+static unsigned WINDOW_BIT_DEPTH = 0;
 
 void shiet_surface_software_directdraw_7__release_surface(void)
 {
@@ -41,10 +42,13 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 void shiet_surface_software_directdraw_7__create_surface(const unsigned width,
-                                                               const unsigned height)
+                                                         const unsigned height,
+                                                         const unsigned bpp,
+                                                         const unsigned deviceIdx)
 {
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
+    WINDOW_BIT_DEPTH = bpp;
 
     shiet_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
     WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();
@@ -55,8 +59,11 @@ void shiet_surface_software_directdraw_7__create_surface(const unsigned width,
         return;
     }
 
-    shiet_surface_directdraw_7__initialize_surface(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_HANDLE,
-                                                         shiet_directdraw7_device_guid(0));
+    shiet_surface_directdraw_7__initialize_surface(WINDOW_WIDTH,
+                                                   WINDOW_HEIGHT,
+                                                   WINDOW_BIT_DEPTH,
+                                                   WINDOW_HANDLE,
+                                                   shiet_directdraw7_device_guid(deviceIdx));
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
     SetForegroundWindow(WINDOW_HANDLE);

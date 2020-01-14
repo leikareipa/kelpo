@@ -6,8 +6,10 @@
 
 uint32_t shiet_window__get_window_handle(void);
 
-void shiet_window__create_window(const unsigned width, const unsigned height, const char *const title,
-                                       LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM));
+void shiet_window__create_window(const unsigned width,
+                                 const unsigned height,
+                                 const char *const title,
+                                 LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM));
 
 void shiet_window__get_window_size(void);
 

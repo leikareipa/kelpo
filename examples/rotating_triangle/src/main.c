@@ -19,7 +19,11 @@
 
 int main(int argc, char *argv[])
 {
-    struct { unsigned width; unsigned height; } renderResolution = {640, 480};
+    /* An index in an enumeration of API-compatible devices on the system,
+     * identifying the devide to be used in rendering.*/
+    unsigned renderDeviceIdx = 0;
+
+    struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
     struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
 
     struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
@@ -49,6 +53,20 @@ int main(int argc, char *argv[])
                     assert((renderResolution.height != 0u) && "Invalid render height.");
                     break;
                 }
+                case 'b':
+                {
+                    renderResolution.bpp = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    assert((renderResolution.bpp != 0u) && "Invalid render bit depth.");
+                    break;
+                }
+                case 'd':
+                {
+                    /* The device index is expected to be 1-indexed (device #1 is 1).*/
+                    renderDeviceIdx = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    assert((renderDeviceIdx != 0u) && "Invalid render device index.");
+                    renderDeviceIdx--;
+                    break;
+                }
                 default: break;
             }
         }
@@ -67,7 +85,11 @@ int main(int argc, char *argv[])
                 renderer.metadata.rendererVersionMinor,
                 renderer.metadata.rendererVersionPatch);
 
-        renderer.initialize(renderResolution.width, renderResolution.height);
+        renderer.initialize(renderResolution.width,
+                            renderResolution.height,
+                            renderResolution.bpp,
+                            renderDeviceIdx);
+
         SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);
 
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
@@ -86,6 +108,7 @@ int main(int argc, char *argv[])
         triangle.vertex[0].r = 255;
         triangle.vertex[0].g = 0;
         triangle.vertex[0].b = 0;
+        triangle.vertex[0].a = 255;
 
         triangle.vertex[1].x = 0.5;
         triangle.vertex[1].y = -0.5;
@@ -96,6 +119,7 @@ int main(int argc, char *argv[])
         triangle.vertex[1].r = 0;
         triangle.vertex[1].g = 255;
         triangle.vertex[1].b = 0;
+        triangle.vertex[1].a = 255;
 
         triangle.vertex[2].x = 0.5;
         triangle.vertex[2].y = 0.5;
@@ -106,6 +130,7 @@ int main(int argc, char *argv[])
         triangle.vertex[2].r = 0;
         triangle.vertex[2].g = 0;
         triangle.vertex[2].b = 255;
+        triangle.vertex[2].a = 255;
         
         triangle.texture = NULL;
 

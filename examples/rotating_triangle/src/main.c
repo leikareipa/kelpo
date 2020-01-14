@@ -99,41 +99,50 @@ int main(int argc, char *argv[])
     {
         struct shiet_polygon_triangle_s triangle;
 
-        triangle.vertex[0].x = -0.5;
-        triangle.vertex[0].y = -0.5;
+        memset(&triangle, 0, sizeof(triangle));
+
+        triangle.vertex[0].x = -1;
+        triangle.vertex[0].y = -1;
         triangle.vertex[0].z = 0;
         triangle.vertex[0].w = 1;
         triangle.vertex[0].u = 0;
         triangle.vertex[0].v = 0;
+        triangle.vertex[0].nx = 0;
+        triangle.vertex[0].ny = 0;
+        triangle.vertex[0].nz = -1;
         triangle.vertex[0].r = 255;
         triangle.vertex[0].g = 0;
         triangle.vertex[0].b = 0;
         triangle.vertex[0].a = 255;
 
-        triangle.vertex[1].x = 0.5;
-        triangle.vertex[1].y = -0.5;
+        triangle.vertex[1].x = 1;
+        triangle.vertex[1].y = -1;
         triangle.vertex[1].z = 0;
         triangle.vertex[1].w = 1;
         triangle.vertex[1].u = 1;
         triangle.vertex[1].v = 0;
+        triangle.vertex[1].nx = 0;
+        triangle.vertex[1].ny = 0;
+        triangle.vertex[1].nz = -1;
         triangle.vertex[1].r = 0;
         triangle.vertex[1].g = 255;
         triangle.vertex[1].b = 0;
         triangle.vertex[1].a = 255;
 
-        triangle.vertex[2].x = 0.5;
-        triangle.vertex[2].y = 0.5;
+        triangle.vertex[2].x = 1;
+        triangle.vertex[2].y = 1;
         triangle.vertex[2].z = 0;
         triangle.vertex[2].w = 1;
         triangle.vertex[2].u = 1;
         triangle.vertex[2].v = 1;
+        triangle.vertex[2].nx = 0;
+        triangle.vertex[2].ny = 0;
+        triangle.vertex[2].nz = -1;
         triangle.vertex[2].r = 0;
         triangle.vertex[2].g = 0;
         triangle.vertex[2].b = 255;
         triangle.vertex[2].a = 255;
         
-        triangle.texture = NULL;
-
         shiet_tristack_push_copy(triangles, &triangle);
     }
 
@@ -145,7 +154,7 @@ int main(int argc, char *argv[])
         shiet_tristack_clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
-                                              0, 0, 1.5,
+                                              0, 0, 3,
                                               0, 0.01, 0);
 
         renderer.rasterizer.clear_frame();

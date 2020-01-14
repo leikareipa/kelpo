@@ -24,6 +24,8 @@ extern LPDIRECT3DDEVICE7 D3DDEVICE_7;
 
 void shiet_rasterizer_direct3d_7__initialize(void)
 {
+    IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
+    
     IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0, D3DTSS_MINFILTER, D3DTFN_LINEAR);
     IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0, D3DTSS_MAGFILTER, D3DTFN_LINEAR);
 
@@ -85,8 +87,6 @@ void shiet_rasterizer_direct3d_7__draw_triangles(struct shiet_polygon_triangle_s
     for (i = 0; i < numTriangles; i++)
     {
         D3DTLVERTEX verts[3];
-        const int mipmapEnabled = (triangles[i].texture->numMipLevels > 1);
-        const int mipmapFilter = (triangles[i].texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
 
         for (v = 0; v < 3; v++)
         {
@@ -104,25 +104,33 @@ void shiet_rasterizer_direct3d_7__draw_triangles(struct shiet_polygon_triangle_s
 
         /* TODO: Reduce state-switching.*/
 
-        IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)(uint32_t)triangles[i].texture->apiId);
+        if (triangles[i].texture)
+        {
+            const int mipmapEnabled = (triangles[i].texture->numMipLevels > 1);
+            const int mipmapFilter = (triangles[i].texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
 
-        IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                              D3DTSS_MIPFILTER,
-                                              (mipmapEnabled? mipmapFilter : FALSE));
+            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)(uint32_t)triangles[i].texture->apiId);
 
-        IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                              D3DTSS_MINFILTER,
-                                              (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                  D3DTSS_MIPFILTER,
+                                                  (mipmapEnabled? mipmapFilter : FALSE));
 
-        IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                              D3DTSS_MAGFILTER,
-                                              (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                  D3DTSS_MINFILTER,
+                                                  (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+
+            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                  D3DTSS_MAGFILTER,
+                                                  (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+        }
 
         IDirect3DDevice7_DrawPrimitive(D3DDEVICE_7,
                                        D3DPT_TRIANGLELIST,
                                        D3DFVF_TLVERTEX,
                                        verts, 3,
                                        NULL);
+
+        IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
     }
 
     IDirect3DDevice7_EndScene(D3DDEVICE_7);

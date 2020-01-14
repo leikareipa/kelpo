@@ -14,7 +14,7 @@ static void initialize_renderer(const unsigned windowWidth,
                                 const unsigned bpp,
                                 const unsigned deviceID)
 {
-    shiet_surface_glide_3__create_surface(windowWidth, windowHeight, deviceID);
+    shiet_surface_glide_3__create_surface(windowWidth, windowHeight, bpp, deviceID);
     shiet_rasterizer_glide_3__initialize();
 
     return;

@@ -120,8 +120,6 @@ void shiet_surface_opengl_1_2__create_surface(const unsigned width,
     pfd.nVersion = 1;
     pfd.dwFlags = (PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER);
     pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = WINDOW_BIT_DEPTH;
-    pfd.cDepthBits = WINDOW_BIT_DEPTH;
     pfd.iLayerType = PFD_MAIN_PLANE;
 
     /* Enter fullscreen.*/

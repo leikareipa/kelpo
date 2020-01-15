@@ -9,13 +9,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/generic_data_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include "kac/import_kac_1_0.h"
 #include "load_kac_1_0_mesh.h"
 
 int shiet_load_kac10_mesh(const char *const kacFilename,
-                          struct shiet_polygon_triangle_stack_s *dstTriangles,
+                          struct shiet_generic_data_stack_s *dstTriangles,
                           struct shiet_polygon_texture_s **dstTextures,
                           uint32_t *numTextures)
 {
@@ -56,7 +56,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
-        shiet_tristack_grow(dstTriangles, numTriangles);
+        shiet_generic_data_stack__grow(dstTriangles, numTriangles);
         *dstTextures = malloc(*numTextures * sizeof(struct shiet_polygon_texture_s));
 
         /* Convert the KAC textures into shiet's internal format.*/
@@ -144,7 +144,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
             }
 
-            shiet_tristack_push_copy(dstTriangles, &shietTriangle);
+            shiet_generic_data_stack__push_copy(dstTriangles, &shietTriangle);
         }
 
         FREE_TEMPORARY_KAC_BUFFERS;

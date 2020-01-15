@@ -10,7 +10,7 @@
 
 #include <shiet_interface/common/stdint.h>
 
-struct shiet_polygon_triangle_stack_s;
+struct shiet_generic_data_stack_s;
 struct shiet_polygon_triangle_s;
 
 /* Loads a triangle mesh - along with any associated textures - from the given
@@ -26,7 +26,7 @@ struct shiet_polygon_triangle_s;
  * whether it should be deallocated.
  */
 int shiet_load_kac10_mesh(const char *const kacFilename,
-                          struct shiet_polygon_triangle_stack_s *dstTriangles,
+                          struct shiet_generic_data_stack_s *dstTriangles,
                           struct shiet_polygon_texture_s **dstTextures,
                           uint32_t *numTextures);
 

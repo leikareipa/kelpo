@@ -11,7 +11,7 @@ src/main.c
 ../common_src/load_kac_1_0_mesh.c
 ../common_src/parse_command_line.c
 ../common_src/kac/import_kac_1_0.c
-../../src/shiet_interface/polygon/triangle/triangle_stack.c
+../../src/shiet_interface/generic_data_stack.c
 ../../src/shiet_interface/interface.c
 "
 

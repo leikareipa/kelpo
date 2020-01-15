@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <time.h>
-#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/generic_data_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/interface.h>
 #include <shiet_interface/common/globals.h>
@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
     
     uint32_t numTextures = 0;
     struct shiet_polygon_texture_s *textures = NULL;
-    struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
-    struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(1);
+    struct shiet_generic_data_stack_s *triangles = shiet_generic_data_stack__create(1, sizeof(struct shiet_polygon_triangle_s));
+    struct shiet_generic_data_stack_s *transformedTriangles = shiet_generic_data_stack__create(1, sizeof(struct shiet_polygon_triangle_s));
 
     struct shiet_polygon_texture_s *fontTexture = shiet_text_mesh__create_font();
 
@@ -154,7 +154,10 @@ int main(int argc, char *argv[])
             renderer.rasterizer.upload_texture(&textures[i]);
         }
 
-        shiet_tristack_grow(transformedTriangles, triangles->capacity);
+        /* Triangle transformation may produce more triangles than there were
+         * before transformation, due to frustum clipping etc. - but also fewer
+         * due to back-face culling and so on.*/
+        shiet_generic_data_stack__grow(transformedTriangles, (triangles->capacity * 1.3));
     }
 
     /* Render.*/
@@ -162,7 +165,7 @@ int main(int argc, char *argv[])
     {
         renderer.window.process_events();
 
-        shiet_tristack_clear(transformedTriangles);
+        shiet_generic_data_stack__clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
                                               0, 0, 4.7,
@@ -186,7 +189,7 @@ int main(int argc, char *argv[])
         renderer.window.flip_surface();
     }
 
-    /* Release memory.*/
+    /* Release any leftover memory.*/
     {
         uint32_t i = 0, m = 0;
 
@@ -199,8 +202,8 @@ int main(int argc, char *argv[])
         }
         free(textures);
 
-        shiet_tristack_free(triangles);
-        shiet_tristack_free(transformedTriangles);
+        shiet_generic_data_stack__free(triangles);
+        shiet_generic_data_stack__free(transformedTriangles);
     }
 
     return 0;

@@ -50,7 +50,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <shiet_interface/polygon/triangle/triangle_stack.h>
+#include <shiet_interface/generic_data_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/vertex.h>
 #include <shiet_interface/common/globals.h>
@@ -202,8 +202,8 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
     return;
 }
 
-void trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_stack_s *const triangles,
-                                           struct shiet_polygon_triangle_stack_s *const dst,
+void trirot_transform_and_rotate_triangles(struct shiet_generic_data_stack_s *const triangles,
+                                           struct shiet_generic_data_stack_s *const dstTriangles,
                                            const float basePosX, const float basePosY, const float basePosZ,
                                            const float rotX, const float rotY, const float rotZ)
 {
@@ -227,7 +227,7 @@ void trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_stack_s
     for (i = 0; i < triangles->count; i++)
     {
         int triIsVisible = 1;
-        struct shiet_polygon_triangle_s transformedTriangle = triangles->data[i];
+        struct shiet_polygon_triangle_s transformedTriangle = ((struct shiet_polygon_triangle_s*)triangles->data)[i];
 
         /* Transform into clip-space.*/
         transform_vert(&transformedTriangle.vertex[0], &clipSpace);
@@ -248,7 +248,7 @@ void trirot_transform_and_rotate_triangles(struct shiet_polygon_triangle_stack_s
 
         if (triIsVisible)
         {
-            shiet_tristack_push_copy(dst, &transformedTriangle);
+            shiet_generic_data_stack__push_copy(dstTriangles, &transformedTriangle);
         }
     }
 

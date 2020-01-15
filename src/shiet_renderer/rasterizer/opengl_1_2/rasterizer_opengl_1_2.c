@@ -19,8 +19,12 @@
 void shiet_rasterizer_opengl_1_2__initialize(void)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0);
 
     /* We'll generally provide our own mipmaps, so don't want OpenGL messing with them.*/
     #ifdef GL_GENERATE_MIPMAP

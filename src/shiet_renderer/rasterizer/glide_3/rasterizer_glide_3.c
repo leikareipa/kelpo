@@ -27,30 +27,32 @@ void shiet_rasterizer_glide_3__initialize(void)
 {
     grColorMask(FXTRUE, FXFALSE);
 
-    /* Vertex data layout. Matches with the shiet_polygon_vertex_s struct.*/
+    /* Vertex data layout matches that in the shiet_polygon_vertex_s struct.*/
     grVertexLayout(GR_PARAM_XY, 0, GR_PARAM_ENABLE);
     grVertexLayout(GR_PARAM_Q, 12, GR_PARAM_ENABLE); /* Corresponds to 1/w in shiet_polygon_vertex_s.*/
     grVertexLayout(GR_PARAM_ST0, 28, GR_PARAM_ENABLE);
     grVertexLayout(GR_PARAM_PARGB, 36, GR_PARAM_ENABLE);
 
-    /* Depth testing.*/
     grDepthBufferMode(GR_DEPTHBUFFER_WBUFFER);
     grDepthBufferFunction(GR_CMP_LESS); 
     grDepthMask(FXTRUE);
 
-    /* Texturing.*/
-    {
-        /* Decal texturing.*/
-        grTexCombine(GR_TMU0,
-                     GR_COMBINE_FUNCTION_LOCAL,
-                     GR_COMBINE_FACTOR_NONE,
-                     GR_COMBINE_FUNCTION_LOCAL,
-                     GR_COMBINE_FACTOR_NONE,
-                     FXFALSE,
-                     FXFALSE);
+    grAlphaTestFunction(GR_CMP_GREATER);
+	grAlphaTestReferenceValue(0);
+    grAlphaCombine(GR_COMBINE_FUNCTION_SCALE_OTHER,
+                   GR_COMBINE_FACTOR_LOCAL,
+                   GR_COMBINE_LOCAL_ITERATED,
+                   GR_COMBINE_OTHER_TEXTURE,
+                   FXFALSE);
 
-        grTexLodBiasValue(GR_TMU0, 0.5);
-    }
+    grTexCombine(GR_TMU0,
+                 GR_COMBINE_FUNCTION_LOCAL,
+                 GR_COMBINE_FACTOR_NONE,
+                 GR_COMBINE_FUNCTION_LOCAL,
+                 GR_COMBINE_FACTOR_NONE,
+                 FXFALSE,
+                 FXFALSE);
+    grTexLodBiasValue(GR_TMU0, 0.5);
 
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
 

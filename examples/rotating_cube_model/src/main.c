@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+#include <time.h>
 #include <shiet_interface/polygon/triangle/triangle_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/interface.h>
@@ -15,8 +16,30 @@
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
 #include "../../common_src/load_kac_1_0_mesh.h"
+#include "../../common_src/text_mesh.h"
 
 #include <windows.h>
+
+/* Call this function once per frame and it'll tell you an estimate of the frame
+ * rate (FPS).*/
+static unsigned framerate(void)
+{
+    static unsigned numFramesCounted = 0;
+    static unsigned framesPerSecond = 0;
+    static unsigned frameRateTimer = 0;
+
+    numFramesCounted++;
+
+    if (!frameRateTimer ||
+        (time(NULL) - frameRateTimer) >= 2)
+    {
+        framesPerSecond = (numFramesCounted / (time(NULL) - frameRateTimer));
+        frameRateTimer = time(NULL);
+        numFramesCounted = 0;
+    }
+
+    return framesPerSecond;
+}
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +54,8 @@ int main(int argc, char *argv[])
     struct shiet_polygon_texture_s *textures = NULL;
     struct shiet_polygon_triangle_stack_s *triangles = shiet_tristack_create(1);
     struct shiet_polygon_triangle_stack_s *transformedTriangles = shiet_tristack_create(1);
+
+    struct shiet_polygon_texture_s *fontTexture = shiet_text_mesh__create_font();
 
     /* Process any relevant command-line parameters.*/
     {
@@ -96,6 +121,9 @@ int main(int argc, char *argv[])
         SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);
 
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
+
+        renderer.rasterizer.upload_texture(fontTexture);
+        /* TODO: The local font texture can now the freed.*/
     }
 
     /* Load in the cube model.*/
@@ -128,6 +156,17 @@ int main(int argc, char *argv[])
                                               0, 0, 4.7,
                                               0.0035, 0.006, 0.0035);
 
+        /* Print the UI text.*/
+        {
+            char fpsString[10];
+            const unsigned fps = framerate();
+
+            sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
+
+            shiet_text_mesh__print(renderer.metadata.rendererName, 25, 30, transformedTriangles);
+            shiet_text_mesh__print(fpsString, 25, 60, transformedTriangles);
+        }
+
         renderer.rasterizer.clear_frame();
         renderer.rasterizer.draw_triangles(transformedTriangles->data,
                                            transformedTriangles->count);
@@ -147,6 +186,8 @@ int main(int argc, char *argv[])
             }
         }
         free(textures);
+
+        /* TODO: Free the font texture.*/
 
         shiet_tristack_free(triangles);
         shiet_tristack_free(transformedTriangles);

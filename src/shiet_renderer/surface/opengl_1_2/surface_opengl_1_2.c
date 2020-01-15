@@ -106,6 +106,7 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 void shiet_surface_opengl_1_2__create_surface(const unsigned width,
                                               const unsigned height,
                                               const unsigned bpp,
+                                              const int vsyncEnabled,
                                               const unsigned deviceIdx)
 {
     PIXELFORMATDESCRIPTOR pfd;
@@ -160,7 +161,7 @@ void shiet_surface_opengl_1_2__create_surface(const unsigned width,
     SetForegroundWindow(WINDOW_HANDLE);
     SetFocus(WINDOW_HANDLE);
     resize_opengl_display(WINDOW_WIDTH, WINDOW_HEIGHT);
-    set_opengl_vsync_enabled(1);
+    set_opengl_vsync_enabled(vsyncEnabled? 1 : 0);
     UpdateWindow(WINDOW_HANDLE);
 
     return;

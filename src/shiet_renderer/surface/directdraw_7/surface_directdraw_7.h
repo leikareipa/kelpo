@@ -64,7 +64,7 @@ HRESULT shiet_surface_directdraw_7__initialize_surface(const unsigned width,
 
 void shiet_surface_directdraw_7__release_surface(void);
 
-void shiet_surface_directdraw_7__flip_surface(void);
+void shiet_surface_directdraw_7__flip_surface(const int vsyncEnabled);
 
 /* TODO.
 void shiet_surface_directdraw_7__resize_surface(void);*/

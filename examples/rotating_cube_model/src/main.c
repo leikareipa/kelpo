@@ -47,6 +47,11 @@ int main(int argc, char *argv[])
      * identifying the devide to be used in rendering.*/
     unsigned renderDeviceIdx = 0;
 
+    /* If set to 1, we'll request the renderer to use vsync. Otherwise, we'll
+     * ask for vsync to be off. On some hardware, this option will have no
+     * effect, however.*/
+    unsigned vsyncEnabled = 1;
+
     struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
     struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
     
@@ -67,6 +72,11 @@ int main(int argc, char *argv[])
                 case 'r':
                 {
                     renderer = shiet_create_interface(shiet_cliparse_optarg());
+                    break;
+                }
+                case 'v':
+                {
+                    vsyncEnabled = strtoul(shiet_cliparse_optarg(), NULL, 10);
                     break;
                 }
                 case 'w':
@@ -116,6 +126,7 @@ int main(int argc, char *argv[])
         renderer.initialize(renderResolution.width,
                             renderResolution.height,
                             renderResolution.bpp,
+                            vsyncEnabled,
                             renderDeviceIdx);
                             
         SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);

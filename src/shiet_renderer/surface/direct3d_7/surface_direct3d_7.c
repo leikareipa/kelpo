@@ -21,6 +21,7 @@
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static unsigned WINDOW_BIT_DEPTH = 0;
+static unsigned IS_VSYNC_ENABLED = 0; /* Either 1 or 0, to set whether to use vsync.*/
 static HWND WINDOW_HANDLE = 0;
 
 static LPDIRECT3D7 DIRECT3D_7 = NULL;
@@ -109,7 +110,7 @@ void shiet_surface_direct3d_7__release_surface(void)
 
 void shiet_surface_direct3d_7__flip_surface(void)
 {
-    shiet_surface_directdraw_7__flip_surface();
+    shiet_surface_directdraw_7__flip_surface(IS_VSYNC_ENABLED);
 
     return;
 }
@@ -127,11 +128,13 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 void shiet_surface_direct3d_7__create_surface(const unsigned width,
                                               const unsigned height,
                                               const unsigned bpp,
+                                              const int vsyncEnabled,
                                               const unsigned deviceIdx)
 {
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     WINDOW_BIT_DEPTH = bpp;
+    IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
     shiet_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
     WINDOW_HANDLE = (HWND)shiet_window__get_window_handle();

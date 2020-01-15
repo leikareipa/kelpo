@@ -15,6 +15,7 @@ struct shiet_interface_s
     void (*initialize)(const unsigned width,
                        const unsigned height,
                        const unsigned bpp,
+                       const int vsyncEnabled,
                        const unsigned deviceID);
 
     struct shiet_interface_window_s

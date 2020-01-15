@@ -66,9 +66,9 @@ void shiet_surface_directdraw_7__release_surface(void)
     return;
 }
 
-void shiet_surface_directdraw_7__flip_surface(void)
+void shiet_surface_directdraw_7__flip_surface(const int vsyncEnabled)
 {
-    IDirectDrawSurface7_Flip(FRONT_BUFFER, NULL, DDFLIP_WAIT);
+    IDirectDrawSurface7_Flip(FRONT_BUFFER, NULL, (vsyncEnabled? DDFLIP_WAIT : DDFLIP_NOVSYNC));
 
     return;
 }

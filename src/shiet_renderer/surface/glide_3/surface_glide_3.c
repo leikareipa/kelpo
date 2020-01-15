@@ -16,6 +16,7 @@ static GrContext_t GLIDE_RENDER_CONTEXT = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static const unsigned WINDOW_BIT_DEPTH = 16;
+static unsigned IS_VSYNC_ENABLED = 0; /* Either 1 or 0, to set whether to use vsync.*/
 static HWND WINDOW_HANDLE = 0;
 
 void shiet_surface_glide_3__release_surface(void)
@@ -30,7 +31,7 @@ void shiet_surface_glide_3__release_surface(void)
 
 void shiet_surface_glide_3__flip_surface(void)
 {
-    grBufferSwap(1);
+    grBufferSwap(IS_VSYNC_ENABLED);
 
     return;
 }
@@ -38,6 +39,7 @@ void shiet_surface_glide_3__flip_surface(void)
 void shiet_surface_glide_3__create_surface(const unsigned width,
                                            const unsigned height,
                                            const unsigned bpp,
+                                           const int vsyncEnabled,
                                            const unsigned deviceIdx)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
@@ -49,6 +51,7 @@ void shiet_surface_glide_3__create_surface(const unsigned width,
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     /* The window bit depth is ignored; must always be 16.*/
+    IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
     assert(!GLIDE_RENDER_CONTEXT &&
            "Glide 3.x: A render context already exists.");

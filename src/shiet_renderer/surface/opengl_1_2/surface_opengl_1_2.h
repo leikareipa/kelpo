@@ -15,6 +15,7 @@ void shiet_surface_opengl_1_2__flip_surface(void);
 void shiet_surface_opengl_1_2__create_surface(const unsigned width,
                                               const unsigned height,
                                               const unsigned bpp,
+                                              const int vsyncEnabled,
                                               const unsigned deviceIdx);
 
 #endif

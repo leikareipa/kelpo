@@ -166,6 +166,8 @@ struct shiet_polygon_texture_s* shiet_text_mesh__create_font(void)
 
 static void release_font_texture(void)
 {
+    /* TODO.*/
+    
     free(FONT_TEXTURE);
     FONT_TEXTURE = NULL;
 

@@ -1,5 +1,5 @@
-#ifndef SHIET_WINDOW_WIN32_H_
-#define SHIET_WINDOW_WIN32_H_
+#ifndef SHIET_RENDERER_WINDOW_WINDOW_WIN32_H
+#define SHIET_RENDERER_WINDOW_WINDOW_WIN32_H
 
 #include <WinDef.h>
 #include <shiet_interface/common/stdint.h>

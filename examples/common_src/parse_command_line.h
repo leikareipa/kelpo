@@ -21,8 +21,8 @@
  * 
  */
 
-#ifndef SHIET_EXAMPLES_COMMON_PARSE_COMMAND_LINE_H
-#define SHIET_EXAMPLES_COMMON_PARSE_COMMAND_LINE_H
+#ifndef SHIET_EXAMPLES_COMMON_SRC_PARSE_COMMAND_LINE_H
+#define SHIET_EXAMPLES_COMMON_SRC_PARSE_COMMAND_LINE_H
 
 int shiet_cliparse(const int argc, char *const argv[]);
 const char* shiet_cliparse_optarg(void);

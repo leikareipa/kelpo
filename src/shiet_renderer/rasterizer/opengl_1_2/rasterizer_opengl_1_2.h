@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef SHIET_RASTERIZER_OPENGL_H
-#define SHIET_RASTERIZER_OPENGL_H
+#ifndef SHIET_RENDERER_RASTERIZER_OPENGL_H
+#define SHIET_RENDERER_RASTERIZER_OPENGL_H
 
 struct shiet_polygon_triangle_s;
 struct shiet_polygon_texture_s;

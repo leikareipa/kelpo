@@ -134,7 +134,8 @@ int main(int argc, char *argv[])
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
 
         renderer.rasterizer.upload_texture(fontTexture);
-        /* TODO: The local font texture can now the freed.*/
+        free(fontTexture->mipLevel[0]);
+        fontTexture->mipLevel[0] = NULL;
     }
 
     /* Load in the cube model.*/
@@ -197,8 +198,6 @@ int main(int argc, char *argv[])
             }
         }
         free(textures);
-
-        /* TODO: Free the font texture.*/
 
         shiet_tristack_free(triangles);
         shiet_tristack_free(transformedTriangles);

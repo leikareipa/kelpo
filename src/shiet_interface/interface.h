@@ -1,5 +1,5 @@
-#ifndef SHIET_INTERFACE_H
-#define SHIET_INTERFACE_H
+#ifndef SHIET_INTERFACE_INTERFACE_H
+#define SHIET_INTERFACE_INTERFACE_H
 
 #include <shiet_interface/common/stdint.h>
 

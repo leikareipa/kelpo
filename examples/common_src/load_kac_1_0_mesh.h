@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef SHIET_EXAMPLES_COMMON_LOAD_KAC_1_0_MESH_H
-#define SHIET_EXAMPLES_COMMON_LOAD_KAC_1_0_MESH_H
+#ifndef SHIET_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
+#define SHIET_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
 
 #include <shiet_interface/common/stdint.h>
 

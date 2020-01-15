@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef SHIET_SURFACE_OPENGL_H
-#define SHIET_SURFACE_OPENGL_H
+#ifndef SHIET_RENDERER_SURFACE_OPENGL_1_2_SURFACE_OPENGL_1_2_H
+#define SHIET_RENDERER_SURFACE_OPENGL_1_2_SURFACE_OPENGL_1_2_H
 
 void shiet_surface_opengl_1_2__release_surface(void);
 

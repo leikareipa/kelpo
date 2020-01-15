@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef SHIET_SURFACE_GLIDE3_H
-#define SHIET_SURFACE_GLIDE3_H
+#ifndef SHIET_RENDERER_SURFACE_GLIDE_3_SURFACE_GLIDE_3_H
+#define SHIET_RENDERER_SURFACE_GLIDE_3_SURFACE_GLIDE_3_H
 
 void shiet_surface_glide_3__release_surface(void);
 

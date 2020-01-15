@@ -1,5 +1,5 @@
-#ifndef SHIET_POLYGON_TEXTURE_H_
-#define SHIET_POLYGON_TEXTURE_H_
+#ifndef SHIET_INTERFACE_POLYGON_TEXTURE_H
+#define SHIET_INTERFACE_POLYGON_TEXTURE_H
 
 #include <shiet_interface/common/stdint.h>
 

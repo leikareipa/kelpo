@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef SHIET_COMMON_STDINT_H
-#define SHIET_COMMON_STDINT_H
+#ifndef SHIET_INTERFACE_COMMON_STDINT_H
+#define SHIET_INTERFACE_COMMON_STDINT_H
 
 #if defined (_WIN32)
     #if defined (__MINGW32__) || (__WATCOMC__)

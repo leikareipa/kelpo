@@ -1,5 +1,5 @@
-#ifndef SHIET_POLYGON_TRIANGLE_H
-#define SHIET_POLYGON_TRIANGLE_H
+#ifndef SHIET_INTERFACE_POLYGON_TRIANGLE_H
+#define SHIET_INTERFACE_POLYGON_TRIANGLE_H
 
 #include <shiet_interface/polygon/texture.h>
 #include <shiet_interface/polygon/vertex.h>

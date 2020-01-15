@@ -44,8 +44,6 @@ static void add_character(const char chr,
                           const unsigned posY,
                           struct shiet_polygon_triangle_stack_s *dst)
 {
-    struct shiet_polygon_triangle_s leftTri, rightTri;
-
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
     const int charId = (chr - ' ');
@@ -57,82 +55,60 @@ static void add_character(const char chr,
     assert((chr >= ' ') &&
            "Cannot represent ASCII characters that precede the space symbol.");
 
-    memset(&leftTri, 0, sizeof(leftTri));
-    memset(&rightTri, 0, sizeof(rightTri));
+    /* Create a quad out of two triangles, and texture it with this character's
+     * symbol from the character set texture.*/
+    {
+        unsigned i = 0;
+        struct shiet_polygon_triangle_s tri;
 
-    leftTri.vertex[0].x = posX;
-    leftTri.vertex[0].y = posY;
-    leftTri.vertex[0].z = 0;
-    leftTri.vertex[0].w = 1;
-    leftTri.vertex[0].u = uStart;
-    leftTri.vertex[0].v = vStart;
-    leftTri.vertex[0].r = 255;
-    leftTri.vertex[0].g = 255;
-    leftTri.vertex[0].b = 255;
-    leftTri.vertex[0].a = 255;
+        memset(&tri, 0, sizeof(tri));
 
-    leftTri.vertex[1].x = posX;
-    leftTri.vertex[1].y = (posY + CHAR_HEIGHT);
-    leftTri.vertex[1].z = 0;
-    leftTri.vertex[1].w = 1;
-    leftTri.vertex[1].u = uStart;
-    leftTri.vertex[1].v = vEnd;
-    leftTri.vertex[1].r = 255;
-    leftTri.vertex[1].g = 255;
-    leftTri.vertex[1].b = 255;
-    leftTri.vertex[1].a = 255;
+        tri.texture = FONT_TEXTURE;
 
-    leftTri.vertex[2].x = (posX + CHAR_WIDTH);
-    leftTri.vertex[2].y = (posY + CHAR_HEIGHT);
-    leftTri.vertex[2].z = 0;
-    leftTri.vertex[2].w = 1;
-    leftTri.vertex[2].u = uEnd;
-    leftTri.vertex[2].v = vEnd;
-    leftTri.vertex[2].r = 255;
-    leftTri.vertex[2].g = 255;
-    leftTri.vertex[2].b = 255;
-    leftTri.vertex[2].a = 255;
+        for (i = 0; i < 3; i++)
+        {
+            tri.vertex[i].z = 0;
+            tri.vertex[i].w = 1;
+            tri.vertex[i].r = 255;
+            tri.vertex[i].g = 255;
+            tri.vertex[i].b = 255;
+            tri.vertex[i].a = 255;
+        }
 
-    /**/
+        tri.vertex[0].x = posX;
+        tri.vertex[0].y = posY;
+        tri.vertex[0].u = uStart;
+        tri.vertex[0].v = vStart;
 
-    rightTri.vertex[0].x = posX;
-    rightTri.vertex[0].y = posY;
-    rightTri.vertex[0].z = 0;
-    rightTri.vertex[0].w = 1;
-    rightTri.vertex[0].u = uStart;
-    rightTri.vertex[0].v = vStart;
-    rightTri.vertex[0].r = 255;
-    rightTri.vertex[0].g = 255;
-    rightTri.vertex[0].b = 255;
-    rightTri.vertex[0].a = 255;
+        tri.vertex[1].x = posX;
+        tri.vertex[1].y = (posY + CHAR_HEIGHT);
+        tri.vertex[1].u = uStart;
+        tri.vertex[1].v = vEnd;
 
-    rightTri.vertex[1].x = (posX + CHAR_WIDTH);
-    rightTri.vertex[1].y = (posY + CHAR_HEIGHT);
-    rightTri.vertex[1].z = 0;
-    rightTri.vertex[1].w = 1;
-    rightTri.vertex[1].u = uEnd;
-    rightTri.vertex[1].v = vEnd;
-    rightTri.vertex[1].r = 255;
-    rightTri.vertex[1].g = 255;
-    rightTri.vertex[1].b = 255;
-    rightTri.vertex[1].a = 255;
+        tri.vertex[2].x = (posX + CHAR_WIDTH);
+        tri.vertex[2].y = (posY + CHAR_HEIGHT);
+        tri.vertex[2].u = uEnd;
+        tri.vertex[2].v = vEnd;
 
-    rightTri.vertex[2].x = (posX + CHAR_WIDTH);
-    rightTri.vertex[2].y = posY;
-    rightTri.vertex[2].z = 0;
-    rightTri.vertex[2].w = 1;
-    rightTri.vertex[2].u = uEnd;
-    rightTri.vertex[2].v = vStart;
-    rightTri.vertex[2].r = 255;
-    rightTri.vertex[2].g = 255;
-    rightTri.vertex[2].b = 255;
-    rightTri.vertex[2].a = 255;
+        shiet_tristack_push_copy(dst, &tri);
 
-    leftTri.texture = FONT_TEXTURE;
-    rightTri.texture = FONT_TEXTURE;
+        tri.vertex[0].x = posX;
+        tri.vertex[0].y = posY;
+        tri.vertex[0].u = uStart;
+        tri.vertex[0].v = vStart;
 
-    shiet_tristack_push_copy(dst, &leftTri);
-    shiet_tristack_push_copy(dst, &rightTri);
+        tri.vertex[1].x = (posX + CHAR_WIDTH);
+        tri.vertex[1].y = (posY + CHAR_HEIGHT);
+        tri.vertex[1].u = uEnd;
+        tri.vertex[1].v = vEnd;
+
+        tri.vertex[2].x = (posX + CHAR_WIDTH);
+        tri.vertex[2].y = posY;
+        tri.vertex[2].u = uEnd;
+        tri.vertex[2].v = vStart;
+
+        shiet_tristack_push_copy(dst, &tri);
+    }
 
     return;
 }

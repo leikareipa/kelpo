@@ -7,14 +7,21 @@
 
 #include <stddef.h>
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include <shiet_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
+#include <shiet_interface/generic_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
 
 #include <gl/gl.h>
 #include <gl/glext.h>
+
+/* For keeping track of where in texture memory textures have been uploaded.
+ * Stack elements will be of type GLuint, which represents an OpenGL texture
+ * ID as returned by glGenTextures().*/
+static struct shiet_generic_stack_s *UPLOADED_TEXTURES;
 
 void shiet_rasterizer_opengl_1_2__initialize(void)
 {
@@ -30,6 +37,15 @@ void shiet_rasterizer_opengl_1_2__initialize(void)
     #ifdef GL_GENERATE_MIPMAP
         glDisable(GL_GENERATE_MIPMAP);
     #endif
+
+    UPLOADED_TEXTURES = shiet_generic_stack__create(10, sizeof(GLuint));
+
+    return;
+}
+
+void shiet_rasterizer_opengl_1_2__release(void)
+{
+    shiet_generic_stack__free(UPLOADED_TEXTURES);
 
     return;
 }
@@ -50,7 +66,7 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
     uint32_t m = 0;
 
     assert(texture &&
-           "OpenGL 1.2 renderer: Attempting to process a NULL texture");
+           "OpenGL 1.2: Attempting to process a NULL texture");
 
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
@@ -80,9 +96,10 @@ static void upload_texture_data(struct shiet_polygon_texture_s *const texture)
 void shiet_rasterizer_opengl_1_2__upload_texture(struct shiet_polygon_texture_s *const texture)
 {
     assert(!glIsTexture(texture->apiId) &&
-           "OpenGL 1.2 renderer: This texture has already been registered. Use update_texture() instead.");
+           "OpenGL 1.2: This texture has already been registered. Use update_texture() instead.");
 
     glGenTextures(1, (GLuint*)&texture->apiId);
+    shiet_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
 
     upload_texture_data(texture);
     
@@ -92,12 +109,20 @@ void shiet_rasterizer_opengl_1_2__upload_texture(struct shiet_polygon_texture_s 
 void shiet_rasterizer_opengl_1_2__update_texture(struct shiet_polygon_texture_s *const texture)
 {
     assert(texture &&
-           "OpenGL 1.2 renderer: Attempting to update a NULL texture");
+           "OpenGL 1.2: Attempting to update a NULL texture");
 
     assert(glIsTexture(texture->apiId) &&
-           "OpenGL 1.2 renderer: This texture has not yet been registered. Use upload_texture() instead.");
+           "OpenGL 1.2: This texture has not yet been registered. Use upload_texture() instead.");
 
     upload_texture_data(texture);
+
+    return;
+}
+
+void shiet_rasterizer_opengl_1_2__purge_textures(void)
+{
+    glDeleteTextures(UPLOADED_TEXTURES->count, UPLOADED_TEXTURES->data);
+    shiet_generic_stack__clear(UPLOADED_TEXTURES);
 
     return;
 }

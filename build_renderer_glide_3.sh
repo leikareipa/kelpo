@@ -14,6 +14,7 @@ src/shiet_renderer/renderer_glide_3.c
 src/shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.c
 src/shiet_renderer/surface/glide_3/surface_glide_3.c
 src/shiet_renderer/window/window_win32.c
+src/shiet_interface/generic_stack.c
 "
 
 BUILD_OPTIONS="

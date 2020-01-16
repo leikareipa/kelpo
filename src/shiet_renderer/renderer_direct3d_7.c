@@ -39,6 +39,7 @@ void import_renderer(struct shiet_interface_s *const interface)
     interface->rasterizer.draw_triangles = shiet_rasterizer_direct3d_7__draw_triangles;
     interface->rasterizer.upload_texture = shiet_rasterizer_direct3d_7__upload_texture;
     interface->rasterizer.update_texture = shiet_rasterizer_direct3d_7__update_texture;
+    interface->rasterizer.purge_textures = shiet_rasterizer_direct3d_7__purge_textures;
 
     interface->metadata.rendererName = RENDERER_NAME;
     interface->metadata.rendererVersionMajor = RENDERER_VERSION[0];

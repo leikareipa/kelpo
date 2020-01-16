@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_interface/generic_data_stack.h>
+#include <shiet_interface/generic_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/interface.h>
 #include <shiet_interface/common/globals.h>
@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
     struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
     struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
 
-    struct shiet_generic_data_stack_s *triangles = shiet_generic_data_stack__create(1, sizeof(struct shiet_polygon_triangle_s));
-    struct shiet_generic_data_stack_s *transformedTriangles = shiet_generic_data_stack__create(triangles->capacity, sizeof(struct shiet_polygon_triangle_s));
+    struct shiet_generic_stack_s *triangles = shiet_generic_stack__create(1, sizeof(struct shiet_polygon_triangle_s));
+    struct shiet_generic_stack_s *transformedTriangles = shiet_generic_stack__create(triangles->capacity, sizeof(struct shiet_polygon_triangle_s));
 
     /* Process any relevant command-line parameters.*/
     {
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         triangle.vertex[2].b = 255;
         triangle.vertex[2].a = 255;
         
-        shiet_generic_data_stack__push_copy(triangles, &triangle);
+        shiet_generic_stack__push_copy(triangles, &triangle);
     }
 
     /* Render.*/
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
     {
         renderer.window.process_events();
 
-        shiet_generic_data_stack__clear(transformedTriangles);
+        shiet_generic_stack__clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
                                               0, 0, 3,
@@ -175,8 +175,8 @@ int main(int argc, char *argv[])
         renderer.window.flip_surface();
     }
 
-    shiet_generic_data_stack__free(triangles);
-    shiet_generic_data_stack__free(transformedTriangles);
+    shiet_generic_stack__free(triangles);
+    shiet_generic_stack__free(transformedTriangles);
 
     return 0;
 }

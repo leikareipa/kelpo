@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <shiet_renderer/surface/opengl_1_2/surface_opengl_1_2.h>
+#include <shiet_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
 #include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
@@ -65,6 +66,8 @@ void shiet_surface_opengl_1_2__release_surface(void)
             RENDER_CONTEXT) &&
            "OpenGL 1.2: Attempting to release the display surface before it has been acquired.");
 
+    shiet_rasterizer_opengl_1_2__release();
+
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
 
@@ -121,6 +124,8 @@ void shiet_surface_opengl_1_2__create_surface(const unsigned width,
     pfd.dwFlags = (PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER);
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.iLayerType = PFD_MAIN_PLANE;
+    pfd.cColorBits = 3;
+    pfd.cDepthBits = 1;
 
     /* Enter fullscreen.*/
     {

@@ -20,7 +20,7 @@
 #define SHIET_EXAMPLES_COMMON_SRC_TEXT_MESH_H
 
 struct shiet_polygon_texture_s;
-struct shiet_generic_data_stack_s;
+struct shiet_generic_stack_s;
 
 /* Loads the font's character set from a file and converts it into a shiet
  * texture, which you should then upload to the renderer.*/
@@ -32,6 +32,6 @@ struct shiet_polygon_texture_s* shiet_text_mesh__create_font(void);
 void shiet_text_mesh__print(const char *text,
                             unsigned posX,
                             unsigned posY,
-                            struct shiet_generic_data_stack_s *const dstTriangles);
+                            struct shiet_generic_stack_s *const dstTriangles);
 
 #endif

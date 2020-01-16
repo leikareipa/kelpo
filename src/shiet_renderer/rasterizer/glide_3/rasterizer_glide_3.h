@@ -13,11 +13,15 @@ struct shiet_polygon_texture_s;
 
 void shiet_rasterizer_glide_3__initialize(void);
 
+void shiet_rasterizer_glide_3__release(void);
+
 void shiet_rasterizer_glide_3__clear_frame(void);
 
 void shiet_rasterizer_glide_3__upload_texture(struct shiet_polygon_texture_s *const texture);
 
 void shiet_rasterizer_glide_3__update_texture(struct shiet_polygon_texture_s *const texture);
+
+void shiet_rasterizer_glide_3__purge_textures(void);
 
 void shiet_rasterizer_glide_3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                               const unsigned numTriangles);

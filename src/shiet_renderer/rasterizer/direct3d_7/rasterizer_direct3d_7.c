@@ -11,6 +11,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <shiet_interface/generic_stack.h>
 #include <shiet_renderer/surface/directdraw_7/create_directdraw_7_surface_from_texture.h>
 #include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
@@ -19,6 +20,11 @@
 
 #include <windows.h>
 #include <d3d.h>
+
+/* For keeping track of where in texture memory textures have been uploaded.
+ * Stack elements will be of type LPDIRECTDRAWSURFACE7, which represents a
+ * pointer to the texture's DirectDraw 7 surface.*/
+static struct shiet_generic_stack_s *UPLOADED_TEXTURES;
 
 extern LPDIRECT3DDEVICE7 D3DDEVICE_7;
 
@@ -38,6 +44,15 @@ void shiet_rasterizer_direct3d_7__initialize(void)
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHATESTENABLE, TRUE);
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
 
+    UPLOADED_TEXTURES = shiet_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE7));
+
+    return;
+}
+
+void shiet_rasterizer_direct3d_7__release(void)
+{
+    shiet_generic_stack__free(UPLOADED_TEXTURES);
+
     return;
 }
 
@@ -55,26 +70,35 @@ void shiet_rasterizer_direct3d_7__upload_texture(struct shiet_polygon_texture_s 
     assert(d3dTexture && "Direct3D 7: Failed to create a Direct3D texture.");
 
     texture->apiId = (uint32_t)d3dTexture;
+    shiet_generic_stack__push_copy(UPLOADED_TEXTURES, &d3dTexture);
 
     return;
 }
 
 void shiet_rasterizer_direct3d_7__update_texture(struct shiet_polygon_texture_s *const texture)
 {
-    /* TODO: It would be better to update the current texture's surface instead
-     * of creating a whole new surface - assuming that the texture's dimensions
-     * haven't changed.*/
-    if (SUCCEEDED(IDirectDrawSurface7_Release((LPDIRECTDRAWSURFACE7)(unsigned)texture->apiId)))
-    {
-        shiet_rasterizer_direct3d_7__upload_texture(texture);
-    }
-    else
-    {
-        assert(0 && "Direct3D 7: Failed to update the texture.");
-    }
+    /* TODO.*/
     
     return;
 }
+
+void shiet_rasterizer_direct3d_7__purge_textures(void)
+{
+    unsigned i = 0;
+
+    IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
+
+    for (i = 0; i < UPLOADED_TEXTURES->count; i++)
+    {
+        LPDIRECTDRAWSURFACE7 uploadedTexture = ((LPDIRECTDRAWSURFACE7*)UPLOADED_TEXTURES->data)[i];
+        IDirectDrawSurface7_Release(uploadedTexture);
+    }
+
+    shiet_generic_stack__clear(UPLOADED_TEXTURES);
+
+    return;
+}
+
 
 void shiet_rasterizer_direct3d_7__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles)

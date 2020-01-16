@@ -86,7 +86,6 @@ LPDIRECTDRAWSURFACE7 shiet_create_directdraw7_surface_from_texture(const struct 
         if (FAILED(IDirectDraw7_CreateSurface(directDrawInterface, &surfaceDescription, &d3dTexture, NULL)))
         {
             IDirectDraw7_Release(directDrawInterface);
-
             return NULL;
         }
 

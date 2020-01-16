@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <shiet_renderer/surface/glide_3/surface_glide_3.h>
+#include <shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
@@ -23,6 +24,8 @@ void shiet_surface_glide_3__release_surface(void)
 {
     assert(GLIDE_RENDER_CONTEXT &&
            "Glide 3.x: Can't release a NULL render context.");
+
+    shiet_rasterizer_glide_3__release();
 
     grSstWinClose(GLIDE_RENDER_CONTEXT);
 

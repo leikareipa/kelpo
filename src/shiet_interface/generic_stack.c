@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <shiet_interface/generic_data_stack.h>
+#include <shiet_interface/generic_stack.h>
 
 /* When growing a stack, its new size will be its current allocated size multiplied
  * by this value and floored to an integer.*/
@@ -19,21 +19,21 @@ static const float STACK_GROWTH_MULTIPLIER = 1.5;
  * given.*/
 static const uint32_t MINIMUM_STACK_SIZE = 4;
 
-struct shiet_generic_data_stack_s* shiet_generic_data_stack__create(const uint32_t initialElementCount,
-                                                                    const uint32_t elementByteSize)
+struct shiet_generic_stack_s* shiet_generic_stack__create(const uint32_t initialElementCount,
+                                                          const uint32_t elementByteSize)
 {
-    struct shiet_generic_data_stack_s *newStack = calloc(1, sizeof(struct shiet_generic_data_stack_s));
+    struct shiet_generic_stack_s *newStack = (struct shiet_generic_stack_s*)calloc(1, sizeof(struct shiet_generic_stack_s));
     assert(newStack && "Failed to allocate memory for a new stack.");
 
     newStack->count = 0;
     newStack->elementByteSize = elementByteSize;
-    shiet_generic_data_stack__grow(newStack, initialElementCount);
+    shiet_generic_stack__grow(newStack, initialElementCount);
 
     return newStack;
 }
 
-void shiet_generic_data_stack__grow(struct shiet_generic_data_stack_s *const stack,
-                                    uint32_t newElementCount)
+void shiet_generic_stack__grow(struct shiet_generic_stack_s *const stack,
+                               uint32_t newElementCount)
 {
     void *newStackBuffer = NULL;
 
@@ -66,13 +66,13 @@ void shiet_generic_data_stack__grow(struct shiet_generic_data_stack_s *const sta
     return;
 }
 
-void shiet_generic_data_stack__push_copy(struct shiet_generic_data_stack_s *const stack,
-                                         const void *const newElement)
+void shiet_generic_stack__push_copy(struct shiet_generic_stack_s *const stack,
+                                    const void *const newElement)
 {
     if ((stack->count >= stack->capacity) ||
         (stack->capacity < MINIMUM_STACK_SIZE))
     {
-        shiet_generic_data_stack__grow(stack, (stack->capacity * STACK_GROWTH_MULTIPLIER));
+        shiet_generic_stack__grow(stack, (stack->capacity * STACK_GROWTH_MULTIPLIER));
     }
 
     assert((stack->count < stack->capacity) && "Failed to properly grow the stack.");
@@ -84,7 +84,7 @@ void shiet_generic_data_stack__push_copy(struct shiet_generic_data_stack_s *cons
     return;
 }
 
-const void* shiet_generic_data_stack__pop(struct shiet_generic_data_stack_s *const stack)
+const void* shiet_generic_stack__pop(struct shiet_generic_stack_s *const stack)
 {
     assert((stack->count > 0) && "Attempting to pop an empty stack.");
 
@@ -93,27 +93,27 @@ const void* shiet_generic_data_stack__pop(struct shiet_generic_data_stack_s *con
     return ((uint8_t*)stack->data + (stack->count * stack->elementByteSize));
 }
 
-void* shiet_generic_data_stack__front(struct shiet_generic_data_stack_s *const stack)
+void* shiet_generic_stack__front(struct shiet_generic_stack_s *const stack)
 {
     return ((uint8_t*)stack->data + ((stack->count - 1) * stack->elementByteSize));
 }
 
-void* shiet_generic_data_stack__at(struct shiet_generic_data_stack_s *const stack,
-                        const uint32_t idx)
+void* shiet_generic_stack__at(struct shiet_generic_stack_s *const stack,
+                              const uint32_t idx)
 {
     assert((idx < stack->count) && "Attempting to access the stack out of bounds.");
 
     return ((uint8_t*)stack->data + (idx * stack->elementByteSize));
 }
 
-void shiet_generic_data_stack__clear(struct shiet_generic_data_stack_s *const stack)
+void shiet_generic_stack__clear(struct shiet_generic_stack_s *const stack)
 {
     stack->count = 0;
 
     return;
 }
 
-void shiet_generic_data_stack__free(struct shiet_generic_data_stack_s *const stack)
+void shiet_generic_stack__free(struct shiet_generic_stack_s *const stack)
 {
     free(stack->data);
     free(stack);

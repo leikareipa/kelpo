@@ -38,6 +38,8 @@ struct shiet_interface_s
         void (*upload_texture)(struct shiet_polygon_texture_s *const texture);
 
         void (*update_texture)(struct shiet_polygon_texture_s *const texture);
+        
+        void (*purge_textures)(void);
 
         void (*draw_triangles)(struct shiet_polygon_triangle_s *const triangles,
                                const unsigned numTriangles);

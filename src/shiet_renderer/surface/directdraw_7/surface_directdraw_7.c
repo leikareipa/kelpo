@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <shiet_renderer/surface/directdraw_7/enumerate_directdraw_7_devices.h>
 #include <shiet_renderer/surface/direct3d_7/surface_direct3d_7.h>
+#include <shiet_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
 #include <shiet_renderer/window/window_win32.h>
 
 #include <windows.h>
@@ -58,6 +59,8 @@ int shiet_surface_directdraw_7__unlock_surface(void)
 
 void shiet_surface_directdraw_7__release_surface(void)
 {
+    shiet_rasterizer_direct3d_7__release();
+
     if (FRONT_BUFFER) IDirectDrawSurface7_Release(FRONT_BUFFER);
     if (BACK_BUFFER) IDirectDrawSurface7_Release(BACK_BUFFER);
     if (Z_BUFFER) IDirectDrawSurface7_Release(Z_BUFFER);
@@ -74,7 +77,7 @@ void shiet_surface_directdraw_7__flip_surface(const int vsyncEnabled)
 }
 
 HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 *d3d,
-                                                                          LPDIRECT3DDEVICE7 *d3dDevice)
+                                                                    LPDIRECT3DDEVICE7 *d3dDevice)
 {
     HRESULT hr = 0;
 
@@ -106,7 +109,7 @@ HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 
 }
 
 HRESULT shiet_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVICE7 d3dDevice,
-                                                                        LPDDPIXELFORMAT pixelFormat)
+                                                                  LPDDPIXELFORMAT pixelFormat)
 {
     HRESULT hr = 0;
     DDSURFACEDESC2 zBufferSurfaceDesc;

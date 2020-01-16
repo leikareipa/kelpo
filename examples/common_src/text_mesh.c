@@ -16,7 +16,7 @@
 #include <shiet_interface/common/stdint.h>
 #include <shiet_interface/polygon/texture.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
-#include <shiet_interface/generic_data_stack.h>
+#include <shiet_interface/generic_stack.h>
 #include "text_mesh.h"
 
 /* A texture that contains the font's character set. The character set is
@@ -42,7 +42,7 @@ static const unsigned CHAR_HEIGHT = 32;
 static void add_character(const char chr,
                           const unsigned posX,
                           const unsigned posY,
-                          struct shiet_generic_data_stack_s *dstTriangles)
+                          struct shiet_generic_stack_s *dstTriangles)
 {
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
@@ -90,7 +90,7 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vEnd;
 
-        shiet_generic_data_stack__push_copy(dstTriangles, &tri);
+        shiet_generic_stack__push_copy(dstTriangles, &tri);
 
         tri.vertex[0].x = posX;
         tri.vertex[0].y = posY;
@@ -107,7 +107,7 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vStart;
 
-        shiet_generic_data_stack__push_copy(dstTriangles, &tri);
+        shiet_generic_stack__push_copy(dstTriangles, &tri);
     }
 
     return;
@@ -116,7 +116,7 @@ static void add_character(const char chr,
 void shiet_text_mesh__print(const char *text,
                             unsigned posX,
                             unsigned posY,
-                            struct shiet_generic_data_stack_s *const dstTriangles)
+                            struct shiet_generic_stack_s *const dstTriangles)
 {
     while (*text)
     {

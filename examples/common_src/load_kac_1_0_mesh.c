@@ -9,13 +9,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_interface/generic_data_stack.h>
+#include <shiet_interface/generic_stack.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include "kac/import_kac_1_0.h"
 #include "load_kac_1_0_mesh.h"
 
 int shiet_load_kac10_mesh(const char *const kacFilename,
-                          struct shiet_generic_data_stack_s *dstTriangles,
+                          struct shiet_generic_stack_s *dstTriangles,
                           struct shiet_polygon_texture_s **dstTextures,
                           uint32_t *numTextures)
 {
@@ -56,7 +56,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
-        shiet_generic_data_stack__grow(dstTriangles, numTriangles);
+        shiet_generic_stack__grow(dstTriangles, numTriangles);
         *dstTextures = malloc(*numTextures * sizeof(struct shiet_polygon_texture_s));
 
         /* Convert the KAC textures into shiet's internal format.*/
@@ -73,6 +73,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
             (*dstTextures)[i].numMipLevels = kacTextures[i].numMipLevels;
             (*dstTextures)[i].flags.clamped = kacTextures[i].metadata.clampUV;
             (*dstTextures)[i].flags.noFiltering = !kacTextures[i].metadata.sampleLinearly;
+            memcpy((*dstTextures)[i].pixelHash, kacTextures[i].metadata.pixelHash, 16);
 
             /* Get the pixels for all levels of mipmapping, starting at level 0 and
              * progressively halving the resolution until we're down to 1 x 1.*/
@@ -144,7 +145,7 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
             }
 
-            shiet_generic_data_stack__push_copy(dstTriangles, &shietTriangle);
+            shiet_generic_stack__push_copy(dstTriangles, &shietTriangle);
         }
 
         FREE_TEMPORARY_KAC_BUFFERS;

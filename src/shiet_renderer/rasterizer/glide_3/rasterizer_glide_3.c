@@ -12,15 +12,22 @@
 #include <shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <shiet_interface/polygon/triangle/triangle.h>
 #include <shiet_interface/polygon/texture.h>
+#include <shiet_interface/generic_stack.h>
 
 #include <glide/glide.h>
+
+/* For keeping track of where in texture memory textures have been uploaded.
+ * Stack elements will be of type FxU32, which represents a pointer to texture
+ * memory where the particular texture's data begins. Note that this stores
+ * no texture metadata, only the texture memory pointer.*/
+static struct shiet_generic_stack_s *UPLOADED_TEXTURES;
 
 /* Minimum and maximum side length for any given texture.*/
 static const unsigned MAX_TEXTURE_SIZE = 256;
 static const unsigned MIN_TEXTURE_SIZE = 2;
 
-/* The address in texture memory (assumed for TMU0) when the next texture can be
- * placed. This will be increased as more textures are loaded.*/
+/* The address in texture memory (assumed for TMU0) where the next texture's
+ * data can be uploaded. This will be incremented as textures are loaded in.*/
 static FxU32 CURRENT_TEXTURE_ADDRESS = 0;
 
 void shiet_rasterizer_glide_3__initialize(void)
@@ -55,6 +62,15 @@ void shiet_rasterizer_glide_3__initialize(void)
     grTexLodBiasValue(GR_TMU0, 0.5);
 
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
+
+    UPLOADED_TEXTURES = shiet_generic_stack__create(10, sizeof(FxU32));
+
+    return;
+}
+
+void shiet_rasterizer_glide_3__release(void)
+{
+    shiet_generic_stack__free(UPLOADED_TEXTURES);
 
     return;
 }
@@ -185,6 +201,13 @@ void shiet_rasterizer_glide_3__update_texture(struct shiet_polygon_texture_s *co
     return;
 }
 
+void shiet_rasterizer_glide_3__purge_textures(void)
+{
+    CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
+    shiet_generic_stack__clear(UPLOADED_TEXTURES);
+
+    return;
+}
 
 void shiet_rasterizer_glide_3__draw_triangles(struct shiet_polygon_triangle_s *const triangles,
                                               const unsigned numTriangles)

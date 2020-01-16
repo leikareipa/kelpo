@@ -1,5 +1,5 @@
 # Build Kelpo's Direct3D 7 renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
-# Unlike the rest of kelpo, which is C89, the DirectX 7 headers require compilation with C++.
+# Unlike the rest of Kelpo, which is C89, the DirectX 7 headers require compilation with C++.
 
 OUTPUT_FILE="bin/kelpo_renderer_direct3d_7.dll"
 

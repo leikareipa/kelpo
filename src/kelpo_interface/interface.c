@@ -42,7 +42,7 @@ struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName
     import_renderer(&renderer);
 
     assert((renderer.metadata.rendererVersionMajor == KELPO_INTERFACE_VERSION_MAJOR) &&
-           "The renderer library's version is incompatible with this version of kelpo.");
+           "The renderer library's version is incompatible with this version of Kelpo.");
 
     return renderer;
 }

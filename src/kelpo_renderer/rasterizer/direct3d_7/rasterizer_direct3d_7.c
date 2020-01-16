@@ -4,7 +4,7 @@
  * Direct3D 7 rasterizer for the Kelpo renderer.
  * 
  * Note: The DirectX 7 headers basically force the use of a C++ compiler -
- * hence, the code here might not conform to C89 like the rest of kelpo.
+ * hence, the code here might not conform to C89 like the rest of Kelpo.
  * 
  */
 
@@ -65,7 +65,7 @@ void kelpo_rasterizer_direct3d_7__clear_frame(void)
 
 void kelpo_rasterizer_direct3d_7__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
-    LPDIRECTDRAWSURFACE7 d3dTexture = kelpo_create_directdraw7_surface_from_texture(texture, D3DDEVICE_7);
+    LPDIRECTDRAWSURFACE7 d3dTexture = kelpo_create_directdraw_7_surface_from_texture(texture, D3DDEVICE_7);
 
     assert(d3dTexture && "Direct3D 7: Failed to create a Direct3D texture.");
 

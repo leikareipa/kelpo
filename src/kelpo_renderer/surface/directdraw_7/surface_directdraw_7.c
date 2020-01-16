@@ -7,7 +7,7 @@
  * other surfaces that require a DirectDraw 7 backend.
  * 
  * Note: The DirectX 7 headers basically force the use of a C++ compiler -
- * hence, the code here might not conform to C89 like the rest of kelpo.
+ * hence, the code here might not conform to C89 like the rest of Kelpo.
  * 
  */
 

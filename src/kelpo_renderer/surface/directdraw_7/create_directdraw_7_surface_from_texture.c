@@ -6,7 +6,7 @@
  * Creates a DirectDraw 7 surface out of a Kelpo texture's data.
  * 
  * Note: The DirectX 7 headers basically force the use of a C++ compiler -
- * hence, the code here might not conform to C89 like the rest of kelpo.
+ * hence, the code here might not conform to C89 like the rest of Kelpo.
  * 
  */
 
@@ -35,8 +35,8 @@ static HRESULT CALLBACK texture_search_callback_argb_1555(DDPIXELFORMAT* pddpf, 
     return DDENUMRET_CANCEL;
 }
 
-LPDIRECTDRAWSURFACE7 kelpo_create_directdraw7_surface_from_texture(const struct kelpo_polygon_texture_s *const texture,
-                                                                   LPDIRECT3DDEVICE7 d3dDevice)
+LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct kelpo_polygon_texture_s *const texture,
+                                                                    LPDIRECT3DDEVICE7 d3dDevice)
 {
     uint32_t m = 0;
     LPDIRECTDRAWSURFACE7 d3dTexture = NULL;

@@ -1,7 +1,7 @@
 /*
  * Tarpeeksi Hyvae Soft 2019
  * 
- * Software: shiet and its related functionality
+ * Software: Kelpo and its related functionality
  * 
  * Transforms triangles into screen space and makes them rotate around the origin.
  * 
@@ -50,10 +50,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <shiet_interface/generic_stack.h>
-#include <shiet_interface/polygon/triangle/triangle.h>
-#include <shiet_interface/polygon/vertex.h>
-#include <shiet_interface/common/globals.h>
+#include <kelpo_interface/generic_stack.h>
+#include <kelpo_interface/polygon/triangle/triangle.h>
+#include <kelpo_interface/polygon/vertex.h>
+#include <kelpo_interface/common/globals.h>
 #include "transform_and_rotate_triangles.h"
 
 struct matrix44_s
@@ -67,7 +67,7 @@ static const float FAR_CLIP = 2000;
 static struct matrix44_s SCREEN_SPACE_MAT;
 static struct matrix44_s PERSP_MAT;
 
-static void transform_vert(struct shiet_polygon_vertex_s *const v,
+static void transform_vert(struct kelpo_polygon_vertex_s *const v,
                            const struct matrix44_s *const m)
 {
     float x0 = ((m->elements[0] * v->x) + (m->elements[4] * v->y) + (m->elements[ 8] * v->z) + (m->elements[12] * v->w));
@@ -179,7 +179,7 @@ static void make_screen_space_mat(struct matrix44_s *const m,
     return;
 }
 
-static void tri_perspective_divide(struct shiet_polygon_triangle_s *const t)
+static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
 {
     unsigned i;
 
@@ -202,8 +202,8 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
     return;
 }
 
-void trirot_transform_and_rotate_triangles(struct shiet_generic_stack_s *const triangles,
-                                           struct shiet_generic_stack_s *const dstTriangles,
+void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const triangles,
+                                           struct kelpo_generic_stack_s *const dstTriangles,
                                            const float basePosX, const float basePosY, const float basePosZ,
                                            const float rotX, const float rotY, const float rotZ)
 {
@@ -227,7 +227,7 @@ void trirot_transform_and_rotate_triangles(struct shiet_generic_stack_s *const t
     for (i = 0; i < triangles->count; i++)
     {
         int triIsVisible = 1;
-        struct shiet_polygon_triangle_s transformedTriangle = ((struct shiet_polygon_triangle_s*)triangles->data)[i];
+        struct kelpo_polygon_triangle_s transformedTriangle = ((struct kelpo_polygon_triangle_s*)triangles->data)[i];
 
         /* Transform into clip-space.*/
         transform_vert(&transformedTriangle.vertex[0], &clipSpace);
@@ -248,7 +248,7 @@ void trirot_transform_and_rotate_triangles(struct shiet_generic_stack_s *const t
 
         if (triIsVisible)
         {
-            shiet_generic_stack__push_copy(dstTriangles, &transformedTriangle);
+            kelpo_generic_stack__push_copy(dstTriangles, &transformedTriangle);
         }
     }
 

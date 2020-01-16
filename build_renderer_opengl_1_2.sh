@@ -1,15 +1,15 @@
-# Build shiet's OpenGL renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
+# Build Kelpo's OpenGL renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
 
-OUTPUT_FILE="bin/shiet_renderer_opengl_1_2.dll"
+OUTPUT_FILE="bin/kelpo_renderer_opengl_1_2.dll"
 
 MINGW441_BASE_PATH=~/compi/mingw441
 
 SRC_FILES="
-src/shiet_renderer/renderer_opengl_1_2.c
-src/shiet_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.c
-src/shiet_renderer/surface/opengl_1_2/surface_opengl_1_2.c
-src/shiet_renderer/window/window_win32.c
-src/shiet_interface/generic_stack.c
+src/kelpo_renderer/renderer_opengl_1_2.c
+src/kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.c
+src/kelpo_renderer/surface/opengl_1_2/surface_opengl_1_2.c
+src/kelpo_renderer/window/window_win32.c
+src/kelpo_interface/generic_stack.c
 "
 
 BUILD_OPTIONS="

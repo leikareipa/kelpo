@@ -1,7 +1,7 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * Software: shiet
+ * Software: Kelpo
  * 
  * Creates a triangle mesh representing a string of ASCII text, with the character
  * symbols loaded from a texture.
@@ -13,16 +13,16 @@
 #include <string.h>
 #include <float.h>
 #include <stdio.h>
-#include <shiet_interface/common/stdint.h>
-#include <shiet_interface/polygon/texture.h>
-#include <shiet_interface/polygon/triangle/triangle.h>
-#include <shiet_interface/generic_stack.h>
+#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/polygon/texture.h>
+#include <kelpo_interface/polygon/triangle/triangle.h>
+#include <kelpo_interface/generic_stack.h>
 #include "text_mesh.h"
 
 /* A texture that contains the font's character set. The character set is
  * expected to begin with the space ' ' character and continue on through
  * the ASCII symbols.*/
-static struct shiet_polygon_texture_s *FONT_TEXTURE;
+static struct kelpo_polygon_texture_s *FONT_TEXTURE;
 
 /* The dimensions of the character set texture.*/
 static const unsigned FONT_TEXTURE_WIDTH = 256;
@@ -42,7 +42,7 @@ static const unsigned CHAR_HEIGHT = 32;
 static void add_character(const char chr,
                           const unsigned posX,
                           const unsigned posY,
-                          struct shiet_generic_stack_s *dstTriangles)
+                          struct kelpo_generic_stack_s *dstTriangles)
 {
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
@@ -59,7 +59,7 @@ static void add_character(const char chr,
      * symbol from the character set texture.*/
     {
         unsigned i = 0;
-        struct shiet_polygon_triangle_s tri;
+        struct kelpo_polygon_triangle_s tri;
 
         memset(&tri, 0, sizeof(tri));
 
@@ -90,7 +90,7 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vEnd;
 
-        shiet_generic_stack__push_copy(dstTriangles, &tri);
+        kelpo_generic_stack__push_copy(dstTriangles, &tri);
 
         tri.vertex[0].x = posX;
         tri.vertex[0].y = posY;
@@ -107,16 +107,16 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vStart;
 
-        shiet_generic_stack__push_copy(dstTriangles, &tri);
+        kelpo_generic_stack__push_copy(dstTriangles, &tri);
     }
 
     return;
 }
 
-void shiet_text_mesh__print(const char *text,
+void kelpo_text_mesh__print(const char *text,
                             unsigned posX,
                             unsigned posY,
-                            struct shiet_generic_stack_s *const dstTriangles)
+                            struct kelpo_generic_stack_s *const dstTriangles)
 {
     while (*text)
     {
@@ -129,7 +129,7 @@ void shiet_text_mesh__print(const char *text,
     return;
 }
 
-struct shiet_polygon_texture_s* shiet_text_mesh__create_font(void)
+struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void)
 {
     unsigned i = 0;
     FILE *const fontFile = fopen("sample-font.raw", "rb"); /* A headerless file with 256*256 RGB 888 pixels.*/
@@ -152,7 +152,7 @@ struct shiet_polygon_texture_s* shiet_text_mesh__create_font(void)
         fread(color, 1, 3, fontFile);
         assert(!ferror(fontFile));
 
-        /* Convert the pixel into shiet's color format (RGBA 5551).*/
+        /* Convert the pixel into Kelpo's color format (RGBA 5551).*/
         FONT_TEXTURE->mipLevel[0][i] = ((color[0] <<  0) |
                                         (color[1] <<  5) |
                                         (color[2] << 10) |

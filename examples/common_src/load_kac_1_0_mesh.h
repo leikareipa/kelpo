@@ -1,17 +1,17 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * Loads a KAC 1.0 mesh into a shiet-compatible format.
+ * Loads a KAC 1.0 mesh into a kelpo-compatible format.
  *
  */
 
-#ifndef SHIET_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
-#define SHIET_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
+#ifndef KELPO_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
+#define KELPO_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
 
-#include <shiet_interface/common/stdint.h>
+#include <kelpo_interface/common/stdint.h>
 
-struct shiet_generic_stack_s;
-struct shiet_polygon_triangle_s;
+struct kelpo_generic_stack_s;
+struct kelpo_polygon_triangle_s;
 
 /* Loads a triangle mesh - along with any associated textures - from the given
  * KAC 1.0 file. Triangles will be placed in the given stack. For textures, takes
@@ -25,9 +25,9 @@ struct shiet_polygon_triangle_s;
  * function, and if the call returns an error, check the pointer's value to see
  * whether it should be deallocated.
  */
-int shiet_load_kac10_mesh(const char *const kacFilename,
-                          struct shiet_generic_stack_s *dstTriangles,
-                          struct shiet_polygon_texture_s **dstTextures,
+int kelpo_load_kac10_mesh(const char *const kacFilename,
+                          struct kelpo_generic_stack_s *dstTriangles,
+                          struct kelpo_polygon_texture_s **dstTextures,
                           uint32_t *numTextures);
 
 #endif

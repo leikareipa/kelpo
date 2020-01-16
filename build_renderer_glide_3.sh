@@ -1,6 +1,6 @@
-# Build shiet's Glide 3.x renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
+# Build Kelpo's Glide 3.x renderer for Win32 using TDM-GCC (MinGW) 4.4.1 via Wine from Linux.
 
-OUTPUT_FILE="bin/shiet_renderer_glide_3.dll"
+OUTPUT_FILE="bin/kelpo_renderer_glide_3.dll"
 
 MINGW441_BASE_PATH=~/compi/mingw441
 
@@ -10,11 +10,11 @@ MINGW441_BASE_PATH=~/compi/mingw441
 GLIDE3_BASE_PATH=~/sdk/glide3
 
 SRC_FILES="
-src/shiet_renderer/renderer_glide_3.c
-src/shiet_renderer/rasterizer/glide_3/rasterizer_glide_3.c
-src/shiet_renderer/surface/glide_3/surface_glide_3.c
-src/shiet_renderer/window/window_win32.c
-src/shiet_interface/generic_stack.c
+src/kelpo_renderer/renderer_glide_3.c
+src/kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.c
+src/kelpo_renderer/surface/glide_3/surface_glide_3.c
+src/kelpo_renderer/window/window_win32.c
+src/kelpo_interface/generic_stack.c
 "
 
 BUILD_OPTIONS="

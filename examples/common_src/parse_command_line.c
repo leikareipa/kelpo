@@ -1,8 +1,8 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * A partial, rudimentary cross-platform getopt() replacement for use by the shiet
- * renderer.
+ * A partial, rudimentary cross-platform getopt() replacement for use by the
+ * Kelpo renderer.
  * 
  */
 
@@ -14,7 +14,7 @@ static unsigned CURRENT_IDX = 0;
 #define MAX_OPTARG_LENGTH 150
 static char LATEST_OPTION_ARGUMENT[MAX_OPTARG_LENGTH + 1]; /* +1 for \0.*/
 
-int shiet_cliparse(const int argc, char *const argv[])
+int kelpo_cliparse(const int argc, char *const argv[])
 {
     while (++CURRENT_IDX)
     {
@@ -38,7 +38,7 @@ int shiet_cliparse(const int argc, char *const argv[])
     return -1;
 }
 
-const char* shiet_cliparse_optarg(void)
+const char* kelpo_cliparse_optarg(void)
 {
     return LATEST_OPTION_ARGUMENT;
 }

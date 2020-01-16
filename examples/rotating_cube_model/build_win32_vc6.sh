@@ -1,5 +1,5 @@
-# Build a shiet render example for Win32 using Microsoft Visual C++ 6 via Wine in Linux.
-# Note that this will place the executable under shiet's root bin/ directory.
+# Build a Kelpo render example for Win32 using Microsoft Visual C++ 6 via Wine in Linux.
+# Note that this will place the executable under Kelpo's root bin/ directory.
 
 VC6_PATH=~/compi/vc60
 
@@ -11,8 +11,8 @@ src/main.c
 ../common_src/load_kac_1_0_mesh.c
 ../common_src/parse_command_line.c
 ../common_src/kac/import_kac_1_0.c
-../../src/shiet_interface/generic_stack.c
-../../src/shiet_interface/interface.c
+../../src/kelpo_interface/generic_stack.c
+../../src/kelpo_interface/interface.c
 "
 
 BUILD_OPTIONS="

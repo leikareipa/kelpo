@@ -1,7 +1,7 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * Loads a KAC 1.0 mesh into a shiet-compatible format.
+ * Loads a KAC 1.0 mesh into a kelpo-compatible format.
  *
  */
 
@@ -9,14 +9,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <shiet_interface/generic_stack.h>
-#include <shiet_interface/polygon/triangle/triangle.h>
+#include <kelpo_interface/generic_stack.h>
+#include <kelpo_interface/polygon/triangle/triangle.h>
 #include "kac/import_kac_1_0.h"
 #include "load_kac_1_0_mesh.h"
 
-int shiet_load_kac10_mesh(const char *const kacFilename,
-                          struct shiet_generic_stack_s *dstTriangles,
-                          struct shiet_polygon_texture_s **dstTextures,
+int kelpo_load_kac10_mesh(const char *const kacFilename,
+                          struct kelpo_generic_stack_s *dstTriangles,
+                          struct kelpo_polygon_texture_s **dstTextures,
                           uint32_t *numTextures)
 {
     struct kac_1_0_vertex_coordinates_s *kacVertexCoords = NULL;
@@ -56,24 +56,23 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
-        shiet_generic_stack__grow(dstTriangles, numTriangles);
-        *dstTextures = malloc(*numTextures * sizeof(struct shiet_polygon_texture_s));
+        kelpo_generic_stack__grow(dstTriangles, numTriangles);
+        *dstTextures = malloc(*numTextures * sizeof(struct kelpo_polygon_texture_s));
 
-        /* Convert the KAC textures into shiet's internal format.*/
+        /* Convert the KAC textures into Kelpo's internal format.*/
         for (i = 0; i < *numTextures; i++)
         {
             uint32_t p = 0, m = 0;
 
             /* The code may rely on bit fields or unallocated pointers being 0,
              * so let's accommodate.*/
-            memset(&(*dstTextures)[i], 0, sizeof(struct shiet_polygon_texture_s));
+            memset(&(*dstTextures)[i], 0, sizeof(struct kelpo_polygon_texture_s));
 
             (*dstTextures)[i].width = kacTextures[i].metadata.sideLength;
             (*dstTextures)[i].height = kacTextures[i].metadata.sideLength;
             (*dstTextures)[i].numMipLevels = kacTextures[i].numMipLevels;
             (*dstTextures)[i].flags.clamped = kacTextures[i].metadata.clampUV;
             (*dstTextures)[i].flags.noFiltering = !kacTextures[i].metadata.sampleLinearly;
-            memcpy((*dstTextures)[i].pixelHash, kacTextures[i].metadata.pixelHash, 16);
 
             /* Get the pixels for all levels of mipmapping, starting at level 0 and
              * progressively halving the resolution until we're down to 1 x 1.*/
@@ -104,13 +103,13 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
 
         for (i = 0; i < numTriangles; i++)
         {
-            struct shiet_polygon_triangle_s shietTriangle;
+            struct kelpo_polygon_triangle_s kelpoTriangle;
             uint32_t v = 0;
             const struct kac_1_0_material_s *material = &kacMaterials[kacTriangles[i].materialIdx];
 
             /* The code may rely on bit fields or the like being initialized to 0,
              * so let's accommodate.*/
-            memset(&shietTriangle, 0, sizeof(struct shiet_polygon_triangle_s));
+            memset(&kelpoTriangle, 0, sizeof(struct kelpo_polygon_triangle_s));
 
             for (v = 0; v < 3; v++)
             {
@@ -122,30 +121,30 @@ int shiet_load_kac10_mesh(const char *const kacFilename,
                 const struct kac_1_0_uv_coordinates_s *uv = &kacUVCoords[kacTriangles[i].vertices[v].uvIdx];
                 const struct kac_1_0_normal_s *normal = &kacNormals[kacTriangles[i].vertices[v].normalIdx];
 
-                shietTriangle.vertex[v].x = vertex->x;
-                shietTriangle.vertex[v].y = vertex->y;
-                shietTriangle.vertex[v].z = vertex->z;
-                shietTriangle.vertex[v].w = 1;
+                kelpoTriangle.vertex[v].x = vertex->x;
+                kelpoTriangle.vertex[v].y = vertex->y;
+                kelpoTriangle.vertex[v].z = vertex->z;
+                kelpoTriangle.vertex[v].w = 1;
 
-                shietTriangle.vertex[v].nx = normal->x;
-                shietTriangle.vertex[v].ny = normal->y;
-                shietTriangle.vertex[v].nz = normal->z;
+                kelpoTriangle.vertex[v].nx = normal->x;
+                kelpoTriangle.vertex[v].ny = normal->y;
+                kelpoTriangle.vertex[v].nz = normal->z;
 
-                shietTriangle.vertex[v].u = uv->u;
-                shietTriangle.vertex[v].v = uv->v;
+                kelpoTriangle.vertex[v].u = uv->u;
+                kelpoTriangle.vertex[v].v = uv->v;
 
-                shietTriangle.vertex[v].r = (material->color.r * materialColorScale);
-                shietTriangle.vertex[v].g = (material->color.g * materialColorScale);
-                shietTriangle.vertex[v].b = (material->color.b * materialColorScale);
-                shietTriangle.vertex[v].a = (material->color.a * materialColorScale);
+                kelpoTriangle.vertex[v].r = (material->color.r * materialColorScale);
+                kelpoTriangle.vertex[v].g = (material->color.g * materialColorScale);
+                kelpoTriangle.vertex[v].b = (material->color.b * materialColorScale);
+                kelpoTriangle.vertex[v].a = (material->color.a * materialColorScale);
             }
 
             if (material->metadata.hasTexture)
             {
-                shietTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
+                kelpoTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
             }
 
-            shiet_generic_stack__push_copy(dstTriangles, &shietTriangle);
+            kelpo_generic_stack__push_copy(dstTriangles, &kelpoTriangle);
         }
 
         FREE_TEMPORARY_KAC_BUFFERS;

@@ -8,7 +8,7 @@
 #ifndef KAC_1_0_TYPES_H
 #define KAC_1_0_TYPES_H
 
-#include <shiet_interface/common/stdint.h>
+#include <kelpo_interface/common/stdint.h>
 
 #define KAC_1_0_VERSION_VALUE 1.0
 

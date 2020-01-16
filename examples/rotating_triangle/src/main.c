@@ -1,17 +1,17 @@
 /*
  * 2019 Tarpeeksi Hyvae Soft
  * 
- * Renders a simple rotating triangle using the shiet renderer.
+ * Renders a simple rotating triangle using the Kelpo renderer.
  * 
  */
 
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <shiet_interface/generic_stack.h>
-#include <shiet_interface/polygon/triangle/triangle.h>
-#include <shiet_interface/interface.h>
-#include <shiet_interface/common/globals.h>
+#include <kelpo_interface/generic_stack.h>
+#include <kelpo_interface/polygon/triangle/triangle.h>
+#include <kelpo_interface/interface.h>
+#include <kelpo_interface/common/globals.h>
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
 
@@ -29,50 +29,50 @@ int main(int argc, char *argv[])
     unsigned vsyncEnabled = 1;
 
     struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
-    struct shiet_interface_s renderer = shiet_create_interface("opengl_1_2");
+    struct kelpo_interface_s renderer = kelpo_create_interface("opengl_1_2");
 
-    struct shiet_generic_stack_s *triangles = shiet_generic_stack__create(1, sizeof(struct shiet_polygon_triangle_s));
-    struct shiet_generic_stack_s *transformedTriangles = shiet_generic_stack__create(triangles->capacity, sizeof(struct shiet_polygon_triangle_s));
+    struct kelpo_generic_stack_s *triangles = kelpo_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
+    struct kelpo_generic_stack_s *transformedTriangles = kelpo_generic_stack__create(triangles->capacity, sizeof(struct kelpo_polygon_triangle_s));
 
     /* Process any relevant command-line parameters.*/
     {
         int c = 0;
-        while ((c = shiet_cliparse(argc, argv)) != -1)
+        while ((c = kelpo_cliparse(argc, argv)) != -1)
         {
             switch (c)
             {
                 case 'r':
                 {
-                    renderer = shiet_create_interface(shiet_cliparse_optarg());
+                    renderer = kelpo_create_interface(kelpo_cliparse_optarg());
                     break;
                 }
                 case 'v':
                 {
-                    vsyncEnabled = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    vsyncEnabled = strtoul(kelpo_cliparse_optarg(), NULL, 10);
                     break;
                 }
                 case 'w':
                 {
-                    renderResolution.width = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    renderResolution.width = strtoul(kelpo_cliparse_optarg(), NULL, 10);
                     assert((renderResolution.width != 0u) && "Invalid render width.");
                     break;
                 }
                 case 'h':
                 {
-                    renderResolution.height = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    renderResolution.height = strtoul(kelpo_cliparse_optarg(), NULL, 10);
                     assert((renderResolution.height != 0u) && "Invalid render height.");
                     break;
                 }
                 case 'b':
                 {
-                    renderResolution.bpp = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    renderResolution.bpp = strtoul(kelpo_cliparse_optarg(), NULL, 10);
                     assert((renderResolution.bpp != 0u) && "Invalid render bit depth.");
                     break;
                 }
                 case 'd':
                 {
                     /* The device index is expected to be 1-indexed (device #1 is 1).*/
-                    renderDeviceIdx = strtoul(shiet_cliparse_optarg(), NULL, 10);
+                    renderDeviceIdx = strtoul(kelpo_cliparse_optarg(), NULL, 10);
                     assert((renderDeviceIdx != 0u) && "Invalid render device index.");
                     renderDeviceIdx--;
                     break;
@@ -86,10 +86,10 @@ int main(int argc, char *argv[])
     {
         char windowTitle[128];
 
-        sprintf(windowTitle, "shiet %d.%d.%d / %s (%d.%d.%d)",
-                SHIET_INTERFACE_VERSION_MAJOR,
-                SHIET_INTERFACE_VERSION_MINOR,
-                SHIET_INTERFACE_VERSION_PATCH,
+        sprintf(windowTitle, "Kelpo %d.%d.%d / %s (%d.%d.%d)",
+                KELPO_INTERFACE_VERSION_MAJOR,
+                KELPO_INTERFACE_VERSION_MINOR,
+                KELPO_INTERFACE_VERSION_PATCH,
                 renderer.metadata.rendererName,
                 renderer.metadata.rendererVersionMajor,
                 renderer.metadata.rendererVersionMinor,
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
     /* Create the triangle that will be rendered in the middle of the screen.*/
     {
-        struct shiet_polygon_triangle_s triangle;
+        struct kelpo_polygon_triangle_s triangle;
 
         memset(&triangle, 0, sizeof(triangle));
 
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         triangle.vertex[2].b = 255;
         triangle.vertex[2].a = 255;
         
-        shiet_generic_stack__push_copy(triangles, &triangle);
+        kelpo_generic_stack__push_copy(triangles, &triangle);
     }
 
     /* Render.*/
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
     {
         renderer.window.process_events();
 
-        shiet_generic_stack__clear(transformedTriangles);
+        kelpo_generic_stack__clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
                                               0, 0, 3,
@@ -175,8 +175,8 @@ int main(int argc, char *argv[])
         renderer.window.flip_surface();
     }
 
-    shiet_generic_stack__free(triangles);
-    shiet_generic_stack__free(transformedTriangles);
+    kelpo_generic_stack__free(triangles);
+    kelpo_generic_stack__free(transformedTriangles);
 
     return 0;
 }

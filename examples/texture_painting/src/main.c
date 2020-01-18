@@ -51,7 +51,7 @@ static void regenerate_texture_mipmaps(struct kelpo_polygon_texture_s *const tex
     assert((texture->width == texture->height) &&
            "Expected the texture to be square.");
 
-    assert(((unsigned)(log(texture->width) / log(2) + 1) == texture->numMipLevels) &&
+    assert(((unsigned)(log(texture->width) / log(2) + 1.5) == texture->numMipLevels) &&
            "Expected the texture to have mip levels down to 1 x 1.");
 
     for (m = 1; m < texture->numMipLevels; m++)

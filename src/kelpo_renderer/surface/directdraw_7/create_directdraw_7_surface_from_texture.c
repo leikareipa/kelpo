@@ -96,7 +96,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
     mipSurface = d3dTexture;
     for (m = 0; m < texture->numMipLevels; m++)
     {
-        DDSURFACEDESC2 ddrawSurface;
+        DDSURFACEDESC2 mipSurfaceDesc;
         const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Kelpo textures are expected to be square.*/
         
         /* Copy the texture's mip level pixel data into the DirectDraw surface.*/
@@ -105,28 +105,28 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             const unsigned bytesPerPixel = 2;
             uint16_t *dstPixels = NULL;
 
-            ddrawSurface.dwSize = sizeof(ddrawSurface);
-            if (FAILED(IDirectDrawSurface7_Lock(mipSurface, NULL, &ddrawSurface, DDLOCK_WAIT, NULL)))
+            mipSurfaceDesc.dwSize = sizeof(mipSurfaceDesc);
+            if (FAILED(IDirectDrawSurface7_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
             {
                 fprintf(stderr, "DirectDraw 7: Failed to lock a texture surface.");
                 return NULL;
             }
 
-            assert(((ddrawSurface.dwWidth == mipLevelSideLength) &&
-                    (ddrawSurface.dwHeight == mipLevelSideLength)) &&
+            assert(((mipSurfaceDesc.dwWidth == mipLevelSideLength) &&
+                    (mipSurfaceDesc.dwHeight == mipLevelSideLength)) &&
                     "DirectDraw 7: Invalid texture surface dimensions.");
 
-            assert(((ddrawSurface.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
-                    (ddrawSurface.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
-                    (ddrawSurface.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
-                    (ddrawSurface.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
+            assert(((mipSurfaceDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
+                    (mipSurfaceDesc.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
+                    (mipSurfaceDesc.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
+                    (mipSurfaceDesc.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
                     "DirectDraw 7: Invalid pixel format for a texture surface. Expected ARGB 1555.");
 
-            dstPixels = (uint16_t*)ddrawSurface.lpSurface;
+            dstPixels = (uint16_t*)mipSurfaceDesc.lpSurface;
 
             /* If the surface's pitch indicates no padding bytes are needed, we
              * can copy the pixel data directly.*/
-            if (ddrawSurface.lPitch == (mipLevelSideLength * bytesPerPixel))
+            if (mipSurfaceDesc.lPitch == (mipLevelSideLength * bytesPerPixel))
             {
                 memcpy(dstPixels, texture->mipLevel[m], (mipLevelSideLength * mipLevelSideLength * bytesPerPixel));
             }
@@ -138,7 +138,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
                 for (q = 0; q < mipLevelSideLength /*texture height*/; q++)
                 {
                     memcpy(dstPixels, &texture->mipLevel[m][q * mipLevelSideLength], (mipLevelSideLength * bytesPerPixel));
-                    dstPixels += (ddrawSurface.lPitch / bytesPerPixel);
+                    dstPixels += (mipSurfaceDesc.lPitch / bytesPerPixel);
                 }
             }
 

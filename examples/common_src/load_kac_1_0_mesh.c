@@ -25,8 +25,9 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
     struct kac_1_0_triangle_s *kacTriangles = NULL;
     struct kac_1_0_texture_s *kacTextures = NULL;
     struct kac_1_0_normal_s *kacNormals = NULL;
-
     uint32_t numTriangles = 0;
+    int returnValue = 1;
+
     *numTextures = 0;
 
     #define FREE_TEMPORARY_KAC_BUFFERS {uint32_t i = 0, m = 0;\
@@ -46,18 +47,23 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
 
     if (kac10_reader__open_file(kacFilename) &&
         (numTriangles = kac10_reader__read_triangles(&kacTriangles)) &&
-        (*numTextures = kac10_reader__read_textures(&kacTextures)) &&
         kac10_reader__read_vertex_coordinates(&kacVertexCoords) &&
         kac10_reader__read_uv_coordinates(&kacUVCoords) &&
         kac10_reader__read_materials(&kacMaterials) &&
-        kac10_reader__read_normals(&kacNormals) &&
-        kac10_reader__close_file())
+        kac10_reader__read_normals(&kacNormals))
     {
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
         kelpo_generic_stack__grow(dstTriangles, numTriangles);
-        *dstTextures = malloc(*numTextures * sizeof(struct kelpo_polygon_texture_s));
+        
+        /* Textures are optional (the file might have 0), so we'll load them in here.*/
+        *numTextures = kac10_reader__read_textures(&kacTextures);
+
+        if (*numTextures)
+        {
+            *dstTextures = malloc(*numTextures * sizeof(struct kelpo_polygon_texture_s));
+        }
 
         /* Convert the KAC textures into Kelpo's internal format.*/
         for (i = 0; i < *numTextures; i++)
@@ -86,7 +92,8 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
                  * this texture in the KAC data.*/
                 if (mipLevelSideLength < KAC_1_0_MIN_TEXTURE_SIDE_LENGTH)
                 {
-                    goto fail;
+                    returnValue = 0;
+                    goto done;
                 }
 
                 (*dstTextures)[i].mipLevel[m] = malloc(mipLevelPixelCount * sizeof((*dstTextures)[i].mipLevel[m][0]));
@@ -146,14 +153,13 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
 
             kelpo_generic_stack__push_copy(dstTriangles, &kelpoTriangle);
         }
-
-        FREE_TEMPORARY_KAC_BUFFERS;
-        return 1;
     }
 
-    fail:
+    done:
     FREE_TEMPORARY_KAC_BUFFERS;
-    return 0;
+    kac10_reader__close_file();
+
+    return returnValue;
 
     #undef FREE_TEMPORARY_KAC_BUFFERS
 }

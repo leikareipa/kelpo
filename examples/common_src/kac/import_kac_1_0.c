@@ -334,7 +334,7 @@ uint32_t kac10_reader__read_materials(struct kac_1_0_material_s **materials)
         (*materials)[i].color.b = ((packedColor >> 8) & 0xf);
         (*materials)[i].color.a = ((packedColor >> 12) & 0xf);
 
-        (*materials)[i].metadata.textureIdx          = ((metadata >>  0) & 0x1fff);
+        (*materials)[i].metadata.textureIdx          = ((metadata >>  0) & 0xffff);
         (*materials)[i].metadata.hasTexture          = ((metadata >> 16) & 0x1);
         (*materials)[i].metadata.hasSmoothShading    = ((metadata >> 17) & 0x1);
     }

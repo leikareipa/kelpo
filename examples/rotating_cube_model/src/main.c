@@ -178,8 +178,8 @@ int main(int argc, char *argv[])
 
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
 
-            kelpo_text_mesh__print(renderer.metadata.rendererName, 25, 30, transformedTriangles);
-            kelpo_text_mesh__print(fpsString, 25, 60, transformedTriangles);
+            kelpo_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
+            kelpo_text_mesh__print(fpsString, 200, 200, 200, 25, 60, transformedTriangles);
         }
 
         renderer.rasterizer.clear_frame();

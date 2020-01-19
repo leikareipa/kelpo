@@ -152,7 +152,6 @@ int main(int argc, char *argv[])
         for (i = 0; i < numTextures; i++)
         {
             renderer.rasterizer.upload_texture(&textures[i]);
-            printf("w %p\n", &textures[i]);
         }
 
         /* Triangle transformation may produce more triangles than there were
@@ -182,9 +181,9 @@ int main(int argc, char *argv[])
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
             sprintf(polyString, "Polygons: %d", ((polys > 9999999)? 9999999 : polys));
 
-            kelpo_text_mesh__print(renderer.metadata.rendererName, 25, 30, transformedTriangles);
-            kelpo_text_mesh__print(polyString, 25, 60, transformedTriangles);
-            kelpo_text_mesh__print(fpsString, 25, 90, transformedTriangles);
+            kelpo_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
+            kelpo_text_mesh__print(polyString, 200, 200, 200, 25, 60, transformedTriangles);
+            kelpo_text_mesh__print(fpsString, 200, 200, 200, 25, 90, transformedTriangles);
         }
 
         renderer.rasterizer.clear_frame();

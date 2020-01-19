@@ -40,6 +40,9 @@ static const unsigned CHAR_HEIGHT = 32;
 /* Creates a quad of two triangles into the given triangle stack, representing
  * the given ASCII character.*/
 static void add_character(const char chr,
+                          const uint8_t r,
+                          const uint8_t g,
+                          const uint8_t b,
                           const unsigned posX,
                           const unsigned posY,
                           struct kelpo_generic_stack_s *dstTriangles)
@@ -69,9 +72,9 @@ static void add_character(const char chr,
         {
             tri.vertex[i].z = 0;
             tri.vertex[i].w = 1;
-            tri.vertex[i].r = 255;
-            tri.vertex[i].g = 255;
-            tri.vertex[i].b = 255;
+            tri.vertex[i].r = r;
+            tri.vertex[i].g = g;
+            tri.vertex[i].b = b;
             tri.vertex[i].a = 255;
         }
 
@@ -114,13 +117,16 @@ static void add_character(const char chr,
 }
 
 void kelpo_text_mesh__print(const char *text,
+                            const uint8_t r,
+                            const uint8_t g,
+                            const uint8_t b,
                             unsigned posX,
                             unsigned posY,
                             struct kelpo_generic_stack_s *const dstTriangles)
 {
     while (*text)
     {
-        add_character(*text, posX, posY, dstTriangles);
+        add_character(*text, r, g, b, posX, posY, dstTriangles);
 
         text++;
         posX += (CHAR_WIDTH / 2);

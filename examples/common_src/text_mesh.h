@@ -19,6 +19,8 @@
 #ifndef KELPO_EXAMPLES_COMMON_SRC_TEXT_MESH_H
 #define KELPO_EXAMPLES_COMMON_SRC_TEXT_MESH_H
 
+#include <kelpo_interface/common/stdint.h>
+
 struct kelpo_polygon_texture_s;
 struct kelpo_generic_stack_s;
 
@@ -30,6 +32,9 @@ struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void);
  * it at the given XY coordinates. The mesh is appended to the given triangle
  * stack.*/
 void kelpo_text_mesh__print(const char *text,
+                            const uint8_t r,
+                            const uint8_t g,
+                            const uint8_t b,
                             unsigned posX,
                             unsigned posY,
                             struct kelpo_generic_stack_s *const dstTriangles);

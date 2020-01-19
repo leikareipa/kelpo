@@ -143,6 +143,7 @@ struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void)
     FONT_TEXTURE->height = FONT_TEXTURE_HEIGHT;
     FONT_TEXTURE->numMipLevels = 1;
     FONT_TEXTURE->mipLevel[0] = malloc(FONT_TEXTURE->width * FONT_TEXTURE->height * sizeof(FONT_TEXTURE->mipLevel[0]));
+    FONT_TEXTURE->flags.noFiltering = 1;
 
     /* Read the font's pixels into the texture.*/
     for (i = 0; i < (FONT_TEXTURE->width * FONT_TEXTURE->height); i++)

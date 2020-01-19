@@ -114,7 +114,26 @@ void kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s 
     assert(glIsTexture(texture->apiId) &&
            "OpenGL 1.2: This texture has not yet been registered. Use upload_texture() instead.");
 
-    upload_texture_data(texture);
+    /* TODO: Make sure the texture's dimensions and color depth haven't changed
+     * since it was first uploaded.*/
+
+    /* Copy each mip level's pixel data into the OpenGL texture.*/
+    {
+        unsigned m = 0;
+        
+        glBindTexture(GL_TEXTURE_2D, texture->apiId);
+
+        for (m = 0; m < texture->numMipLevels; m++)
+        {
+            const unsigned mipLevelSideLength = (texture->width / pow(2, m));
+
+            glTexSubImage2D(GL_TEXTURE_2D, m,
+                            0, 0,
+                            mipLevelSideLength, mipLevelSideLength,
+                            GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                            texture->mipLevel[m]);
+        }
+    }
 
     return;
 }

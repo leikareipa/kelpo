@@ -59,7 +59,6 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
         
         /* Textures are optional (the file might have 0), so we'll load them in here.*/
         *numTextures = kac10_reader__read_textures(&kacTextures);
-
         if (*numTextures)
         {
             *dstTextures = malloc(*numTextures * sizeof(struct kelpo_polygon_texture_s));

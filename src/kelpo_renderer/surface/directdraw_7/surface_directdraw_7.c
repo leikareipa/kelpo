@@ -228,5 +228,5 @@ HRESULT kelpo_surface_directdraw_7__initialize_surface(const unsigned width,
         }
     }
 
-	return S_OK;
+    return S_OK;
 }

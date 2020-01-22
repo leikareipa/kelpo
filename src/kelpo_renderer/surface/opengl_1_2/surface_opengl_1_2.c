@@ -93,12 +93,12 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
     switch (message)
     {
         case WM_SIZE:
-		{
+        {
             const unsigned newWidth = LOWORD(lParam);
             const unsigned newHeight = HIWORD(lParam);
-			resize_opengl_display(newWidth, newHeight);
-			break;
-		}
+            resize_opengl_display(newWidth, newHeight);
+            break;
+        }
 
         default: break;
     }

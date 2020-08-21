@@ -55,6 +55,7 @@
 #include <kelpo_interface/polygon/vertex.h>
 #include <kelpo_interface/common/globals.h>
 #include "transform_and_rotate_triangles.h"
+#include "clip_triangles.h"
 
 struct matrix44_s
 {
@@ -234,21 +235,30 @@ void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const t
         transform_vert(&transformedTriangle.vertex[1], &clipSpace);
         transform_vert(&transformedTriangle.vertex[2], &clipSpace);
 
-        /* Something might happen in clip-space at some point, but not now.*/
-
-        /* Transform into screen-space.*/
-        transform_vert(&transformedTriangle.vertex[0], &SCREEN_SPACE_MAT);
-        transform_vert(&transformedTriangle.vertex[1], &SCREEN_SPACE_MAT);
-        transform_vert(&transformedTriangle.vertex[2], &SCREEN_SPACE_MAT);
-        tri_perspective_divide(&transformedTriangle);
-
-        /* Back-face culling would go here.*/
-
-        /* Depth clipping would go here.*/
-
-        if (triIsVisible)
+        /* Clip the triangle against the viewing frustum, and transform the clippings
+         * into screen space.*/
         {
-            kelpo_generic_stack__push_copy(dstTriangles, &transformedTriangle);
+            unsigned k = 0;
+            struct kelpo_polygon_triangle_s *clippedTris;
+            const unsigned numClippedTris = triclip_clip_triangle(&transformedTriangle, &clippedTris);
+
+            for (k = 0; k < numClippedTris; k++)
+            {
+                /* Transform into screen-space.*/
+                transform_vert(&clippedTris[k].vertex[0], &SCREEN_SPACE_MAT);
+                transform_vert(&clippedTris[k].vertex[1], &SCREEN_SPACE_MAT);
+                transform_vert(&clippedTris[k].vertex[2], &SCREEN_SPACE_MAT);
+                tri_perspective_divide(&clippedTris[k]);
+
+                /* Back-face culling would go here.*/
+
+                /* Depth clipping would go here.*/
+
+                if (triIsVisible)
+                {
+                    kelpo_generic_stack__push_copy(dstTriangles, &clippedTris[k]);
+                }
+            }
         }
     }
 

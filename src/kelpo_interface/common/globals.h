@@ -9,7 +9,7 @@
 
 #define DEG_TO_RAD(x) (((x) * (M_PI)) / 180.0)
 
-#define LERP(x, y, step) ((x) + ((step) * ((y) - (x))))
+#define KELPO_LERP(x, y, step) ((x) + ((step) * ((y) - (x))))
 
 enum
 {

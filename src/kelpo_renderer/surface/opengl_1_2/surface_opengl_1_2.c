@@ -88,7 +88,7 @@ void kelpo_surface_opengl_1_2__flip_surface(void)
     return;
 }
 
-static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT window_proc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -97,6 +97,7 @@ static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
             const unsigned newWidth = LOWORD(lParam);
             const unsigned newHeight = HIWORD(lParam);
             resize_opengl_display(newWidth, newHeight);
+            
             break;
         }
 
@@ -145,7 +146,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
         }
     }
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
+    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 1.2", window_proc);
 
     WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
     WINDOW_DC = GetDC(WINDOW_HANDLE);

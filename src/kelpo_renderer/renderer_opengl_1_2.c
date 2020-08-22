@@ -29,6 +29,7 @@ void import_renderer(struct kelpo_interface_s *const interface)
     interface->window.process_events = kelpo_window__process_window_events;
     interface->window.flip_surface = kelpo_surface_opengl_1_2__flip_surface;
     interface->window.get_handle = kelpo_window__get_window_handle;
+    interface->window.set_message_handler = kelpo_window__set_external_message_handler;
 
     interface->rasterizer.clear_frame = kelpo_rasterizer_opengl_1_2__clear_frame;
     interface->rasterizer.draw_triangles = kelpo_rasterizer_opengl_1_2__draw_triangles;

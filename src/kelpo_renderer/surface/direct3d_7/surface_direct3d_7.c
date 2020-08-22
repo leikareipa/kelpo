@@ -115,7 +115,7 @@ void kelpo_surface_direct3d_7__flip_surface(void)
     return;
 }
 
-static LRESULT window_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT window_proc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -136,7 +136,7 @@ void kelpo_surface_direct3d_7__create_surface(const unsigned width,
     WINDOW_BIT_DEPTH = bpp;
     IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "", window_proc);
+    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Direct3D 7", window_proc);
     WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);

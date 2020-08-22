@@ -9,7 +9,6 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <kelpo_renderer/window/window_win32.h>
-#include <kelpo_interface/common/globals.h>
 
 static char WINDOW_CLASS_NAME[] = "KelpoDisplay";
 static char WINDOW_TITLE[64];
@@ -18,7 +17,14 @@ static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static int WINDOW_ACTIVE = 0;
 
-LRESULT (*CUSTOM_WINDOW_PROC)(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+/* A pointer to a function provided by the creator of this window. The function
+ * will receive the window's messages.*/
+static kelpo_custom_window_message_handler_t *WINDOW_OWNER_MESSAGE_HANDLER = 0;
+
+/* A pointer to an externally-provided function that will receive the window's
+ * messages. Generally, this function will be provided by the end-user of the
+ * renderer.*/
+static kelpo_custom_window_message_handler_t *EXTERNAL_MESSAGE_HANDLER = 0;
 
 int kelpo_window__is_window_open(void)
 {
@@ -27,30 +33,38 @@ int kelpo_window__is_window_open(void)
 
 static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (!CUSTOM_WINDOW_PROC ||
-        !CUSTOM_WINDOW_PROC(hWnd, message, wParam, lParam))
+    if (EXTERNAL_MESSAGE_HANDLER &&
+        EXTERNAL_MESSAGE_HANDLER(message, wParam, lParam))
     {
-        switch (message)
-        {
-            case WM_ACTIVATE:
-            {
-                WINDOW_ACTIVE = !HIWORD(wParam);
-                
-                break;
-            }
-
-            case WM_DESTROY:
-            {
-                PostQuitMessage(0);
-                WINDOW_HANDLE = NULL;
-
-                break;
-            }
-
-            default: return DefWindowProc(hWnd, message, wParam, lParam);
-        }
+        return 0;
     }
 
+    if (WINDOW_OWNER_MESSAGE_HANDLER &&
+        WINDOW_OWNER_MESSAGE_HANDLER(message, wParam, lParam))
+    {
+        return 0;
+    }
+
+    switch (message)
+    {
+        case WM_ACTIVATE:
+        {
+            WINDOW_ACTIVE = !HIWORD(wParam);
+            
+            break;
+        }
+
+        case WM_DESTROY:
+        {
+            PostQuitMessage(0);
+            WINDOW_HANDLE = NULL;
+
+            break;
+        }
+
+        default: return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    
     return 0;
 }
 
@@ -59,17 +73,24 @@ uint32_t kelpo_window__get_window_handle(void)
     return (uint32_t)WINDOW_HANDLE;
 }
 
+void kelpo_window__set_external_message_handler(kelpo_custom_window_message_handler_t *const messageHandler)
+{
+    EXTERNAL_MESSAGE_HANDLER = messageHandler;
+    
+    return;
+}
+
 void kelpo_window__create_window(const unsigned width,
                                  const unsigned height,
                                  const char *const title,
-                                 LRESULT (*customWindowProc)(HWND, UINT, WPARAM, LPARAM))
+                                 kelpo_custom_window_message_handler_t *const messageHandler)
 {
     const HINSTANCE hInstance = GetModuleHandle(NULL);
     WNDCLASSA wc;
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
-    CUSTOM_WINDOW_PROC = customWindowProc;
+    WINDOW_OWNER_MESSAGE_HANDLER = messageHandler;
 
     assert((strlen(title) < NUM_ARRAY_ELEMENTS(WINDOW_TITLE)) && "The given window title is too long.");
     sprintf(WINDOW_TITLE, "%s", title);

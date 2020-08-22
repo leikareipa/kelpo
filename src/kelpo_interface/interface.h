@@ -2,10 +2,14 @@
 #define KELPO_INTERFACE_INTERFACE_H
 
 #include <kelpo_interface/common/stdint.h>
+#include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
-#define KELPO_INTERFACE_VERSION_MINOR 1 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
+#define KELPO_INTERFACE_VERSION_MINOR 2 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
+
+/* A user-provided function that will receive the renderer window's messages.*/
+typedef LRESULT kelpo_custom_window_message_handler_t(UINT message, WPARAM wParam, LPARAM lParam);
 
 struct kelpo_polygon_triangle_s;
 struct kelpo_polygon_texture_s;
@@ -21,6 +25,8 @@ struct kelpo_interface_s
     struct kelpo_interface_window_s
     {
         uint32_t (*get_handle)(void);
+
+        void (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
 
         void (*process_events)(void);
 

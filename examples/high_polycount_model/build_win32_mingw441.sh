@@ -8,6 +8,7 @@ OUTPUT_FILE="../../bin/high_polycount_model.exe"
 SRC_FILES="
 src/main.c
 ../common_src/transform_and_rotate_triangles.c
+../common_src/clip_triangles.c
 ../common_src/load_kac_1_0_mesh.c
 ../common_src/parse_command_line.c
 ../common_src/kac/import_kac_1_0.c

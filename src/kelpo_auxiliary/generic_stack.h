@@ -27,7 +27,7 @@
 
 #include <kelpo_interface/common/stdint.h>
 
-struct kelpo_generic_stack_s
+struct kelpoa_generic_stack_s
 {
     /* A contiguous block of memory holding the stack's allocated elements.
      * Elements in the range [0,size) contain the stack's current data; while
@@ -47,8 +47,8 @@ struct kelpo_generic_stack_s
 };
 
 /* Creates a new stack.*/
-struct kelpo_generic_stack_s* kelpo_generic_stack__create(const uint32_t initialElementCount,
-                                                          const uint32_t elementByteSize);
+struct kelpoa_generic_stack_s* kelpoa_generic_stack__create(const uint32_t initialElementCount,
+                                                            const uint32_t elementByteSize);
 
 /* Increases the stack's allocated size. To guarantee that the stack's data remain
  * contiguous in memory, the new data area will be obtained from an entirely new
@@ -56,35 +56,35 @@ struct kelpo_generic_stack_s* kelpo_generic_stack__create(const uint32_t initial
  * to these data will become invalid). If the stack's current capacity is equal to
  * or larger than the given new element count, the function will return without
  * doing anything.*/
-void kelpo_generic_stack__grow(struct kelpo_generic_stack_s *const stack,
-                               uint32_t newElementCount);
+void kelpoa_generic_stack__grow(struct kelpoa_generic_stack_s *const stack,
+                                uint32_t newElementCount);
 
 /* Adds a shallow copy of the given element of data onto the stack. The stack will
  * be grown as needed to accommodate the addition.*/
-void kelpo_generic_stack__push_copy(struct kelpo_generic_stack_s *const stack,
-                                    const void *const newElement);
+void kelpoa_generic_stack__push_copy(struct kelpoa_generic_stack_s *const stack,
+                                     const void *const newElement);
 
 /* Removes the most recently added element from the stack and returns a pointer
  * to it. The removal is simply a decrementing of an index value; no memory is
  * deallocated. The data pointed to by the returned pointer remains valid until
  * a new element is pushed onto the stack (which overwrites the data), the stack
  * is asked to grow (which deallocates the original data), or the stack is freed.*/
-const void* kelpo_generic_stack__pop(struct kelpo_generic_stack_s *const stack);
+const void* kelpoa_generic_stack__pop(struct kelpoa_generic_stack_s *const stack);
 
 /* Returns a pointer to the most recently added element.*/
-void* kelpo_generic_stack__front(struct kelpo_generic_stack_s *const stack);
+void* kelpoa_generic_stack__front(struct kelpoa_generic_stack_s *const stack);
 
 /* Returns a pointer to the idx'th element.*/
-void* kelpo_generic_stack__at(struct kelpo_generic_stack_s *const stack,
-                              const uint32_t idx);
+void* kelpoa_generic_stack__at(struct kelpoa_generic_stack_s *const stack,
+                               const uint32_t idx);
 
 /* Removes all existing elements from the stack, but doesn't deallocate their
  * memory. The memory will be reused for new elements pushed onto the stack.*/
-void kelpo_generic_stack__clear(struct kelpo_generic_stack_s *const stack);
+void kelpoa_generic_stack__clear(struct kelpoa_generic_stack_s *const stack);
 
 /* Deallocates all memory allocated for the stack, including the stack pointer
  * itself. After this call, the stack pointer should be considered invalid, as
  * should any existing pointers to the stack's data.*/
-void kelpo_generic_stack__free(struct kelpo_generic_stack_s *const stack);
+void kelpoa_generic_stack__free(struct kelpoa_generic_stack_s *const stack);
 
 #endif

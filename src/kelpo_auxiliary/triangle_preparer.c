@@ -12,7 +12,7 @@
 #include <kelpo_auxiliary/triangle_clipper.h>
 
 static void transform_vert(struct kelpo_polygon_vertex_s *const v,
-                           const struct matrix44_s *const m)
+                           const struct kelpoa_matrix44_s *const m)
 {
     float x0 = ((m->elements[0] * v->x) + (m->elements[4] * v->y) + (m->elements[ 8] * v->z) + (m->elements[12] * v->w));
     float y0 = ((m->elements[1] * v->x) + (m->elements[5] * v->y) + (m->elements[ 9] * v->z) + (m->elements[13] * v->w));
@@ -42,10 +42,10 @@ static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
     return;
 }
 
-void triprepr_duplicate_triangles(const struct kelpo_generic_stack_s *const triangles,
-                                  struct kelpo_generic_stack_s *const duplicatedTriangles)
+void kelpoa_triprepr__duplicate_triangles(const struct kelpoa_generic_stack_s *const triangles,
+                                          struct kelpoa_generic_stack_s *const duplicatedTriangles)
 {
-    kelpo_generic_stack__grow(duplicatedTriangles, triangles->count);
+    kelpoa_generic_stack__grow(duplicatedTriangles, triangles->count);
 
     /* The triangle stack stores its data contiguously, so we can just memcpy()
      * it. Note that this only does a shallow copy.*/
@@ -56,8 +56,8 @@ void triprepr_duplicate_triangles(const struct kelpo_generic_stack_s *const tria
     return;
 }
 
-void triprepr_transform_triangles(struct kelpo_generic_stack_s *const triangles,
-                                  struct matrix44_s *const matrix)
+void kelpoa_triprepr__transform_triangles(struct kelpoa_generic_stack_s *const triangles,
+                                          struct kelpoa_matrix44_s *const matrix)
 {
     unsigned i = 0;
 
@@ -73,52 +73,52 @@ void triprepr_transform_triangles(struct kelpo_generic_stack_s *const triangles,
     return;
 }
 
-void triprepr_rotate_triangles(struct kelpo_generic_stack_s *const triangles,
-                               const float x,
-                               const float y,
-                               const float z)
+void kelpoa_triprepr__rotate_triangles(struct kelpoa_generic_stack_s *const triangles,
+                                       const float x,
+                                       const float y,
+                                       const float z)
 {
-    struct matrix44_s rotationMatrix;
+    struct kelpoa_matrix44_s rotationMatrix;
     
-    matrix44_make_rotation_matrix(&rotationMatrix, x, y, z);
+    kelpoa_matrix44__make_rotation_matrix(&rotationMatrix, x, y, z);
 
-    triprepr_transform_triangles(triangles, &rotationMatrix);
+    kelpoa_triprepr__transform_triangles(triangles, &rotationMatrix);
 
     return;
 }
 
-void triprepr_translate_triangles(struct kelpo_generic_stack_s *const triangles,
-                                  const float x,
-                                  const float y,
-                                  const float z)
+void kelpoa_triprepr__translate_triangles(struct kelpoa_generic_stack_s *const triangles,
+                                          const float x,
+                                          const float y,
+                                          const float z)
 {
-    struct matrix44_s translationMatrix;
+    struct kelpoa_matrix44_s translationMatrix;
     
-    matrix44_make_translation_matrix(&translationMatrix, x, y, z);
+    kelpoa_matrix44__make_translation_matrix(&translationMatrix, x, y, z);
 
-    triprepr_transform_triangles(triangles, &translationMatrix);
+    kelpoa_triprepr__transform_triangles(triangles, &translationMatrix);
 
     return;
 }
 
-void triprepr_scale_triangles(struct kelpo_generic_stack_s *const triangles,
-                              const float x,
-                              const float y,
-                              const float z)
+void kelpoa_triprepr__scale_triangles(struct kelpoa_generic_stack_s *const triangles,
+                                      const float x,
+                                      const float y,
+                                      const float z)
 {
-    struct matrix44_s scalingMatrix;
+    struct kelpoa_matrix44_s scalingMatrix;
     
-    matrix44_make_scaling_matrix(&scalingMatrix, x, y, z);
+    kelpoa_matrix44__make_scaling_matrix(&scalingMatrix, x, y, z);
 
-    triprepr_transform_triangles(triangles, &scalingMatrix);
+    kelpoa_triprepr__transform_triangles(triangles, &scalingMatrix);
 
     return;
 }
 
-void triprepr_project_triangles_to_screen(const struct kelpo_generic_stack_s *const triangles,
-                                          struct kelpo_generic_stack_s *const screenSpaceTriangles,
-                                          const struct matrix44_s *const clipSpaceMatrix,
-                                          const struct matrix44_s *const screenSpaceMatrix)
+void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_stack_s *const triangles,
+                                                  struct kelpoa_generic_stack_s *const screenSpaceTriangles,
+                                                  const struct kelpoa_matrix44_s *const clipSpaceMatrix,
+                                                  const struct kelpoa_matrix44_s *const screenSpaceMatrix)
 {
     unsigned i = 0;
 
@@ -135,7 +135,7 @@ void triprepr_project_triangles_to_screen(const struct kelpo_generic_stack_s *co
         {
             unsigned k = 0;
             struct kelpo_polygon_triangle_s *clippedTris;
-            const unsigned numClippedTris = triclip_clip_triangle(triangle, &clippedTris);
+            const unsigned numClippedTris = kelpoa_triclip__clip_triangle(triangle, &clippedTris);
 
             for (k = 0; k < numClippedTris; k++)
             {
@@ -144,7 +144,7 @@ void triprepr_project_triangles_to_screen(const struct kelpo_generic_stack_s *co
                 transform_vert(&clippedTris[k].vertex[2], screenSpaceMatrix);
                 tri_perspective_divide(&clippedTris[k]);
 
-                kelpo_generic_stack__push_copy(screenSpaceTriangles, &clippedTris[k]);
+                kelpoa_generic_stack__push_copy(screenSpaceTriangles, &clippedTris[k]);
             }
         }
     }

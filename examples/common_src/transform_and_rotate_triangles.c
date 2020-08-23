@@ -57,7 +57,7 @@
 #include <kelpo_interface/common/globals.h>
 #include "transform_and_rotate_triangles.h"
 
-struct matrix44_s
+struct kelpoa_matrix44_s
 {
     float elements[4*4];
 };
@@ -65,11 +65,11 @@ struct matrix44_s
 static const float NEAR_CLIP = 1;
 static const float FAR_CLIP = 2000;
 
-static struct matrix44_s SCREEN_SPACE_MAT;
-static struct matrix44_s PERSP_MAT;
+static struct kelpoa_matrix44_s SCREEN_SPACE_MAT;
+static struct kelpoa_matrix44_s PERSP_MAT;
 
 static void transform_vert(struct kelpo_polygon_vertex_s *const v,
-                           const struct matrix44_s *const m)
+                           const struct kelpoa_matrix44_s *const m)
 {
     float x0 = ((m->elements[0] * v->x) + (m->elements[4] * v->y) + (m->elements[ 8] * v->z) + (m->elements[12] * v->w));
     float y0 = ((m->elements[1] * v->x) + (m->elements[5] * v->y) + (m->elements[ 9] * v->z) + (m->elements[13] * v->w));
@@ -84,9 +84,9 @@ static void transform_vert(struct kelpo_polygon_vertex_s *const v,
     return;
 }
 
-static void mul_two_mats(const struct matrix44_s *const m1,
-                         const struct matrix44_s *const m2,
-                         struct matrix44_s *const dst)
+static void mul_two_mats(const struct kelpoa_matrix44_s *const m1,
+                         const struct kelpoa_matrix44_s *const m2,
+                         struct kelpoa_matrix44_s *const dst)
 {
     int i, j;
 
@@ -106,10 +106,10 @@ static void mul_two_mats(const struct matrix44_s *const m1,
     return;
 }
 
-static void make_rot_mat(struct matrix44_s *const m,
+static void make_rot_mat(struct kelpoa_matrix44_s *const m,
                          float x, float y, float z)
 {
-    struct matrix44_s rx, ry, rz, tmp;
+    struct kelpoa_matrix44_s rx, ry, rz, tmp;
 
     rx.elements[0] = 1;      rx.elements[4] = 0;       rx.elements[8]  = 0;       rx.elements[12] = 0;
     rx.elements[1] = 0;      rx.elements[5] = cos(x);  rx.elements[9]  = -sin(x); rx.elements[13] = 0;
@@ -132,7 +132,7 @@ static void make_rot_mat(struct matrix44_s *const m,
     return;
 }
 
-static void make_transl_mat(struct matrix44_s *const m,
+static void make_transl_mat(struct kelpoa_matrix44_s *const m,
                             const float x, const float y, const float z)
 {
     m->elements[0] = 1;    m->elements[4] = 0;    m->elements[8]  = 0; m->elements[12] = x;
@@ -143,7 +143,7 @@ static void make_transl_mat(struct matrix44_s *const m,
     return;
 }
 
-static void make_persp_mat(struct matrix44_s *const m,
+static void make_persp_mat(struct kelpoa_matrix44_s *const m,
                            const float fov, const float aspectRatio,
                            const float zNear, const float zFar)
 {
@@ -158,7 +158,7 @@ static void make_persp_mat(struct matrix44_s *const m,
     return;
 }
 
-static void make_scaling_mat(struct matrix44_s *const m,
+static void make_scaling_mat(struct kelpoa_matrix44_s *const m,
                              const float x, const float y, const float z)
 {
     m->elements[0] = x;    m->elements[4] = 0;    m->elements[8]  = 0;    m->elements[12] = 0;
@@ -169,7 +169,7 @@ static void make_scaling_mat(struct matrix44_s *const m,
     return;
 }
 
-static void make_screen_space_mat(struct matrix44_s *const m,
+static void make_screen_space_mat(struct kelpoa_matrix44_s *const m,
                                   const float halfWidth, const float halfHeight)
 {
     m->elements[0] = halfWidth; m->elements[4] = 0;             m->elements[8]  = 0;    m->elements[12] = halfWidth - 0.5f;
@@ -203,14 +203,14 @@ void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigne
     return;
 }
 
-void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const triangles,
-                                           struct kelpo_generic_stack_s *const dstTriangles,
+void trirot_transform_and_rotate_triangles(struct kelpoa_generic_stack_s *const triangles,
+                                           struct kelpoa_generic_stack_s *const dstTriangles,
                                            const float basePosX, const float basePosY, const float basePosZ,
                                            const float rotX, const float rotY, const float rotZ)
 {
     uint32_t i = 0;
     static float rot[3] = {0};
-    struct matrix44_s rotation, transl, worldSpace, clipSpace;
+    struct kelpoa_matrix44_s rotation, transl, worldSpace, clipSpace;
 
     /* We'll produce cumulative rotation.*/
     rot[0] += rotX;
@@ -239,7 +239,7 @@ void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const t
         {
             unsigned k = 0;
             struct kelpo_polygon_triangle_s *clippedTris;
-            const unsigned numClippedTris = triclip_clip_triangle(&transformedTriangle, &clippedTris);
+            const unsigned numClippedTris = kelpoa_triclip__clip_triangle(&transformedTriangle, &clippedTris);
 
             for (k = 0; k < numClippedTris; k++)
             {
@@ -250,7 +250,7 @@ void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const t
 
                 if (triIsVisible)
                 {
-                    kelpo_generic_stack__push_copy(dstTriangles, &clippedTris[k]);
+                    kelpoa_generic_stack__push_copy(dstTriangles, &clippedTris[k]);
                 }
             }
         }

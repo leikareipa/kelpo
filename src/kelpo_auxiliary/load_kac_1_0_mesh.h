@@ -10,7 +10,7 @@
 
 #include <kelpo_interface/common/stdint.h>
 
-struct kelpo_generic_stack_s;
+struct kelpoa_generic_stack_s;
 struct kelpo_polygon_texture_s;
 
 /* Loads a triangle mesh - along with any associated textures - from the given
@@ -25,9 +25,9 @@ struct kelpo_polygon_texture_s;
  * function, and if the call returns an error, check the pointer's value to see
  * whether it should be deallocated.
  */
-int kelpo_load_kac10_mesh(const char *const kacFilename,
-                          struct kelpo_generic_stack_s *dstTriangles,
-                          struct kelpo_polygon_texture_s **dstTextures,
-                          uint32_t *numTextures);
+int kelpoa_load_kac10_mesh(const char *const kacFilename,
+                           struct kelpoa_generic_stack_s *dstTriangles,
+                           struct kelpo_polygon_texture_s **dstTextures,
+                           uint32_t *numTextures);
 
 #endif

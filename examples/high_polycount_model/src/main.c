@@ -57,10 +57,10 @@ int main(int argc, char *argv[])
     
     uint32_t numTextures = 0;
     struct kelpo_polygon_texture_s *textures = NULL;
-    struct kelpo_generic_stack_s *triangles = kelpo_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
-    struct kelpo_generic_stack_s *transformedTriangles = kelpo_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
+    struct kelpoa_generic_stack_s *triangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
+    struct kelpoa_generic_stack_s *transformedTriangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
 
-    struct kelpo_polygon_texture_s *fontTexture = kelpo_text_mesh__create_font();
+    struct kelpo_polygon_texture_s *fontTexture = kelpoa_text_mesh__create_font();
 
     /* Process any relevant command-line parameters.*/
     {
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
     {
         uint32_t i = 0;
 
-        if (!kelpo_load_kac10_mesh("buddha.kac", triangles, &textures, &numTextures) ||
+        if (!kelpoa_load_kac10_mesh("buddha.kac", triangles, &textures, &numTextures) ||
             !triangles->count)
         {
             fprintf(stderr, "ERROR: Could not load the model.\n");
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
         /* Triangle transformation may produce more triangles than there were
          * before transformation, due to frustum clipping etc. - but also fewer
          * due to back-face culling and so on.*/
-        kelpo_generic_stack__grow(transformedTriangles, (triangles->capacity * 1.3));
+        kelpoa_generic_stack__grow(transformedTriangles, (triangles->capacity * 1.3));
     }
 
     /* Render.*/
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
     {
         renderer.window.process_events();
 
-        kelpo_generic_stack__clear(transformedTriangles);
+        kelpoa_generic_stack__clear(transformedTriangles);
         trirot_transform_and_rotate_triangles(triangles,
                                               transformedTriangles,
                                               0, -0.075, 2.5,
@@ -181,9 +181,9 @@ int main(int argc, char *argv[])
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
             sprintf(polyString, "Polygons: %d", ((polys > 9999999)? 9999999 : polys));
 
-            kelpo_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
-            kelpo_text_mesh__print(polyString, 200, 200, 200, 25, 60, transformedTriangles);
-            kelpo_text_mesh__print(fpsString, 200, 200, 200, 25, 90, transformedTriangles);
+            kelpoa_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
+            kelpoa_text_mesh__print(polyString, 200, 200, 200, 25, 60, transformedTriangles);
+            kelpoa_text_mesh__print(fpsString, 200, 200, 200, 25, 90, transformedTriangles);
         }
 
         renderer.rasterizer.clear_frame();
@@ -206,8 +206,8 @@ int main(int argc, char *argv[])
         }
         free(textures);
 
-        kelpo_generic_stack__free(triangles);
-        kelpo_generic_stack__free(transformedTriangles);
+        kelpoa_generic_stack__free(triangles);
+        kelpoa_generic_stack__free(transformedTriangles);
     }
 
     return 0;

@@ -8,9 +8,9 @@
 #include <math.h>
 #include <kelpo_auxiliary/matrix_44.h>
 
-void matrix44_multiply_two_matrices(const struct matrix44_s *const m1,
-                                    const struct matrix44_s *const m2,
-                                    struct matrix44_s *const dst)
+void kelpoa_matrix44__multiply_two_matrices(const struct kelpoa_matrix44_s *const m1,
+                                            const struct kelpoa_matrix44_s *const m2,
+                                            struct kelpoa_matrix44_s *const dst)
 {
     int i, j;
 
@@ -30,12 +30,12 @@ void matrix44_multiply_two_matrices(const struct matrix44_s *const m1,
     return;
 }
 
-void matrix44_make_rotation_matrix(struct matrix44_s *const m,
-                                   float x,
-                                   float y,
-                                   float z)
+void kelpoa_matrix44__make_rotation_matrix(struct kelpoa_matrix44_s *const m,
+                                           float x,
+                                           float y,
+                                           float z)
 {
-    struct matrix44_s rx, ry, rz, tmp;
+    struct kelpoa_matrix44_s rx, ry, rz, tmp;
 
     rx.elements[0] = 1;      rx.elements[4] = 0;       rx.elements[8]  = 0;       rx.elements[12] = 0;
     rx.elements[1] = 0;      rx.elements[5] = cos(x);  rx.elements[9]  = -sin(x); rx.elements[13] = 0;
@@ -52,16 +52,16 @@ void matrix44_make_rotation_matrix(struct matrix44_s *const m,
     rz.elements[2] = 0;      rz.elements[6] = 0;       rz.elements[10] = 1;       rz.elements[14] = 0;
     rz.elements[3] = 0;      rz.elements[7] = 0;       rz.elements[11] = 0;       rz.elements[15] = 1;
 
-    matrix44_multiply_two_matrices(&rz, &ry, &tmp);
-    matrix44_multiply_two_matrices(&rx, &tmp, m);
+    kelpoa_matrix44__multiply_two_matrices(&rz, &ry, &tmp);
+    kelpoa_matrix44__multiply_two_matrices(&rx, &tmp, m);
 
     return;
 }
 
-void matrix44_make_translation_matrix(struct matrix44_s *const m,
-                                      const float x,
-                                      const float y,
-                                      const float z)
+void kelpoa_matrix44__make_translation_matrix(struct kelpoa_matrix44_s *const m,
+                                              const float x,
+                                              const float y,
+                                              const float z)
 {
     m->elements[0] = 1;    m->elements[4] = 0;    m->elements[8]  = 0;    m->elements[12] = x;
     m->elements[1] = 0;    m->elements[5] = 1;    m->elements[9]  = 0;    m->elements[13] = y;
@@ -71,11 +71,11 @@ void matrix44_make_translation_matrix(struct matrix44_s *const m,
     return;
 }
 
-void matrix44_make_clip_space_matrix(struct matrix44_s *const m,
-                                     const float fov,
-                                     const float aspectRatio,
-                                     const float zNear,
-                                     const float zFar)
+void kelpoa_matrix44__make_clip_space_matrix(struct kelpoa_matrix44_s *const m,
+                                             const float fov,
+                                             const float aspectRatio,
+                                             const float zNear,
+                                             const float zFar)
 {
     float tanHalfFOV = tan(fov / 2);
     float zRange = zNear - zFar;
@@ -88,10 +88,10 @@ void matrix44_make_clip_space_matrix(struct matrix44_s *const m,
     return;
 }
 
-void matrix44_make_scaling_matrix(struct matrix44_s *const m,
-                                  const float x,
-                                  const float y,
-                                  const float z)
+void kelpoa_matrix44__make_scaling_matrix(struct kelpoa_matrix44_s *const m,
+                                          const float x,
+                                          const float y,
+                                          const float z)
 {
     m->elements[0] = x;    m->elements[4] = 0;    m->elements[8]  = 0;    m->elements[12] = 0;
     m->elements[1] = 0;    m->elements[5] = y;    m->elements[9]  = 0;    m->elements[13] = 0;
@@ -101,9 +101,9 @@ void matrix44_make_scaling_matrix(struct matrix44_s *const m,
     return;
 }
 
-void matrix44_make_screen_space_matrix(struct matrix44_s *const m,
-                                       const float halfWidth,
-                                       const float halfHeight)
+void kelpoa_matrix44__make_screen_space_matrix(struct kelpoa_matrix44_s *const m,
+                                               const float halfWidth,
+                                               const float halfHeight)
 {
     m->elements[0] = halfWidth;    m->elements[4] = 0;             m->elements[8]  = 0;    m->elements[12] = halfWidth - 0.5f;
     m->elements[1] = 0;            m->elements[5] = -halfHeight;   m->elements[9]  = 0;    m->elements[13] = halfHeight - 0.5f;

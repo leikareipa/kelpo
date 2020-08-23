@@ -40,12 +40,12 @@
 /* A buffer to store the triangles we've clipped from a given input triangle.
  * An pointer to this buffer will be returned to the caller when they request
  * to have a triangle clipped.*/
-static struct kelpo_polygon_triangle_s CLIPPED_TRIANGLES[TRICLIP_MAX_NUM_CLIPPED_TRIANGLES];
+static struct kelpo_polygon_triangle_s CLIPPED_TRIANGLES[KELPOA_TRICLIP_MAX_NUM_CLIPPED_TRIANGLES];
 
 /* Temporary buffers to hold vertex data during clipping.*/
 static struct vert_buffer_s
 {
-    struct kelpo_polygon_vertex_s v[TRICLIP_MAX_NUM_CLIPPED_VERTICES];
+    struct kelpo_polygon_vertex_s v[KELPOA_TRICLIP_MAX_NUM_CLIPPED_VERTICES];
     unsigned idx;
 } VERTEX_BUFFER_1,
   VERTEX_BUFFER_2;
@@ -123,8 +123,8 @@ static int clip_polygon_axis(const int componentIdx)
     return (VERTEX_BUFFER_1.idx != 0);
 }
 
-unsigned triclip_clip_triangle(const struct kelpo_polygon_triangle_s *const triangle,
-                               struct kelpo_polygon_triangle_s **dstClippedTriangles)
+unsigned kelpoa_triclip__clip_triangle(const struct kelpo_polygon_triangle_s *const triangle,
+                                       struct kelpo_polygon_triangle_s **dstClippedTriangles)
 {
     unsigned numClippedTriangles = 0;
     
@@ -153,7 +153,7 @@ unsigned triclip_clip_triangle(const struct kelpo_polygon_triangle_s *const tria
             CLIPPED_TRIANGLES[numClippedTriangles].vertex[1] = VERTEX_BUFFER_1.v[i];
             CLIPPED_TRIANGLES[numClippedTriangles].vertex[2] = VERTEX_BUFFER_1.v[i+1];
 
-            if (++numClippedTriangles >= TRICLIP_MAX_NUM_CLIPPED_TRIANGLES)
+            if (++numClippedTriangles >= KELPOA_TRICLIP_MAX_NUM_CLIPPED_TRIANGLES)
             {
                 break;
             }

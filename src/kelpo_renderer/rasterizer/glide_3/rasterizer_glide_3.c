@@ -20,7 +20,7 @@
  * Stack elements will be of type FxU32, which represents a pointer to texture
  * memory where the particular texture's data begins. Note that this stores
  * no texture metadata, only the texture memory pointer.*/
-static struct kelpo_generic_stack_s *UPLOADED_TEXTURES;
+static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
 
 /* Minimum and maximum side length for any given texture.*/
 static const unsigned MAX_TEXTURE_SIZE = 256;
@@ -63,14 +63,14 @@ void kelpo_rasterizer_glide_3__initialize(void)
 
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
 
-    UPLOADED_TEXTURES = kelpo_generic_stack__create(10, sizeof(FxU32));
+    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(FxU32));
 
     return;
 }
 
 void kelpo_rasterizer_glide_3__release(void)
 {
-    kelpo_generic_stack__free(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__free(UPLOADED_TEXTURES);
 
     return;
 }
@@ -204,7 +204,7 @@ void kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *co
 void kelpo_rasterizer_glide_3__purge_textures(void)
 {
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
-    kelpo_generic_stack__clear(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
     return;
 }

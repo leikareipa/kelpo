@@ -19,20 +19,20 @@ static const float STACK_GROWTH_MULTIPLIER = 1.5;
  * given.*/
 static const uint32_t MINIMUM_STACK_SIZE = 4;
 
-struct kelpo_generic_stack_s* kelpo_generic_stack__create(const uint32_t initialElementCount,
+struct kelpoa_generic_stack_s* kelpoa_generic_stack__create(const uint32_t initialElementCount,
                                                           const uint32_t elementByteSize)
 {
-    struct kelpo_generic_stack_s *newStack = (struct kelpo_generic_stack_s*)calloc(1, sizeof(struct kelpo_generic_stack_s));
+    struct kelpoa_generic_stack_s *newStack = (struct kelpoa_generic_stack_s*)calloc(1, sizeof(struct kelpoa_generic_stack_s));
     assert(newStack && "Failed to allocate memory for a new stack.");
 
     newStack->count = 0;
     newStack->elementByteSize = elementByteSize;
-    kelpo_generic_stack__grow(newStack, initialElementCount);
+    kelpoa_generic_stack__grow(newStack, initialElementCount);
 
     return newStack;
 }
 
-void kelpo_generic_stack__grow(struct kelpo_generic_stack_s *const stack,
+void kelpoa_generic_stack__grow(struct kelpoa_generic_stack_s *const stack,
                                uint32_t newElementCount)
 {
     void *newStackBuffer = NULL;
@@ -67,13 +67,13 @@ void kelpo_generic_stack__grow(struct kelpo_generic_stack_s *const stack,
     return;
 }
 
-void kelpo_generic_stack__push_copy(struct kelpo_generic_stack_s *const stack,
+void kelpoa_generic_stack__push_copy(struct kelpoa_generic_stack_s *const stack,
                                     const void *const newElement)
 {
     if ((stack->count >= stack->capacity) ||
         (stack->capacity < MINIMUM_STACK_SIZE))
     {
-        kelpo_generic_stack__grow(stack, (stack->capacity * STACK_GROWTH_MULTIPLIER));
+        kelpoa_generic_stack__grow(stack, (stack->capacity * STACK_GROWTH_MULTIPLIER));
     }
 
     assert((stack->count < stack->capacity) && "Failed to properly grow the stack.");
@@ -85,7 +85,7 @@ void kelpo_generic_stack__push_copy(struct kelpo_generic_stack_s *const stack,
     return;
 }
 
-const void* kelpo_generic_stack__pop(struct kelpo_generic_stack_s *const stack)
+const void* kelpoa_generic_stack__pop(struct kelpoa_generic_stack_s *const stack)
 {
     assert((stack->count > 0) && "Attempting to pop an empty stack.");
 
@@ -94,12 +94,12 @@ const void* kelpo_generic_stack__pop(struct kelpo_generic_stack_s *const stack)
     return ((uint8_t*)stack->data + (stack->count * stack->elementByteSize));
 }
 
-void* kelpo_generic_stack__front(struct kelpo_generic_stack_s *const stack)
+void* kelpoa_generic_stack__front(struct kelpoa_generic_stack_s *const stack)
 {
     return ((uint8_t*)stack->data + ((stack->count - 1) * stack->elementByteSize));
 }
 
-void* kelpo_generic_stack__at(struct kelpo_generic_stack_s *const stack,
+void* kelpoa_generic_stack__at(struct kelpoa_generic_stack_s *const stack,
                               const uint32_t idx)
 {
     assert((idx < stack->count) && "Attempting to access the stack out of bounds.");
@@ -107,14 +107,14 @@ void* kelpo_generic_stack__at(struct kelpo_generic_stack_s *const stack,
     return ((uint8_t*)stack->data + (idx * stack->elementByteSize));
 }
 
-void kelpo_generic_stack__clear(struct kelpo_generic_stack_s *const stack)
+void kelpoa_generic_stack__clear(struct kelpoa_generic_stack_s *const stack)
 {
     stack->count = 0;
 
     return;
 }
 
-void kelpo_generic_stack__free(struct kelpo_generic_stack_s *const stack)
+void kelpoa_generic_stack__free(struct kelpoa_generic_stack_s *const stack)
 {
     free(stack->data);
     free(stack);

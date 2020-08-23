@@ -21,7 +21,7 @@
 /* For keeping track of where in texture memory textures have been uploaded.
  * Stack elements will be of type GLuint, which represents an OpenGL texture
  * ID as returned by glGenTextures().*/
-static struct kelpo_generic_stack_s *UPLOADED_TEXTURES;
+static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
 
 void kelpo_rasterizer_opengl_1_2__initialize(void)
 {
@@ -38,14 +38,14 @@ void kelpo_rasterizer_opengl_1_2__initialize(void)
         glDisable(GL_GENERATE_MIPMAP);
     #endif
 
-    UPLOADED_TEXTURES = kelpo_generic_stack__create(10, sizeof(GLuint));
+    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(GLuint));
 
     return;
 }
 
 void kelpo_rasterizer_opengl_1_2__release(void)
 {
-    kelpo_generic_stack__free(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__free(UPLOADED_TEXTURES);
 
     return;
 }
@@ -99,7 +99,7 @@ void kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s 
            "OpenGL 1.2: This texture has already been registered. Use update_texture() instead.");
 
     glGenTextures(1, (GLuint*)&texture->apiId);
-    kelpo_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
+    kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
 
     upload_texture_data(texture);
     
@@ -141,7 +141,7 @@ void kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s 
 void kelpo_rasterizer_opengl_1_2__purge_textures(void)
 {
     glDeleteTextures(UPLOADED_TEXTURES->count, UPLOADED_TEXTURES->data);
-    kelpo_generic_stack__clear(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
     return;
 }

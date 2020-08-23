@@ -22,21 +22,21 @@
 #include <kelpo_interface/common/stdint.h>
 
 struct kelpo_polygon_texture_s;
-struct kelpo_generic_stack_s;
+struct kelpoa_generic_stack_s;
 
 /* Loads the font's character set from a file and converts it into a Kelpo
  * texture, which you should then upload to the renderer.*/
-struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void);
+struct kelpo_polygon_texture_s* kelpoa_text_mesh__create_font(void);
 
 /* Creates a triangle mesh representing the given ASCII string and positions
  * it at the given XY coordinates. The mesh is appended to the given triangle
  * stack.*/
-void kelpo_text_mesh__print(const char *text,
-                            const uint8_t r,
-                            const uint8_t g,
-                            const uint8_t b,
-                            unsigned posX,
-                            unsigned posY,
-                            struct kelpo_generic_stack_s *const dstTriangles);
+void kelpoa_text_mesh__print(const char *text,
+                             const uint8_t r,
+                             const uint8_t g,
+                             const uint8_t b,
+                             unsigned posX,
+                             unsigned posY,
+                             struct kelpoa_generic_stack_s *const dstTriangles);
 
 #endif

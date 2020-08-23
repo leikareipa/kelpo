@@ -14,10 +14,10 @@
 #include <kelpo_auxiliary/import_kac_1_0.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 
-int kelpo_load_kac10_mesh(const char *const kacFilename,
-                          struct kelpo_generic_stack_s *dstTriangles,
-                          struct kelpo_polygon_texture_s **dstTextures,
-                          uint32_t *numTextures)
+int kelpoa_load_kac10_mesh(const char *const kacFilename,
+                           struct kelpoa_generic_stack_s *dstTriangles,
+                           struct kelpo_polygon_texture_s **dstTextures,
+                           uint32_t *numTextures)
 {
     struct kac_1_0_vertex_coordinates_s *kacVertexCoords = NULL;
     struct kac_1_0_uv_coordinates_s *kacUVCoords = NULL;
@@ -55,7 +55,7 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
         uint32_t i = 0;
 
         /* Allocate memory for the destination buffers.*/
-        kelpo_generic_stack__grow(dstTriangles, numTriangles);
+        kelpoa_generic_stack__grow(dstTriangles, numTriangles);
         
         /* Textures are optional (the file might have 0), so we'll load them in here.*/
         *numTextures = kac10_reader__read_textures(&kacTextures);
@@ -150,7 +150,7 @@ int kelpo_load_kac10_mesh(const char *const kacFilename,
                 kelpoTriangle.texture = &(*dstTextures)[material->metadata.textureIdx];
             }
 
-            kelpo_generic_stack__push_copy(dstTriangles, &kelpoTriangle);
+            kelpoa_generic_stack__push_copy(dstTriangles, &kelpoTriangle);
         }
     }
 

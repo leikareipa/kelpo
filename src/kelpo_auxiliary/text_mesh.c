@@ -45,7 +45,7 @@ static void add_character(const char chr,
                           const uint8_t b,
                           const unsigned posX,
                           const unsigned posY,
-                          struct kelpo_generic_stack_s *dstTriangles)
+                          struct kelpoa_generic_stack_s *dstTriangles)
 {
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
@@ -93,7 +93,7 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vEnd;
 
-        kelpo_generic_stack__push_copy(dstTriangles, &tri);
+        kelpoa_generic_stack__push_copy(dstTriangles, &tri);
 
         tri.vertex[0].x = posX;
         tri.vertex[0].y = posY;
@@ -110,19 +110,19 @@ static void add_character(const char chr,
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vStart;
 
-        kelpo_generic_stack__push_copy(dstTriangles, &tri);
+        kelpoa_generic_stack__push_copy(dstTriangles, &tri);
     }
 
     return;
 }
 
-void kelpo_text_mesh__print(const char *text,
-                            const uint8_t r,
-                            const uint8_t g,
-                            const uint8_t b,
-                            unsigned posX,
-                            unsigned posY,
-                            struct kelpo_generic_stack_s *const dstTriangles)
+void kelpoa_text_mesh__print(const char *text,
+                             const uint8_t r,
+                             const uint8_t g,
+                             const uint8_t b,
+                             unsigned posX,
+                             unsigned posY,
+                             struct kelpoa_generic_stack_s *const dstTriangles)
 {
     while (*text)
     {
@@ -135,7 +135,7 @@ void kelpo_text_mesh__print(const char *text,
     return;
 }
 
-struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void)
+struct kelpo_polygon_texture_s* kelpoa_text_mesh__create_font(void)
 {
     unsigned i = 0;
     FILE *const fontFile = fopen("sample-font.raw", "rb"); /* A headerless file with 256*256 RGB 888 pixels.*/

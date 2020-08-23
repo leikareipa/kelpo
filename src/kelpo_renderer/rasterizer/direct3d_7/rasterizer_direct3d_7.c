@@ -25,7 +25,7 @@
 /* For keeping track of where in texture memory textures have been uploaded.
  * Stack elements will be of type LPDIRECTDRAWSURFACE7, which represents a
  * pointer to the texture's DirectDraw 7 surface.*/
-static struct kelpo_generic_stack_s *UPLOADED_TEXTURES;
+static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
 
 extern LPDIRECT3DDEVICE7 D3DDEVICE_7;
 
@@ -45,14 +45,14 @@ void kelpo_rasterizer_direct3d_7__initialize(void)
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHATESTENABLE, TRUE);
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
 
-    UPLOADED_TEXTURES = kelpo_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE7));
+    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE7));
 
     return;
 }
 
 void kelpo_rasterizer_direct3d_7__release(void)
 {
-    kelpo_generic_stack__free(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__free(UPLOADED_TEXTURES);
 
     return;
 }
@@ -71,7 +71,7 @@ void kelpo_rasterizer_direct3d_7__upload_texture(struct kelpo_polygon_texture_s 
     assert(d3dTexture && "Direct3D 7: Failed to create a Direct3D texture.");
 
     texture->apiId = (uint32_t)d3dTexture;
-    kelpo_generic_stack__push_copy(UPLOADED_TEXTURES, &d3dTexture);
+    kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &d3dTexture);
 
     return;
 }
@@ -188,7 +188,7 @@ void kelpo_rasterizer_direct3d_7__purge_textures(void)
         IDirectDrawSurface7_Release(uploadedTexture);
     }
 
-    kelpo_generic_stack__clear(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
     return;
 }

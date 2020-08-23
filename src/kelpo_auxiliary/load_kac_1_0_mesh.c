@@ -9,10 +9,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
+#include <kelpo_auxiliary/load_kac_1_0_mesh.h>
+#include <kelpo_auxiliary/import_kac_1_0.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
-#include "kac/import_kac_1_0.h"
-#include "load_kac_1_0_mesh.h"
 
 int kelpo_load_kac10_mesh(const char *const kacFilename,
                           struct kelpo_generic_stack_s *dstTriangles,

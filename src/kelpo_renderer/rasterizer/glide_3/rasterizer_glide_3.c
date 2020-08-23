@@ -12,7 +12,7 @@
 #include <kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
 
 #include <glide/glide.h>
 

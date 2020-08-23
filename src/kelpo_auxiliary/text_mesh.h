@@ -16,8 +16,8 @@
  * 
  */
 
-#ifndef KELPO_EXAMPLES_COMMON_SRC_TEXT_MESH_H
-#define KELPO_EXAMPLES_COMMON_SRC_TEXT_MESH_H
+#ifndef KELPO_AUXILIARY_TEXT_MESH_H
+#define KELPO_AUXILIARY_TEXT_MESH_H
 
 #include <kelpo_interface/common/stdint.h>
 

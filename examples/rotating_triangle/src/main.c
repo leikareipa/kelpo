@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/interface.h>
 #include <kelpo_interface/common/globals.h>

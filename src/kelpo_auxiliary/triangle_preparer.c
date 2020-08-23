@@ -6,10 +6,10 @@
 
 #include <string.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
-#include <kelpo_interface/generic_stack.h>
-#include "triangle_preparer.h"
-#include "clip_triangles.h"
-#include "matrix_44.h"
+#include <kelpo_auxiliary/generic_stack.h>
+#include <kelpo_auxiliary/triangle_preparer.h>
+#include <kelpo_auxiliary/matrix_44.h>
+#include <kelpo_auxiliary/triangle_clipper.h>
 
 static void transform_vert(struct kelpo_polygon_vertex_s *const v,
                            const struct matrix44_s *const m)

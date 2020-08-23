@@ -8,12 +8,12 @@ OUTPUT_FILE="../../bin/texture_painting.exe"
 SRC_FILES="
 src/main.c
 ../common_src/transform_and_rotate_triangles.c
-../common_src/clip_triangles.c
-../common_src/load_kac_1_0_mesh.c
 ../common_src/parse_command_line.c
-../common_src/kac/import_kac_1_0.c
-../common_src/text_mesh.c
-../../src/kelpo_interface/generic_stack.c
+../../src/kelpo_auxiliary/generic_stack.c
+../../src/kelpo_auxiliary/load_kac_1_0_mesh.c
+../../src/kelpo_auxiliary/import_kac_1_0.c
+../../src/kelpo_auxiliary/triangle_clipper.c
+../../src/kelpo_auxiliary/text_mesh.c
 ../../src/kelpo_interface/interface.c
 "
 

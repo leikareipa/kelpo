@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef KELPO_INTERFACE_GENERIC_STACK_H
-#define KELPO_INTERFACE_GENERIC_STACK_H
+#ifndef KELPO_AUXILIARY_GENERIC_STACK_H
+#define KELPO_AUXILIARY_GENERIC_STACK_H
 
 #include <kelpo_interface/common/stdint.h>
 

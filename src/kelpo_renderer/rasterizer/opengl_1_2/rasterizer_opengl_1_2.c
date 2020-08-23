@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
 

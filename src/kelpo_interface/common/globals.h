@@ -7,7 +7,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-#define DEG_TO_RAD(x) (((x) * (M_PI)) / 180.0)
+#define KELPO_DEG_TO_RAD(x) (((x) * (M_PI)) / 180.0)
 
 #define KELPO_LERP(x, y, step) ((x) + ((step) * ((y) - (x))))
 

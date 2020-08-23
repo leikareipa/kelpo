@@ -16,8 +16,8 @@
 #include <kelpo_interface/common/stdint.h>
 #include <kelpo_interface/polygon/texture.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
-#include <kelpo_interface/generic_stack.h>
-#include "text_mesh.h"
+#include <kelpo_auxiliary/generic_stack.h>
+#include <kelpo_auxiliary/text_mesh.h>
 
 /* A texture that contains the font's character set. The character set is
  * expected to begin with the space ' ' character and continue on through
@@ -149,7 +149,7 @@ struct kelpo_polygon_texture_s* kelpo_text_mesh__create_font(void)
     FONT_TEXTURE->height = FONT_TEXTURE_HEIGHT;
     FONT_TEXTURE->numMipLevels = 1;
     FONT_TEXTURE->mipLevel[0] = malloc(FONT_TEXTURE->width * FONT_TEXTURE->height * sizeof(FONT_TEXTURE->mipLevel[0]));
-    FONT_TEXTURE->flags.noFiltering = 1;
+    FONT_TEXTURE->flags.noFiltering = 0;
 
     /* Read the font's pixels into the texture.*/
     for (i = 0; i < (FONT_TEXTURE->width * FONT_TEXTURE->height); i++)

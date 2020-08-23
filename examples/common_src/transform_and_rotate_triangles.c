@@ -50,12 +50,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
+#include <kelpo_auxiliary/triangle_clipper.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/vertex.h>
 #include <kelpo_interface/common/globals.h>
 #include "transform_and_rotate_triangles.h"
-#include "clip_triangles.h"
 
 struct matrix44_s
 {
@@ -198,7 +198,7 @@ static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
 void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigned renderHeight)
 {
     make_screen_space_mat(&SCREEN_SPACE_MAT, (renderWidth / 2.0f), (renderHeight / 2.0f));
-    make_persp_mat(&PERSP_MAT, DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
+    make_persp_mat(&PERSP_MAT, KELPO_DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
 
     return;
 }
@@ -230,7 +230,6 @@ void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const t
         int triIsVisible = 1;
         struct kelpo_polygon_triangle_s transformedTriangle = ((struct kelpo_polygon_triangle_s*)triangles->data)[i];
 
-        /* Transform into clip-space.*/
         transform_vert(&transformedTriangle.vertex[0], &clipSpace);
         transform_vert(&transformedTriangle.vertex[1], &clipSpace);
         transform_vert(&transformedTriangle.vertex[2], &clipSpace);
@@ -244,15 +243,10 @@ void trirot_transform_and_rotate_triangles(struct kelpo_generic_stack_s *const t
 
             for (k = 0; k < numClippedTris; k++)
             {
-                /* Transform into screen-space.*/
                 transform_vert(&clippedTris[k].vertex[0], &SCREEN_SPACE_MAT);
                 transform_vert(&clippedTris[k].vertex[1], &SCREEN_SPACE_MAT);
                 transform_vert(&clippedTris[k].vertex[2], &SCREEN_SPACE_MAT);
                 tri_perspective_divide(&clippedTris[k]);
-
-                /* Back-face culling would go here.*/
-
-                /* Depth clipping would go here.*/
 
                 if (triIsVisible)
                 {

@@ -8,10 +8,10 @@ OUTPUT_FILE="../../bin/rotating_triangle.exe"
 SRC_FILES="
 src/main.c
 ../common_src/transform_and_rotate_triangles.c
-../common_src/clip_triangles.c
 ../common_src/parse_command_line.c
 ../../src/kelpo_interface/interface.c
-../../src/kelpo_interface/generic_stack.c
+../../src/kelpo_auxiliary/generic_stack.c
+../../src/kelpo_auxiliary/triangle_clipper.c
 "
 
 BUILD_OPTIONS="

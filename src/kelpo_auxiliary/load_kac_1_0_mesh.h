@@ -5,13 +5,13 @@
  *
  */
 
-#ifndef KELPO_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
-#define KELPO_EXAMPLES_COMMON_SRC_LOAD_KAC_1_0_MESH_H
+#ifndef KELPO_AUXILIARY_LOAD_KAC_1_0_MESH_H
+#define KELPO_AUXILIARY_LOAD_KAC_1_0_MESH_H
 
 #include <kelpo_interface/common/stdint.h>
 
 struct kelpo_generic_stack_s;
-struct kelpo_polygon_triangle_s;
+struct kelpo_polygon_texture_s;
 
 /* Loads a triangle mesh - along with any associated textures - from the given
  * KAC 1.0 file. Triangles will be placed in the given stack. For textures, takes

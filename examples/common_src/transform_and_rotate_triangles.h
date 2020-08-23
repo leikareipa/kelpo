@@ -7,7 +7,6 @@
 #define KELPO_EXAMPLES_COMMON_SRC_TRANSFORM_AND_ROTATE_TRIANGLES_H
 
 struct kelpo_generic_stack_s;
-struct kelpo_polygon_triangle_s;
 
 /* Set up screen-space-related matrices.*/
 void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigned renderHeight);

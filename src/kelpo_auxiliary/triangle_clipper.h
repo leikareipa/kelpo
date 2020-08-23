@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef KELPO_EXAMPLES_COMMON_CLIP_TRIANGLES_H
-#define KELPO_EXAMPLES_COMMON_CLIP_TRIANGLES_H
+#ifndef KELPO_AUXILIARY_TRIANGLE_CLIPPER_H
+#define KELPO_AUXILIARY_TRIANGLE_CLIPPER_H
 
 /* The maximum number of triangles and vertices we can clip a source triangle into.
  * These will be used to size the working buffers on the stack, so better conservative

@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-#include <kelpo_interface/generic_stack.h>
+#include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_renderer/surface/directdraw_7/create_directdraw_7_surface_from_texture.h>
 #include <kelpo_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <kelpo_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>

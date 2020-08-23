@@ -18,7 +18,7 @@ src/kelpo_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.c
 src/kelpo_renderer/surface/direct3d_7/surface_direct3d_7.c
 src/kelpo_renderer/surface/directdraw_7/surface_directdraw_7.c
 src/kelpo_renderer/window/window_win32.c
-src/kelpo_interface/generic_stack.c
+src/kelpo_auxiliary/generic_stack.c
 "
 
 BUILD_OPTIONS="

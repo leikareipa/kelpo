@@ -6,7 +6,7 @@
 
 #include <assert.h>
 #include <math.h>
-#include "matrix_44.h"
+#include <kelpo_auxiliary/matrix_44.h>
 
 void matrix44_multiply_two_matrices(const struct matrix44_s *const m1,
                                     const struct matrix44_s *const m2,

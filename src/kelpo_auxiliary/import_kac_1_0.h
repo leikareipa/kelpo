@@ -10,7 +10,7 @@
 #ifndef IMPORT_KAC_1_0_H
 #define IMPORT_KAC_1_0_H
 
-#include "kac_1_0_types.h"
+#include <kelpo_auxiliary/kac_1_0_types.h>
 
 /* Sets the target file to be read from. Returns 1 if the target is a valid KAC
  * 1.0 file that is ready to be read from; otherwise, returns 0. This function

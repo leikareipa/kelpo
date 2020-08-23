@@ -35,7 +35,7 @@
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/vertex.h>
 #include <kelpo_interface/common/globals.h>
-#include "clip_triangles.h"
+#include <kelpo_auxiliary/triangle_clipper.h>
 
 /* A buffer to store the triangles we've clipped from a given input triangle.
  * An pointer to this buffer will be returned to the caller when they request

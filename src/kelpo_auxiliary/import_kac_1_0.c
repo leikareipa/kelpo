@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "import_kac_1_0.h"
+#include <kelpo_auxiliary/import_kac_1_0.h>
 
 /* An ID for each of the possible segments in a KAC 1.0 file.*/
 enum

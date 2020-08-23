@@ -239,7 +239,7 @@ void trirot_transform_and_rotate_triangles(struct kelpoa_generic_stack_s *const 
         {
             unsigned k = 0;
             struct kelpo_polygon_triangle_s *clippedTris;
-            const unsigned numClippedTris = kelpoa_triclip__clip_triangle(&transformedTriangle, &clippedTris);
+            const unsigned numClippedTris = kelpoa_triclipr__clip_triangle(&transformedTriangle, &clippedTris);
 
             for (k = 0; k < numClippedTris; k++)
             {

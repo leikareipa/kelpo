@@ -135,7 +135,7 @@ void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_st
         {
             unsigned k = 0;
             struct kelpo_polygon_triangle_s *clippedTris;
-            const unsigned numClippedTris = kelpoa_triclip__clip_triangle(triangle, &clippedTris);
+            const unsigned numClippedTris = kelpoa_triclipr__clip_triangle(triangle, &clippedTris);
 
             for (k = 0; k < numClippedTris; k++)
             {

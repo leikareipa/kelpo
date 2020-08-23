@@ -42,11 +42,12 @@ void kelpo_generic_stack__grow(struct kelpo_generic_stack_s *const stack,
         newElementCount = MINIMUM_STACK_SIZE;
     }
 
+    if (stack->capacity >= newElementCount)
+    {
+        return;
+    }
+
     assert(stack && "Attempting to operate on a NULL stack.");
-    
-    assert((newElementCount > stack->capacity) &&
-           (newElementCount > stack->count) &&
-           "Trying to grow the stack to a smaller size than what it is now.");
 
     assert((stack->count <= stack->capacity) &&
            "Attempting to grow a malformed stack.");

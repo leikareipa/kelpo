@@ -53,7 +53,9 @@ struct kelpo_generic_stack_s* kelpo_generic_stack__create(const uint32_t initial
 /* Increases the stack's allocated size. To guarantee that the stack's data remain
  * contiguous in memory, the new data area will be obtained from an entirely new
  * allocation and the existing data will be migrated there (all previous pointers
- * to these data will become invalid).*/
+ * to these data will become invalid). If the stack's current capacity is equal to
+ * or larger than the given new element count, the function will return without
+ * doing anything.*/
 void kelpo_generic_stack__grow(struct kelpo_generic_stack_s *const stack,
                                uint32_t newElementCount);
 

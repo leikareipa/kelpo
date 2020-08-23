@@ -116,13 +116,13 @@ static void add_character(const char chr,
     return;
 }
 
-void kelpoa_text_mesh__print(const char *text,
-                             const uint8_t r,
-                             const uint8_t g,
-                             const uint8_t b,
+void kelpoa_text_mesh__print(struct kelpoa_generic_stack_s *const dstTriangles,
+                             const char *text,
                              unsigned posX,
                              unsigned posY,
-                             struct kelpoa_generic_stack_s *const dstTriangles)
+                             const uint8_t r,
+                             const uint8_t g,
+                             const uint8_t b)
 {
     while (*text)
     {

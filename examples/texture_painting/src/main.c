@@ -216,8 +216,8 @@ int main(int argc, char *argv[])
 
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
 
-            kelpoa_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
-            kelpoa_text_mesh__print(fpsString, 200, 200, 200, 25, 60, transformedTriangles);
+            kelpoa_text_mesh__print(transformedTriangles, renderer.metadata.rendererName, 25, 30, 255, 255, 255);
+            kelpoa_text_mesh__print(transformedTriangles, fpsString, 25, 60, 200, 200, 200);
         }
 
         /* Paint circles onto the cube's texture. We'll add one new pixel each

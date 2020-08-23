@@ -181,9 +181,9 @@ int main(int argc, char *argv[])
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
             sprintf(polyString, "Polygons: %d", ((polys > 9999999)? 9999999 : polys));
 
-            kelpoa_text_mesh__print(renderer.metadata.rendererName, 255, 255, 255, 25, 30, transformedTriangles);
-            kelpoa_text_mesh__print(polyString, 200, 200, 200, 25, 60, transformedTriangles);
-            kelpoa_text_mesh__print(fpsString, 200, 200, 200, 25, 90, transformedTriangles);
+            kelpoa_text_mesh__print(transformedTriangles, renderer.metadata.rendererName, 25, 30, 255, 255, 255);
+            kelpoa_text_mesh__print(transformedTriangles, polyString, 25, 60, 200, 200, 200);
+            kelpoa_text_mesh__print(transformedTriangles, fpsString, 25, 90, 200, 200, 200);
         }
 
         renderer.rasterizer.clear_frame();

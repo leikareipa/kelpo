@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
     }
 
     /* Render.*/
-    while (renderer.window.is_window_open())
+    while (renderer.window.is_open())
     {
         renderer.window.process_events();
 

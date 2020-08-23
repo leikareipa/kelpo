@@ -32,7 +32,7 @@ struct kelpo_interface_s
 
         void (*flip_surface)(void);
 
-        int (*is_window_open)(void);
+        int (*is_open)(void);
 
         /*size*/
     } window;

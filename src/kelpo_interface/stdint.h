@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef KELPO_INTERFACE_COMMON_STDINT_H
-#define KELPO_INTERFACE_COMMON_STDINT_H
+#ifndef KELPO_INTERFACE_STDINT_H
+#define KELPO_INTERFACE_STDINT_H
 
 #if defined (_WIN32)
     #if defined (__MINGW32__) || (__WATCOMC__)

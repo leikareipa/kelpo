@@ -1,7 +1,7 @@
 #ifndef KELPO_INTERFACE_POLYGON_VERTEX_H
 #define KELPO_INTERFACE_POLYGON_VERTEX_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 
 /* Note: Changes to this struct should also be reflected in the Glide 3.x renderer's
  * calls to grVertexLayout().*/

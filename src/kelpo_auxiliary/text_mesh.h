@@ -19,7 +19,7 @@
 #ifndef KELPO_AUXILIARY_TEXT_MESH_H
 #define KELPO_AUXILIARY_TEXT_MESH_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 
 struct kelpo_polygon_texture_s;
 struct kelpoa_generic_stack_s;

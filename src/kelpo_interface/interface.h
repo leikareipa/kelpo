@@ -1,7 +1,7 @@
 #ifndef KELPO_INTERFACE_INTERFACE_H
 #define KELPO_INTERFACE_INTERFACE_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 #include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/

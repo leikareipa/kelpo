@@ -25,7 +25,7 @@
 #ifndef KELPO_AUXILIARY_GENERIC_STACK_H
 #define KELPO_AUXILIARY_GENERIC_STACK_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 
 struct kelpoa_generic_stack_s
 {

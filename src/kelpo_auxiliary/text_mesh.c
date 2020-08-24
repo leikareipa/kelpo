@@ -13,7 +13,7 @@
 #include <string.h>
 #include <float.h>
 #include <stdio.h>
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 #include <kelpo_interface/polygon/texture.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_auxiliary/generic_stack.h>

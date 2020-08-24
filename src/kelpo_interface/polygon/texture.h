@@ -1,7 +1,7 @@
 #ifndef KELPO_INTERFACE_POLYGON_TEXTURE_H
 #define KELPO_INTERFACE_POLYGON_TEXTURE_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 
 struct kelpo_polygon_texture_s
 {

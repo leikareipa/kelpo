@@ -1,7 +1,7 @@
 #ifndef KELPO_RENDERER_WINDOW_WINDOW_WIN32_H
 #define KELPO_RENDERER_WINDOW_WINDOW_WIN32_H
 
-#include <kelpo_interface/common/stdint.h>
+#include <kelpo_interface/stdint.h>
 #include <kelpo_interface/interface.h>
 #include <kelpo_auxiliary/misc.h>
 

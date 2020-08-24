@@ -9,7 +9,7 @@
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
 
 /* A user-provided function that will receive the renderer window's messages.*/
-typedef LRESULT kelpo_custom_window_message_handler_t(UINT message, WPARAM wParam, LPARAM lParam);
+typedef LRESULT kelpo_custom_window_message_handler_t(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
 
 struct kelpo_polygon_triangle_s;
 struct kelpo_polygon_texture_s;

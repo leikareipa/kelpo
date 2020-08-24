@@ -198,7 +198,7 @@ static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
 void trirot_initialize_screen_geometry(const unsigned renderWidth, const unsigned renderHeight)
 {
     make_screen_space_mat(&SCREEN_SPACE_MAT, (renderWidth / 2.0f), (renderHeight / 2.0f));
-    make_persp_mat(&PERSP_MAT, KELPO_DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
+    make_persp_mat(&PERSP_MAT, KELPOA_DEG_TO_RAD(60), (renderWidth / (float)renderHeight), NEAR_CLIP, FAR_CLIP);
 
     return;
 }

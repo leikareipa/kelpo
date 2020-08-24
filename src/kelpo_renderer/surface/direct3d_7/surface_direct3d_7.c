@@ -115,7 +115,7 @@ void kelpo_surface_direct3d_7__flip_surface(void)
     return;
 }
 
-static LRESULT window_proc(UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {

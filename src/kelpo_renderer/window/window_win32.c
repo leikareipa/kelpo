@@ -31,16 +31,16 @@ int kelpo_window__is_window_open(void)
     return (WINDOW_HANDLE != NULL);
 }
 
-static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (EXTERNAL_MESSAGE_HANDLER &&
-        EXTERNAL_MESSAGE_HANDLER(message, wParam, lParam))
+        EXTERNAL_MESSAGE_HANDLER(windowHandle, message, wParam, lParam))
     {
         return 0;
     }
 
     if (WINDOW_OWNER_MESSAGE_HANDLER &&
-        WINDOW_OWNER_MESSAGE_HANDLER(message, wParam, lParam))
+        WINDOW_OWNER_MESSAGE_HANDLER(windowHandle, message, wParam, lParam))
     {
         return 0;
     }
@@ -62,7 +62,7 @@ static LRESULT CALLBACK window_message_handler(HWND hWnd, UINT message, WPARAM w
             break;
         }
 
-        default: return DefWindowProc(hWnd, message, wParam, lParam);
+        default: return DefWindowProc(windowHandle, message, wParam, lParam);
     }
     
     return 0;

@@ -88,7 +88,7 @@ void kelpo_surface_opengl_1_2__flip_surface(void)
     return;
 }
 
-static LRESULT window_proc(UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {

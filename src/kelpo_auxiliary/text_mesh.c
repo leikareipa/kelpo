@@ -39,13 +39,14 @@ static const unsigned CHAR_HEIGHT = 32;
 
 /* Creates a quad of two triangles into the given triangle stack, representing
  * the given ASCII character.*/
-static void add_character(const char chr,
+static void add_character(struct kelpoa_generic_stack_s *dstTriangles,
+                          const char chr,
                           const uint8_t r,
                           const uint8_t g,
                           const uint8_t b,
                           const unsigned posX,
                           const unsigned posY,
-                          struct kelpoa_generic_stack_s *dstTriangles)
+                          const float scale)
 {
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
@@ -84,12 +85,12 @@ static void add_character(const char chr,
         tri.vertex[0].v = vStart;
 
         tri.vertex[1].x = posX;
-        tri.vertex[1].y = (posY + CHAR_HEIGHT);
+        tri.vertex[1].y = (posY + CHAR_HEIGHT * scale);
         tri.vertex[1].u = uStart;
         tri.vertex[1].v = vEnd;
 
-        tri.vertex[2].x = (posX + CHAR_WIDTH);
-        tri.vertex[2].y = (posY + CHAR_HEIGHT);
+        tri.vertex[2].x = (posX + CHAR_WIDTH * scale);
+        tri.vertex[2].y = (posY + CHAR_HEIGHT * scale);
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vEnd;
 
@@ -100,12 +101,12 @@ static void add_character(const char chr,
         tri.vertex[0].u = uStart;
         tri.vertex[0].v = vStart;
 
-        tri.vertex[1].x = (posX + CHAR_WIDTH);
-        tri.vertex[1].y = (posY + CHAR_HEIGHT);
+        tri.vertex[1].x = (posX + CHAR_WIDTH * scale);
+        tri.vertex[1].y = (posY + CHAR_HEIGHT * scale);
         tri.vertex[1].u = uEnd;
         tri.vertex[1].v = vEnd;
 
-        tri.vertex[2].x = (posX + CHAR_WIDTH);
+        tri.vertex[2].x = (posX + CHAR_WIDTH * scale);
         tri.vertex[2].y = posY;
         tri.vertex[2].u = uEnd;
         tri.vertex[2].v = vStart;
@@ -129,17 +130,18 @@ unsigned kelpoa_text_mesh__character_height(void)
 void kelpoa_text_mesh__print(struct kelpoa_generic_stack_s *const dstTriangles,
                              const char *text,
                              unsigned posX,
-                             unsigned posY,
+                             const unsigned posY, 
                              const uint8_t r,
                              const uint8_t g,
-                             const uint8_t b)
+                             const uint8_t b,
+                             const float scale)
 {
     while (*text)
     {
-        add_character(*text, r, g, b, posX, posY, dstTriangles);
+        add_character(dstTriangles, *text, r, g, b, posX, posY, scale);
 
         text++;
-        posX += (CHAR_WIDTH / 2);
+        posX += ((CHAR_WIDTH / 2) * scale);
     }
 
     return;

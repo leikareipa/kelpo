@@ -38,9 +38,10 @@ unsigned kelpoa_text_mesh__character_height(void);
 void kelpoa_text_mesh__print(struct kelpoa_generic_stack_s *const dstTriangles,
                              const char *text,
                              unsigned posX,
-                             unsigned posY,
+                             const unsigned posY,
                              const uint8_t r,
                              const uint8_t g,
-                             const uint8_t b);
+                             const uint8_t b,
+                             const float scale);
 
 #endif

@@ -54,7 +54,7 @@
 #include <kelpo_auxiliary/triangle_clipper.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/vertex.h>
-#include <kelpo_interface/common/globals.h>
+#include <kelpo_auxiliary/misc.h>
 #include "transform_and_rotate_triangles.h"
 
 struct kelpoa_matrix44_s

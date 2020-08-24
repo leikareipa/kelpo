@@ -2,8 +2,8 @@
 #define KELPO_RENDERER_WINDOW_WINDOW_WIN32_H
 
 #include <kelpo_interface/common/stdint.h>
-#include <kelpo_interface/common/globals.h>
 #include <kelpo_interface/interface.h>
+#include <kelpo_auxiliary/misc.h>
 
 uint32_t kelpo_window__get_window_handle(void);
 

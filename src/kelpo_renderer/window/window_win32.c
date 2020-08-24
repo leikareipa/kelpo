@@ -92,7 +92,7 @@ void kelpo_window__create_window(const unsigned width,
     WINDOW_HEIGHT = height;
     WINDOW_OWNER_MESSAGE_HANDLER = messageHandler;
 
-    assert((strlen(title) < NUM_ARRAY_ELEMENTS(WINDOW_TITLE)) && "The given window title is too long.");
+    assert((strlen(title) < KELPOA_NUM_ARRAY_ELEMENTS(WINDOW_TITLE)) && "The given window title is too long.");
     sprintf(WINDOW_TITLE, "%s", title);
 
     memset(&wc, 0, sizeof(wc));

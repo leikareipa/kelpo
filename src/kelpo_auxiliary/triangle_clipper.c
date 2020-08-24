@@ -34,7 +34,7 @@
 #include <assert.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/vertex.h>
-#include <kelpo_interface/common/globals.h>
+#include <kelpo_auxiliary/misc.h>
 #include <kelpo_auxiliary/triangle_clipper.h>
 
 /* A buffer to store the triangles we've clipped from a given input triangle.
@@ -83,13 +83,13 @@ static void clip_polygon_component(struct vert_buffer_s *vertsIn,
         {
             float lerpStep = (prevVert->w - prevComponent) / ((prevVert->w - prevComponent) - (curVert->w - curComponent));
 
-            vertsOut->v[vertsOut->idx].x = KELPO_LERP(prevVert->x, curVert->x, lerpStep);
-            vertsOut->v[vertsOut->idx].y = KELPO_LERP(prevVert->y, curVert->y, lerpStep);
-            vertsOut->v[vertsOut->idx].z = KELPO_LERP(prevVert->z, curVert->z, lerpStep);
-            vertsOut->v[vertsOut->idx].w = KELPO_LERP(prevVert->w, curVert->w, lerpStep);
+            vertsOut->v[vertsOut->idx].x = KELPOA_LERP(prevVert->x, curVert->x, lerpStep);
+            vertsOut->v[vertsOut->idx].y = KELPOA_LERP(prevVert->y, curVert->y, lerpStep);
+            vertsOut->v[vertsOut->idx].z = KELPOA_LERP(prevVert->z, curVert->z, lerpStep);
+            vertsOut->v[vertsOut->idx].w = KELPOA_LERP(prevVert->w, curVert->w, lerpStep);
 
-            vertsOut->v[vertsOut->idx].u = KELPO_LERP(prevVert->u, curVert->u, lerpStep);
-            vertsOut->v[vertsOut->idx].v = KELPO_LERP(prevVert->v, curVert->v, lerpStep);
+            vertsOut->v[vertsOut->idx].u = KELPOA_LERP(prevVert->u, curVert->u, lerpStep);
+            vertsOut->v[vertsOut->idx].v = KELPOA_LERP(prevVert->v, curVert->v, lerpStep);
 
             vertsOut->idx++;
         }

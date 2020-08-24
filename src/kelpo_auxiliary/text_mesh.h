@@ -28,6 +28,10 @@ struct kelpoa_generic_stack_s;
  * texture, which you should then upload to the renderer.*/
 struct kelpo_polygon_texture_s* kelpoa_text_mesh__create_font(void);
 
+unsigned kelpoa_text_mesh__character_width(void);
+
+unsigned kelpoa_text_mesh__character_height(void);
+
 /* Creates a triangle mesh representing the given ASCII string and positions
  * it at the given XY coordinates. The mesh is appended to the given triangle
  * stack.*/

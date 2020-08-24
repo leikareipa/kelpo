@@ -116,6 +116,16 @@ static void add_character(const char chr,
     return;
 }
 
+unsigned kelpoa_text_mesh__character_width(void)
+{
+    return (CHAR_WIDTH / 2);
+}
+
+unsigned kelpoa_text_mesh__character_height(void)
+{
+    return CHAR_HEIGHT;
+}
+
 void kelpoa_text_mesh__print(struct kelpoa_generic_stack_s *const dstTriangles,
                              const char *text,
                              unsigned posX,

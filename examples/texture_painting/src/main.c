@@ -17,10 +17,9 @@
 #include <kelpo_auxiliary/misc.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/interface.h>
+#include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/parse_command_line.h"
-
-#include <windows.h>
 
 /* Call this function once per frame and it'll tell you an estimate of the frame
  * rate (FPS).*/
@@ -147,24 +146,13 @@ int main(int argc, char *argv[])
 
     /* Initialize the renderer.*/
     {
-        char windowTitle[128];
-
-        sprintf(windowTitle, "Kelpo %d.%d.%d / %s (%d.%d.%d)",
-                KELPO_INTERFACE_VERSION_MAJOR,
-                KELPO_INTERFACE_VERSION_MINOR,
-                KELPO_INTERFACE_VERSION_PATCH,
-                renderer.metadata.rendererName,
-                renderer.metadata.rendererVersionMajor,
-                renderer.metadata.rendererVersionMinor,
-                renderer.metadata.rendererVersionPatch);
-
         renderer.initialize(renderResolution.width,
                             renderResolution.height,
                             renderResolution.bpp,
                             vsyncEnabled,
                             renderDeviceIdx);
                             
-        SetWindowTextA((HWND)renderer.window.get_handle(), windowTitle);
+        renderer.window.set_message_handler(default_window_message_handler);
 
         trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
 

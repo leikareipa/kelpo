@@ -21,6 +21,9 @@ struct kelpo_polygon_texture_s
      * to glGenTextures().*/
     uint32_t apiId;
 
+    /* Additional storage for the render API, in case it needs it.*/
+    void *apiAuxData;
+
     /* Note: Assume that each flag will be initialized to 0 by default.*/
     struct kelpo_polygon_texture_flags_s
     {

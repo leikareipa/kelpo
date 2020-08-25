@@ -24,6 +24,10 @@ struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_glide_3.dll", "import_renderer");
     }
+    else if (strcmp("direct3d_5", rasterizerName) == 0)
+    {
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_direct3d_5.dll", "import_renderer");
+    }
     else if (strcmp("direct3d_7", rasterizerName) == 0)
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_direct3d_7.dll", "import_renderer");

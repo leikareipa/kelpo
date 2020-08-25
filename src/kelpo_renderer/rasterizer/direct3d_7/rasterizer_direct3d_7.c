@@ -193,11 +193,17 @@ void kelpo_rasterizer_direct3d_7__purge_textures(void)
     return;
 }
 
-
 void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles)
 {
-    unsigned i = 0, v = 0;
+    unsigned i = 0;
+
+    /* We'll keep track of which texture we've rendered with most recently, so
+     * we'll know not to re-set the texture pipeline's state if we're rendering
+     * with the same texture again. A value of ~0 is assumed to mean "unknown"
+     * or "most recent triangle was untextured" - this further assumes that
+     * valid texture ids can never have that value. */ 
+    unsigned currentTextureApiId = ~0;
 
     if (FAILED(IDirect3DDevice7_BeginScene(D3DDEVICE_7)))
     {
@@ -206,6 +212,7 @@ void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s
 
     for (i = 0; i < numTriangles; i++)
     {
+        unsigned v = 0;
         D3DTLVERTEX verts[3];
 
         for (v = 0; v < 3; v++)
@@ -224,12 +231,15 @@ void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s
 
         /* TODO: Reduce state-switching.*/
 
-        if (triangles[i].texture)
+        if (triangles[i].texture &&
+            (triangles[i].texture->apiId != currentTextureApiId))
         {
             const int mipmapEnabled = (triangles[i].texture->numMipLevels > 1);
             const int mipmapFilter = (triangles[i].texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
 
-            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)(uint32_t)triangles[i].texture->apiId);
+            currentTextureApiId = triangles[i].texture->apiId;
+
+            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)triangles[i].texture->apiId);
 
             IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
                                                   D3DTSS_MIPFILTER,
@@ -243,14 +253,18 @@ void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s
                                                   D3DTSS_MAGFILTER,
                                                   (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
         }
+        else if (!triangles[i].texture)
+        {
+            currentTextureApiId = ~0;
+
+            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
+        }
 
         IDirect3DDevice7_DrawPrimitive(D3DDEVICE_7,
                                        D3DPT_TRIANGLELIST,
                                        D3DFVF_TLVERTEX,
                                        verts, 3,
                                        NULL);
-
-        IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
     }
 
     IDirect3DDevice7_EndScene(D3DDEVICE_7);

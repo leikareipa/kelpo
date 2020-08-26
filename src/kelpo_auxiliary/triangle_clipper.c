@@ -88,6 +88,15 @@ static void clip_polygon_component(struct vert_buffer_s *vertsIn,
             vertsOut->v[vertsOut->idx].z = KELPOA_LERP(prevVert->z, curVert->z, lerpStep);
             vertsOut->v[vertsOut->idx].w = KELPOA_LERP(prevVert->w, curVert->w, lerpStep);
 
+            vertsOut->v[vertsOut->idx].nx = KELPOA_LERP(prevVert->nx, curVert->nx, lerpStep);
+            vertsOut->v[vertsOut->idx].ny = KELPOA_LERP(prevVert->ny, curVert->ny, lerpStep);
+            vertsOut->v[vertsOut->idx].nz = KELPOA_LERP(prevVert->nz, curVert->nz, lerpStep);
+
+            vertsOut->v[vertsOut->idx].r = KELPOA_LERP(prevVert->r, curVert->r, lerpStep);
+            vertsOut->v[vertsOut->idx].g = KELPOA_LERP(prevVert->g, curVert->g, lerpStep);
+            vertsOut->v[vertsOut->idx].b = KELPOA_LERP(prevVert->b, curVert->b, lerpStep);
+            vertsOut->v[vertsOut->idx].a = KELPOA_LERP(prevVert->a, curVert->a, lerpStep);
+
             vertsOut->v[vertsOut->idx].u = KELPOA_LERP(prevVert->u, curVert->u, lerpStep);
             vertsOut->v[vertsOut->idx].v = KELPOA_LERP(prevVert->v, curVert->v, lerpStep);
 

@@ -232,6 +232,11 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
 
             for (v = 0; v < 3; v++)
             {
+                /* Convert from Kelpo's BGR to Glide's RGB.*/
+                uint8_t tmp = triangles[i].vertex[v].r;
+                triangles[i].vertex[v].r = triangles[i].vertex[v].b;
+                triangles[i].vertex[v].b = tmp;
+
                 triangles[i].vertex[v].u = ((triangles[i].vertex[v].u * triangles[i].vertex[v].w) * 256);
                 triangles[i].vertex[v].v = ((triangles[i].vertex[v].v * triangles[i].vertex[v].w) * 256);
             }

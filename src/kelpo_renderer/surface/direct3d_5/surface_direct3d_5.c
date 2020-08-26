@@ -42,12 +42,18 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = WINDOW_WIDTH;
     viewport.dwHeight = WINDOW_HEIGHT;
+    viewport.dvScaleX = WINDOW_WIDTH;
+    viewport.dvScaleY = WINDOW_HEIGHT;
 
-    kelpo_surface_directdraw_5__initialize_surface(WINDOW_WIDTH,
-                                                   WINDOW_HEIGHT,
-                                                   WINDOW_BIT_DEPTH,
-                                                   WINDOW_HANDLE,
-                                                   deviceGUID);
+     if (FAILED(hr = kelpo_surface_directdraw_5__initialize_surface(WINDOW_WIDTH,
+                                                                    WINDOW_HEIGHT,
+                                                                    WINDOW_BIT_DEPTH,
+                                                                    WINDOW_HANDLE,
+                                                                    deviceGUID)))
+    {
+        fprintf(stderr, "Direct3D 5: Failed to initialize the DirectDraw/Direct3D surface.");
+        return hr;
+    }
 
     if (FAILED(hr = kelpo_surface_directdraw_5__initialize_direct3d_5_interface(&DIRECT3D_5, &D3DDEVICE_5)))
     {
@@ -55,12 +61,27 @@ static HRESULT setup_direct3d(GUID deviceGUID)
         return hr;
     }
 
-    if (FAILED(hr = IDirect3D2_CreateViewport(DIRECT3D_5, &D3DVIEWPORT_5, NULL)) ||
-        FAILED(hr = IDirect3DDevice2_AddViewport(D3DDEVICE_5, D3DVIEWPORT_5)) ||
-        FAILED(hr = IDirect3DViewport2_SetViewport(D3DVIEWPORT_5, &viewport)) ||
-        FAILED(hr = IDirect3DDevice2_SetCurrentViewport(D3DDEVICE_5, D3DVIEWPORT_5)))
+    if (FAILED(hr = IDirect3D2_CreateViewport(DIRECT3D_5, &D3DVIEWPORT_5, NULL)))
     {
-        fprintf(stderr, "Direct3D 5: Failed to create the viewport.");
+        fprintf(stderr, "Direct3D 5: Failed to create the viewport (error 0x%x).\n", hr);
+        return hr;
+    }
+
+    if (FAILED(hr = IDirect3DDevice2_AddViewport(D3DDEVICE_5, D3DVIEWPORT_5)))
+    {
+        fprintf(stderr, "Direct3D 5: Failed to add the viewport to the Direct3D device (error 0x%x).\n", hr);
+        return hr;
+    }
+
+    if (FAILED(hr = IDirect3DViewport2_SetViewport(D3DVIEWPORT_5, &viewport)))
+    {
+        fprintf(stderr, "Direct3D 5: Failed to assign viewport parameters (error 0x%x).\n", hr);
+        return hr;
+    }
+
+    if (FAILED(hr = IDirect3DDevice2_SetCurrentViewport(D3DDEVICE_5, D3DVIEWPORT_5)))
+    {
+        fprintf(stderr, "Direct3D 5: Failed to make the viewport current (error 0x%x).\n", hr);
         return hr;
     }
 

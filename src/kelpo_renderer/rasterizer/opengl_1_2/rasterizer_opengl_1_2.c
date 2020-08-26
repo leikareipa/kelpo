@@ -162,7 +162,7 @@ void kelpo_rasterizer_opengl_1_2__draw_triangles(struct kelpo_polygon_triangle_s
                 for (v = 0; v < 3; v++)
                 {
                     glColor3ub(triangles[i].vertex[v].r, triangles[i].vertex[v].g, triangles[i].vertex[v].b);
-                    glVertex2f(triangles[i].vertex[v].x, -triangles[i].vertex[v].y);
+                    glVertex3f(triangles[i].vertex[v].x, -triangles[i].vertex[v].y, -triangles[i].vertex[v].z);
                 }
             glEnd();
         }

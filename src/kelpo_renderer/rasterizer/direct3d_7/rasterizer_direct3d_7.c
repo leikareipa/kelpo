@@ -243,7 +243,7 @@ void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s
 
             IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
                                                   D3DTSS_MIPFILTER,
-                                                  (mipmapEnabled? mipmapFilter : FALSE));
+                                                  (mipmapEnabled? mipmapFilter : D3DTFP_NONE));
 
             IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
                                                   D3DTSS_MINFILTER,

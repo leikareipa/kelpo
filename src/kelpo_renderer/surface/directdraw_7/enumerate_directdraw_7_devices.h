@@ -36,7 +36,7 @@ struct kelpo_directdraw7_device_list_s
 };
 
 /* Returns a list of all DirectDraw 7 devices on this PC.*/
-kelpo_directdraw7_device_list_s kelpo_enumerate_directdraw7_devices(void);
+struct kelpo_directdraw7_device_list_s kelpo_enumerate_directdraw7_devices(void);
 
 /* Returns the GUID of the idx'th DirectDraw 7 device on this PC.*/
 GUID kelpo_directdraw7_device_guid(unsigned deviceIdx);

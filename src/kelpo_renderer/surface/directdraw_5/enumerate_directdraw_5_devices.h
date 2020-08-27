@@ -36,7 +36,7 @@ struct kelpo_directdraw5_device_list_s
 };
 
 /* Returns a list of all DirectDraw 5 devices on this PC.*/
-kelpo_directdraw5_device_list_s kelpo_enumerate_directdraw5_devices(void);
+struct kelpo_directdraw5_device_list_s kelpo_enumerate_directdraw5_devices(void);
 
 /* Returns the GUID of the idx'th DirectDraw 5 device on this PC.*/
 GUID kelpo_directdraw5_device_guid(unsigned deviceIdx);

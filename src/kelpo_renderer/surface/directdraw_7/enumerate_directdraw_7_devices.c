@@ -38,7 +38,7 @@ static BOOL WINAPI device_enum_callback(GUID *deviceGUID,
     return 1;
 }
 
-kelpo_directdraw7_device_list_s kelpo_enumerate_directdraw7_devices(void)
+struct kelpo_directdraw7_device_list_s kelpo_enumerate_directdraw7_devices(void)
 {
     struct kelpo_directdraw7_device_list_s deviceList;
 

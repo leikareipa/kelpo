@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <kelpo_renderer/surface/opengl_1_2/surface_opengl_1_2.h>
 #include <kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <gl/glu.h>

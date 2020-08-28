@@ -17,7 +17,7 @@ src/kelpo_renderer/surface/directdraw_5/create_directdraw_5_surface_from_texture
 src/kelpo_renderer/rasterizer/direct3d_5/rasterizer_direct3d_5.c
 src/kelpo_renderer/surface/direct3d_5/surface_direct3d_5.c
 src/kelpo_renderer/surface/directdraw_5/surface_directdraw_5.c
-src/kelpo_renderer/window/window_win32.c
+src/kelpo_renderer/window/win32/window_win32.c
 src/kelpo_auxiliary/generic_stack.c
 "
 

@@ -13,7 +13,7 @@
 #include <kelpo_renderer/surface/directdraw_5/enumerate_directdraw_5_devices.h>
 #include <kelpo_renderer/surface/directdraw_5/surface_directdraw_5.h>
 #include <kelpo_renderer/surface/direct3d_5/surface_direct3d_5.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <d3d.h>

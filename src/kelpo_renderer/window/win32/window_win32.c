@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 
 static char WINDOW_CLASS_NAME[] = "KelpoDisplay";
 static char WINDOW_TITLE[64];

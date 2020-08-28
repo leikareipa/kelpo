@@ -16,7 +16,7 @@
 #include <kelpo_renderer/surface/directdraw_6/enumerate_directdraw_6_devices.h>
 #include <kelpo_renderer/surface/direct3d_6/surface_direct3d_6.h>
 #include <kelpo_renderer/rasterizer/direct3d_6/rasterizer_direct3d_6.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <d3d.h>

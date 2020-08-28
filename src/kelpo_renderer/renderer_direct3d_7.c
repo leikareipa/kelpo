@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <kelpo_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <kelpo_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 #include <kelpo_interface/interface.h>
 
 static const char RENDERER_NAME[] = "Direct3D 7";

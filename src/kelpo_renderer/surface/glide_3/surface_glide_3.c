@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <kelpo_renderer/surface/glide_3/surface_glide_3.h>
 #include <kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
-#include <kelpo_renderer/window/window_win32.h>
+#include <kelpo_renderer/window/win32/window_win32.h>
 
 #include <windows.h>
 #include <glide/glide.h>

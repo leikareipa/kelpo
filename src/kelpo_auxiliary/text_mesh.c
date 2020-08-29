@@ -34,7 +34,7 @@ static const unsigned NUM_CHARS_PER_VERTICAL_LINE = 16;
 
 /* The dimensions of each individual character in the string mesh (not in
  * the character set texture).*/
-static const unsigned CHAR_WIDTH = 32;
+static const unsigned CHAR_WIDTH = 19;
 static const unsigned CHAR_HEIGHT = 32;
 
 /* Creates a quad of two triangles into the given triangle stack, representing
@@ -51,8 +51,8 @@ static void add_character(struct kelpoa_generic_stack_s *dstTriangles,
     /* Calculate the UV coordinates in the character set texture of this particular
      * character.*/
     const int charId = (chr - ' ');
-    const float uStart = ((1.0 / NUM_CHARS_PER_HORIZONTAL_LINE) * (charId % 16));
-    const float uEnd = (uStart + (1.0 / NUM_CHARS_PER_HORIZONTAL_LINE) - FLT_MIN);
+    const float uStart = ((1.0 / NUM_CHARS_PER_HORIZONTAL_LINE) * (charId % 16)) + (0.2 / NUM_CHARS_PER_HORIZONTAL_LINE);
+    const float uEnd = (uStart + (0.55 / NUM_CHARS_PER_HORIZONTAL_LINE) - FLT_MIN);
     const float vStart = (1.0 / NUM_CHARS_PER_VERTICAL_LINE) * (charId / 16) + 0.5;
     const float vEnd = (vStart + (1.0 / NUM_CHARS_PER_VERTICAL_LINE) - FLT_MIN);
 
@@ -119,7 +119,7 @@ static void add_character(struct kelpoa_generic_stack_s *dstTriangles,
 
 unsigned kelpoa_text_mesh__character_width(void)
 {
-    return (CHAR_WIDTH / 2);
+    return CHAR_WIDTH;
 }
 
 unsigned kelpoa_text_mesh__character_height(void)
@@ -141,7 +141,7 @@ void kelpoa_text_mesh__print(struct kelpoa_generic_stack_s *const dstTriangles,
         add_character(dstTriangles, *text, r, g, b, posX, posY, scale);
 
         text++;
-        posX += ((CHAR_WIDTH / 2) * scale);
+        posX += (CHAR_WIDTH * scale);
     }
 
     return;

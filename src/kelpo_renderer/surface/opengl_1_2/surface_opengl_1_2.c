@@ -122,7 +122,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
     memset(&pfd, 0, sizeof(pfd));
     pfd.nSize = sizeof(pfd);
     pfd.nVersion = 1;
-    pfd.dwFlags = (PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER);
+    pfd.dwFlags = (PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER);
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.iLayerType = PFD_MAIN_PLANE;
     pfd.cColorBits = 3;

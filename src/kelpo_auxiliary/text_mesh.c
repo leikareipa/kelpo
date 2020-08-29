@@ -34,7 +34,7 @@ static const unsigned NUM_CHARS_PER_VERTICAL_LINE = 16;
 
 /* The dimensions of each individual character in the string mesh (not in
  * the character set texture).*/
-static const unsigned CHAR_WIDTH = 19;
+static const unsigned CHAR_WIDTH = 18;
 static const unsigned CHAR_HEIGHT = 32;
 
 /* Creates a quad of two triangles into the given triangle stack, representing

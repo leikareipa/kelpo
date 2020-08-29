@@ -5,7 +5,7 @@
 #include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
-#define KELPO_INTERFACE_VERSION_MINOR 2 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
+#define KELPO_INTERFACE_VERSION_MINOR 4 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
 
 /* A user-provided function that will receive the renderer window's messages.*/

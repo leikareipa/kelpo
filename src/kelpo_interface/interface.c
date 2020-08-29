@@ -20,6 +20,10 @@ struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_opengl_1_2.dll", "import_renderer");
     }
+    else if (strcmp("opengl_3_0", rasterizerName) == 0)
+    {
+        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_opengl_3_0.dll", "import_renderer");
+    }
     else if (strcmp("glide_3", rasterizerName) == 0)
     {
         import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_glide_3.dll", "import_renderer");

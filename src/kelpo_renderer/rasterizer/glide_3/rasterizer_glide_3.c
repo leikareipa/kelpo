@@ -30,15 +30,24 @@ static const unsigned MIN_TEXTURE_SIZE = 2;
  * data can be uploaded. This will be incremented as textures are loaded in.*/
 static FxU32 CURRENT_TEXTURE_ADDRESS = 0;
 
+/* NOTE: This struct would ideally not be padded further by the compiler,
+ * since we manually pass its byte-level structure to grVertexLayout().*/
+struct glide_vertex_s
+{
+    float x, y, q;
+    float u, v;
+    uint32_t rgba; /* Each of the four color channels takes 1 byte.*/
+};
+
 void kelpo_rasterizer_glide_3__initialize(void)
 {
     grColorMask(FXTRUE, FXFALSE);
 
-    /* Vertex data layout matches that in the kelpo_polygon_vertex_s struct.*/
+    /* Vertex data layout matches that in the glide_vertex_s struct.*/
     grVertexLayout(GR_PARAM_XY, 0, GR_PARAM_ENABLE);
-    grVertexLayout(GR_PARAM_Q, 12, GR_PARAM_ENABLE); /* Corresponds to 1/w in kelpo_polygon_vertex_s.*/
-    grVertexLayout(GR_PARAM_ST0, 28, GR_PARAM_ENABLE);
-    grVertexLayout(GR_PARAM_PARGB, 36, GR_PARAM_ENABLE);
+    grVertexLayout(GR_PARAM_Q, 8, GR_PARAM_ENABLE);
+    grVertexLayout(GR_PARAM_ST0, 12, GR_PARAM_ENABLE);
+    grVertexLayout(GR_PARAM_PARGB, 20, GR_PARAM_ENABLE);
 
     grDepthBufferMode(GR_DEPTHBUFFER_WBUFFER);
     grDepthBufferFunction(GR_CMP_LESS); 
@@ -216,6 +225,20 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
 
     for (i = 0; i < numTriangles; i++)
     {
+        struct glide_vertex_s verts[3];
+
+        for (v = 0; v < 3; v++)
+        {
+            verts[v].x = triangles[i].vertex[v].x;
+            verts[v].y = triangles[i].vertex[v].y;
+            verts[v].q = triangles[i].vertex[v].w;
+
+            ((char*)&verts[v].rgba)[0] = triangles[i].vertex[v].b;
+            ((char*)&verts[v].rgba)[1] = triangles[i].vertex[v].g;
+            ((char*)&verts[v].rgba)[2] = triangles[i].vertex[v].r;
+            ((char*)&verts[v].rgba)[3] = triangles[i].vertex[v].a;
+        }
+
         if (!triangles[i].texture)
         {
             grColorCombine(GR_COMBINE_FUNCTION_LOCAL,
@@ -232,13 +255,8 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
 
             for (v = 0; v < 3; v++)
             {
-                /* Convert from Kelpo's BGR to Glide's RGB.*/
-                uint8_t tmp = triangles[i].vertex[v].r;
-                triangles[i].vertex[v].r = triangles[i].vertex[v].b;
-                triangles[i].vertex[v].b = tmp;
-
-                triangles[i].vertex[v].u = ((triangles[i].vertex[v].u * triangles[i].vertex[v].w) * 256);
-                triangles[i].vertex[v].v = ((triangles[i].vertex[v].v * triangles[i].vertex[v].w) * 256);
+                verts[v].u = ((triangles[i].vertex[v].u * triangles[i].vertex[v].w) * 256);
+                verts[v].v = ((triangles[i].vertex[v].v * triangles[i].vertex[v].w) * 256);
             }
 
             grTexFilterMode(GR_TMU0,
@@ -262,9 +280,9 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
                            FXFALSE);
         }
 
-        grDrawTriangle(&triangles[i].vertex[0],
-                       &triangles[i].vertex[1],
-                       &triangles[i].vertex[2]);
+        grDrawTriangle(&verts[0],
+                       &verts[1],
+                       &verts[2]);
     }
 
     return;

@@ -298,11 +298,11 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
             const int isEndOfTriangles = (numTrianglesProcessed >= numTriangles);
 
             const int hasTexture = (triangle->texture != NULL);
-            const unsigned currentApiId = (hasTexture? triangle->texture->apiId : 0);
+            const uint32_t currentApiId = (hasTexture? triangle->texture->apiId : 0);
             
             const struct kelpo_polygon_triangle_s *nextTriangle = (isEndOfTriangles? NULL : (triangle + 1));
             const int nextHasTexture = (nextTriangle? (nextTriangle->texture != NULL) : 0);
-            const unsigned nextApiId = (nextHasTexture? nextTriangle->texture->apiId : 0);
+            const uint32_t nextApiId = (nextHasTexture? nextTriangle->texture->apiId : 0);
             const int isEndOfBatch = (isEndOfTriangles || (nextApiId != currentApiId));
 
             if (isEndOfBatch)

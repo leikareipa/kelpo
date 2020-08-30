@@ -19,6 +19,10 @@ void kelpoa_triprepr__duplicate_triangles(const struct kelpoa_generic_stack_s *c
 void kelpoa_triprepr__transform_triangles(struct kelpoa_generic_stack_s *const triangles,
                                           struct kelpoa_matrix44_s *const matrix);
 
+/* Transforms the given triangles' vertex normals by the given 4-by-4 matrix.*/
+void kelpoa_triprepr__transform_triangle_normals(struct kelpoa_generic_stack_s *const triangles,
+                                                 struct kelpoa_matrix44_s *const matrix);
+
 /* Rotates the given triangles' vertices around the origin 0, 0, 0. Expects the
  * triangles to be in world space.*/
 void kelpoa_triprepr__rotate_triangles(struct kelpoa_generic_stack_s *const triangles,
@@ -41,10 +45,15 @@ void kelpoa_triprepr__scale_triangles(struct kelpoa_generic_stack_s *const trian
                                       const float z);
 
 /* Clips the given triangles against the view frustum. Expects the triangles
- * to be in world space. The vertices will be transformed into screen space.*/
+ * to be in world space, having been translated, rotated, and/or scaled to
+ * their final positions for rendering. The vertices will be transformed into
+ * screen space. The results of the clipping and transformation will be placed
+ * in the given 'screenSpaceTriangles' stack (the original triangles will not
+ * be modified).*/
 void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_stack_s *const triangles,
                                                   struct kelpoa_generic_stack_s *const screenSpaceTriangles,
                                                   const struct kelpoa_matrix44_s *const clipSpaceMatrix,
-                                                  const struct kelpoa_matrix44_s *const screenSpaceMatrix);
+                                                  const struct kelpoa_matrix44_s *const screenSpaceMatrix,
+                                                  const int backfaceCull);
 
 #endif

@@ -27,10 +27,17 @@
  * pointer to the texture's DirectDraw 7 surface.*/
 static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
 
+/* For temporary storage of vertices during rendering. Stack elements will be
+ * of type D3DTLVERTEX.*/
+static struct kelpoa_generic_stack_s *D3D7_VERTEX_CACHE;
+
 extern LPDIRECT3DDEVICE7 D3DDEVICE_7;
 
 void kelpo_rasterizer_direct3d_7__initialize(void)
 {
+    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE7));
+    D3D7_VERTEX_CACHE = kelpoa_generic_stack__create(1000, sizeof(D3DTLVERTEX));
+
     IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
     
     IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0, D3DTSS_MINFILTER, D3DTFN_LINEAR);
@@ -45,14 +52,13 @@ void kelpo_rasterizer_direct3d_7__initialize(void)
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHATESTENABLE, TRUE);
     IDirect3DDevice7_SetRenderState(D3DDEVICE_7, D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
 
-    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE7));
-
     return;
 }
 
 void kelpo_rasterizer_direct3d_7__release(void)
 {
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__free(D3D7_VERTEX_CACHE);
 
     return;
 }
@@ -196,75 +202,110 @@ void kelpo_rasterizer_direct3d_7__purge_textures(void)
 void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles)
 {
-    unsigned i = 0;
+    unsigned numTrianglesProcessed = 0;
+    unsigned numTrianglesInBatch = 0;
+    const struct kelpo_polygon_triangle_s *triangle = triangles;
 
-    /* We'll keep track of which texture we've rendered with most recently, so
-     * we'll know not to re-set the texture pipeline's state if we're rendering
-     * with the same texture again. A value of ~0 is assumed to mean "unknown"
-     * or "most recent triangle was untextured" - this further assumes that
-     * valid texture ids can never have that value. */ 
-    unsigned currentTextureApiId = ~0;
+    if ((3 * numTriangles) > D3D7_VERTEX_CACHE->capacity)
+    {
+        kelpoa_generic_stack__grow(D3D7_VERTEX_CACHE, (3 * numTriangles));
+    }
 
     if (FAILED(IDirect3DDevice7_BeginScene(D3DDEVICE_7)))
     {
         return;
     }
 
-    for (i = 0; i < numTriangles; i++)
+    /* Render the triangles in batches. Each batch consists of consecutive
+     * triangles that share a texture.*/
+    while (1)
     {
-        unsigned v = 0;
-        D3DTLVERTEX verts[3];
-
-        for (v = 0; v < 3; v++)
+        D3DTLVERTEX *const vertexCache = (D3DTLVERTEX*)D3D7_VERTEX_CACHE->data;
+        
+        /* Add the current triangle into the batch.*/
         {
-            verts[v].sx = triangles[i].vertex[v].x;
-            verts[v].sy = triangles[i].vertex[v].y;
-            verts[v].sz = triangles[i].vertex[v].z;
-            verts[v].rhw = triangles[i].vertex[v].w;
-            verts[v].tu = triangles[i].vertex[v].u;
-            verts[v].tv = triangles[i].vertex[v].v;
-            verts[v].color = RGBA_MAKE(triangles[i].vertex[v].r,
-                                       triangles[i].vertex[v].g,
-                                       triangles[i].vertex[v].b,
-                                       triangles[i].vertex[v].a);
+            unsigned v = 0;
+
+            for (v = 0; v < 3; v++)
+            {
+                const struct kelpo_polygon_vertex_s *const srcVertex = &triangle->vertex[v];
+                D3DTLVERTEX *const dstVertex = &vertexCache[(numTrianglesInBatch * 3) + v];
+
+                memset(dstVertex, 0, sizeof(D3DTLVERTEX));
+
+                dstVertex->sx = srcVertex->x;
+                dstVertex->sy = srcVertex->y;
+                dstVertex->sz = srcVertex->z;
+                dstVertex->rhw = srcVertex->w;
+                dstVertex->tu = srcVertex->u;
+                dstVertex->tv = srcVertex->v;
+                dstVertex->color = RGBA_MAKE(srcVertex->r,
+                                             srcVertex->g,
+                                             srcVertex->b,
+                                             srcVertex->a);
+            }
+
+            numTrianglesInBatch++;
+            numTrianglesProcessed++;
         }
 
-        /* TODO: Reduce state-switching.*/
-
-        if (triangles[i].texture &&
-            (triangles[i].texture->apiId != currentTextureApiId))
+        /* If we're at the end of the current batch, render its triangles and
+         * start a new batch.*/
         {
-            const int mipmapEnabled = (triangles[i].texture->numMipLevels > 1);
-            const int mipmapFilter = (triangles[i].texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
+            const int isEndOfTriangles = (numTrianglesProcessed >= numTriangles);
 
-            currentTextureApiId = triangles[i].texture->apiId;
+            const int hasTexture = (triangle->texture != NULL);
+            const uint32_t currentApiId = (hasTexture? triangle->texture->apiId : 0);
+            
+            const struct kelpo_polygon_triangle_s *nextTriangle = (isEndOfTriangles? NULL : (triangle + 1));
+            const int nextHasTexture = (nextTriangle? (nextTriangle->texture != NULL) : 0);
+            const uint32_t nextApiId = (nextHasTexture? nextTriangle->texture->apiId : 0);
+            const int isEndOfBatch = (isEndOfTriangles || (nextApiId != currentApiId));
 
-            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)triangles[i].texture->apiId);
+            if (isEndOfBatch)
+            {
+                const unsigned numVerts = (3 * numTrianglesInBatch);
 
-            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                                  D3DTSS_MIPFILTER,
-                                                  (mipmapEnabled? mipmapFilter : D3DTFP_NONE));
+                if (!hasTexture)
+                {
+                    IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
+                }
+                else
+                {
+                    const int mipmapEnabled = (triangle->texture->numMipLevels > 1);
+                    const int mipmapFilter = (triangle->texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
 
-            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                                  D3DTSS_MINFILTER,
-                                                  (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+                    IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)triangle->texture->apiId);
 
-            IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
-                                                  D3DTSS_MAGFILTER,
-                                                  (triangles[i].texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+                    IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                          D3DTSS_MIPFILTER,
+                                                          (mipmapEnabled? mipmapFilter : D3DTFP_NONE));
+
+                    IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                          D3DTSS_MINFILTER,
+                                                          (triangle->texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+
+                    IDirect3DDevice7_SetTextureStageState(D3DDEVICE_7, 0,
+                                                          D3DTSS_MAGFILTER,
+                                                          (triangle->texture->flags.noFiltering? D3DTFN_POINT : D3DTFN_LINEAR));
+                }
+
+                IDirect3DDevice7_DrawPrimitive(D3DDEVICE_7,
+                                               D3DPT_TRIANGLELIST,
+                                               D3DFVF_TLVERTEX,
+                                               vertexCache, numVerts,
+                                               NULL);
+
+                if (isEndOfTriangles)
+                {
+                    break;
+                }
+
+                numTrianglesInBatch = 0;
+            }
         }
-        else if (!triangles[i].texture)
-        {
-            currentTextureApiId = ~0;
 
-            IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
-        }
-
-        IDirect3DDevice7_DrawPrimitive(D3DDEVICE_7,
-                                       D3DPT_TRIANGLELIST,
-                                       D3DFVF_TLVERTEX,
-                                       verts, 3,
-                                       NULL);
+        triangle++;
     }
 
     IDirect3DDevice7_EndScene(D3DDEVICE_7);

@@ -245,11 +245,13 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
 {
     unsigned i = 0;
     GLuint lastBoundTexture = 0; /* Assumes OpenGL never generates texture id 0.*/
+    struct gl3_vertex_s verts[3];
+
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(verts), NULL, GL_DYNAMIC_DRAW);
 
     for (i = 0; i < numTriangles; i++)
     {
         unsigned v = 0;
-        struct gl3_vertex_s verts[3];
 
         if (!triangles[i].texture)
         {
@@ -281,9 +283,9 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
             verts[v].a = (srcVertex->a / 255.0);
         }
 
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(verts), verts, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)sizeof(verts), verts);
         
-        glDrawArrays(GL_TRIANGLES, 0, (numTriangles * 3));
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
     return;

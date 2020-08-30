@@ -97,9 +97,11 @@
 #define GL_STENCIL_BACK_WRITEMASK 0x8CA5
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_STATIC_DRAW 0x88E4
+#define GL_DYNAMIC_DRAW 0x88E8
 
 typedef char GLchar;
 typedef ptrdiff_t GLsizeiptr;
+typedef ptrdiff_t GLintptr;
 
 typedef GLuint (GLAPIENTRY *PFNGLCREATEPROGRAMPROC)(void);
 extern PFNGLCREATEPROGRAMPROC glCreateProgram;
@@ -136,6 +138,9 @@ extern PFNGLBINDBUFFERPROC glBindBuffer;
 
 typedef void (GLAPIENTRY *PFNGLBUFFERDATAPROC)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
 extern PFNGLBUFFERDATAPROC glBufferData;
+
+typedef void (GLAPIENTRY *PFNGLBUFFERSUBDATAPROC)(GLenum target, GLintptr offset, GLsizeiptr size, const void* data);
+extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
 typedef void (GLAPIENTRY *PFNGLGENVERTEXARRAYSPROC)(GLsizei n, GLuint* arrays);
 extern PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;

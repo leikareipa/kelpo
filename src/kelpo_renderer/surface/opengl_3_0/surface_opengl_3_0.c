@@ -47,6 +47,7 @@ PFNGLUSEPROGRAMPROC glUseProgram;
 PFNGLGENBUFFERSPROC glGenBuffers;
 PFNGLBINDBUFFERPROC glBindBuffer;
 PFNGLBUFFERDATAPROC glBufferData;
+PFNGLBUFFERSUBDATAPROC glBufferSubData;
 PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
 PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
 PFNGLGETATTRIBLOCATIONPROC glGetAttribLocation;
@@ -122,6 +123,9 @@ static int initialize_extensions(void)
             
         glBufferData =
             (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
+
+        glBufferSubData =
+            (PFNGLBUFFERSUBDATAPROC)wglGetProcAddress("glBufferSubData");
             
         glGenVertexArrays =
             (PFNGLGENVERTEXARRAYSPROC)wglGetProcAddress("glGenVertexArrays");

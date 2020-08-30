@@ -5,6 +5,7 @@
  * 
  */
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <assert.h>
 #include <string.h>
@@ -23,6 +24,10 @@
  * ID as returned by glGenTextures().*/
 static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
 
+/* For temporary storage of vertices during rendering. Stack elements will be
+ * of type struct gl3_vertex_s.*/
+static struct kelpoa_generic_stack_s *GL3_VERTEX_CACHE;
+
 struct gl3_vertex_s
 {
     float x, y, z, w;
@@ -33,6 +38,9 @@ struct gl3_vertex_s
 void kelpo_rasterizer_opengl_3_0__initialize(void)
 {
     GLuint shaderProgram = glCreateProgram();
+
+    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(GLuint));
+    GL3_VERTEX_CACHE = kelpoa_generic_stack__create(1000, sizeof(struct gl3_vertex_s));
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -46,8 +54,6 @@ void kelpo_rasterizer_opengl_3_0__initialize(void)
     #ifdef GL_GENERATE_MIPMAP
         glDisable(GL_GENERATE_MIPMAP);
     #endif
-
-    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(GLuint));
 
     /* Compile the vertex and fragment shaders.*/
     {
@@ -140,6 +146,7 @@ void kelpo_rasterizer_opengl_3_0__initialize(void)
 void kelpo_rasterizer_opengl_3_0__release(void)
 {
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
+    kelpoa_generic_stack__free(GL3_VERTEX_CACHE);
 
     return;
 }
@@ -243,49 +250,92 @@ void kelpo_rasterizer_opengl_3_0__purge_textures(void)
 void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles)
 {
-    unsigned i = 0;
-    GLuint lastBoundTexture = 0; /* Assumes OpenGL never generates texture id 0.*/
-    struct gl3_vertex_s verts[3];
+    unsigned numTrianglesProcessed = 0;
+    unsigned numTrianglesInBatch = 0;
+    const struct kelpo_polygon_triangle_s *triangle = triangles;
 
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(verts), NULL, GL_DYNAMIC_DRAW);
-
-    for (i = 0; i < numTriangles; i++)
+    if ((3 * numTriangles) > GL3_VERTEX_CACHE->capacity)
     {
-        unsigned v = 0;
+        kelpoa_generic_stack__grow(GL3_VERTEX_CACHE, (3 * numTriangles));
+    }
 
-        if (!triangles[i].texture)
-        {
-            glDisable(GL_TEXTURE_2D);
-        }
-        else
-        {
-            glEnable(GL_TEXTURE_2D);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(struct gl3_vertex_s) * 3 * numTriangles), NULL, GL_DYNAMIC_DRAW);
 
-            if (triangles[i].texture->apiId != lastBoundTexture)
+    /* Render the triangles in batches. Each batch consists of consecutive
+     * triangles that share a texture.*/
+    while (1)
+    {
+        struct gl3_vertex_s *const vertexCache = (struct gl3_vertex_s*)GL3_VERTEX_CACHE->data;
+        
+        /* Add the current triangle into the batch.*/
+        {
+            unsigned v = 0;
+
+            for (v = 0; v < 3; v++)
             {
-                glBindTexture(GL_TEXTURE_2D, triangles[i].texture->apiId);
+                const struct kelpo_polygon_vertex_s *const srcVertex = &triangle->vertex[v];
+                struct gl3_vertex_s *const dstVertex = &vertexCache[(numTrianglesInBatch * 3) + v];
+
+                dstVertex->x = srcVertex->x;
+                dstVertex->y = -srcVertex->y;
+                dstVertex->z = -srcVertex->z;
+                dstVertex->w = srcVertex->w;
+                dstVertex->u = srcVertex->u;
+                dstVertex->v = srcVertex->v;
+                dstVertex->r = (srcVertex->r / 255.0);
+                dstVertex->g = (srcVertex->g / 255.0);
+                dstVertex->b = (srcVertex->b / 255.0);
+                dstVertex->a = (srcVertex->a / 255.0);
+            }
+
+            numTrianglesInBatch++;
+            numTrianglesProcessed++;
+        }
+
+        /* If we're at the end of the current batch, render its triangles and
+         * start a new batch.*/
+        {
+            const int isEndOfTriangles = (numTrianglesProcessed >= numTriangles);
+
+            const int hasTexture = (triangle->texture != NULL);
+            const unsigned currentApiId = (hasTexture? triangle->texture->apiId : 0);
+            
+            const struct kelpo_polygon_triangle_s *nextTriangle = (isEndOfTriangles? NULL : (triangle + 1));
+            const int nextHasTexture = (nextTriangle? (nextTriangle->texture != NULL) : 0);
+            const unsigned nextApiId = (nextHasTexture? nextTriangle->texture->apiId : 0);
+            const int isEndOfBatch = (isEndOfTriangles || (nextApiId != currentApiId));
+
+            if (isEndOfBatch)
+            {
+                const unsigned numVerts = (3 * numTrianglesInBatch);
+
+                if (!hasTexture)
+                {
+                    glDisable(GL_TEXTURE_2D);
+                }
+                else
+                {
+                    glEnable(GL_TEXTURE_2D);
+                    glBindTexture(GL_TEXTURE_2D, currentApiId);
+                }
+
+                glBufferSubData(GL_ARRAY_BUFFER,
+                                0,
+                                (GLsizeiptr)(sizeof(struct gl3_vertex_s) * numVerts),
+                                vertexCache);
+
+                glDrawArrays(GL_TRIANGLES, 0, numVerts);
+
+                if (isEndOfTriangles)
+                {
+                    break;
+                }
+
+                numTrianglesInBatch = 0;
             }
         }
 
-        for (v = 0; v < 3; v++)
-        {
-            const struct kelpo_polygon_vertex_s *srcVertex = &triangles[i].vertex[v];
-
-            verts[v].x = srcVertex->x;
-            verts[v].y = -srcVertex->y;
-            verts[v].z = -srcVertex->z;
-            verts[v].w = srcVertex->w;
-            verts[v].u = srcVertex->u;
-            verts[v].v = srcVertex->v;
-            verts[v].r = (srcVertex->r / 255.0);
-            verts[v].g = (srcVertex->g / 255.0);
-            verts[v].b = (srcVertex->b / 255.0);
-            verts[v].a = (srcVertex->a / 255.0);
-        }
-
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)sizeof(verts), verts);
-        
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        triangle++;
     }
 
     return;

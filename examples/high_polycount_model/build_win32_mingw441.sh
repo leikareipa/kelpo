@@ -7,9 +7,11 @@ OUTPUT_FILE="../../bin/high_polycount_model.exe"
 
 SRC_FILES="
 src/main.c
-../common_src/transform_and_rotate_triangles.c
 ../common_src/default_window_message_handler.c
 ../common_src/parse_command_line.c
+../../src/kelpo_auxiliary/triangle_preparer.c
+../../src/kelpo_auxiliary/matrix_44.c
+../../src/kelpo_auxiliary/vector_3.c
 ../../src/kelpo_auxiliary/generic_stack.c
 ../../src/kelpo_auxiliary/triangle_clipper.c
 ../../src/kelpo_auxiliary/load_kac_1_0_mesh.c

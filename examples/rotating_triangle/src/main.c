@@ -11,12 +11,17 @@
 #include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_auxiliary/misc.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
+#include <kelpo_auxiliary/triangle_preparer.h>
+#include <kelpo_auxiliary/matrix_44.h>
 #include <kelpo_interface/interface.h>
-#include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
 
 #include <windows.h>
+
+/* The default render resolution. Note: The render resolution may be modified
+ * by command-line arguments.*/
+static struct { unsigned width; unsigned height; unsigned bpp; } RENDER_RESOLUTION = {640, 480, 16};
 
 int main(int argc, char *argv[])
 {
@@ -29,11 +34,14 @@ int main(int argc, char *argv[])
      * effect, however.*/
     unsigned vsyncEnabled = 1;
 
-    struct { unsigned width; unsigned height; unsigned bpp; } renderResolution = {640, 480, 16};
     struct kelpo_interface_s renderer = kelpo_create_interface("opengl_1_2");
 
     struct kelpoa_generic_stack_s *triangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
-    struct kelpoa_generic_stack_s *transformedTriangles = kelpoa_generic_stack__create(triangles->capacity, sizeof(struct kelpo_polygon_triangle_s));
+    struct kelpoa_generic_stack_s *worldSpaceTriangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
+    struct kelpoa_generic_stack_s *screenSpaceTriangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
+
+    struct kelpoa_matrix44_s clipSpaceMatrix;
+    struct kelpoa_matrix44_s screenSpaceMatrix;
 
     /* Process any relevant command-line parameters.*/
     {
@@ -54,20 +62,20 @@ int main(int argc, char *argv[])
                 }
                 case 'w':
                 {
-                    renderResolution.width = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((renderResolution.width != 0u) && "Invalid render width.");
+                    RENDER_RESOLUTION.width = strtoul(kelpo_cliparse_optarg(), NULL, 10);
+                    assert((RENDER_RESOLUTION.width != 0u) && "Invalid render width.");
                     break;
                 }
                 case 'h':
                 {
-                    renderResolution.height = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((renderResolution.height != 0u) && "Invalid render height.");
+                    RENDER_RESOLUTION.height = strtoul(kelpo_cliparse_optarg(), NULL, 10);
+                    assert((RENDER_RESOLUTION.height != 0u) && "Invalid render height.");
                     break;
                 }
                 case 'b':
                 {
-                    renderResolution.bpp = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((renderResolution.bpp != 0u) && "Invalid render bit depth.");
+                    RENDER_RESOLUTION.bpp = strtoul(kelpo_cliparse_optarg(), NULL, 10);
+                    assert((RENDER_RESOLUTION.bpp != 0u) && "Invalid render bit depth.");
                     break;
                 }
                 case 'd':
@@ -85,15 +93,13 @@ int main(int argc, char *argv[])
 
     /* Initialize the renderer.*/
     {
-        renderer.initialize(renderResolution.width,
-                            renderResolution.height,
-                            renderResolution.bpp,
+        renderer.initialize(RENDER_RESOLUTION.width,
+                            RENDER_RESOLUTION.height,
+                            RENDER_RESOLUTION.bpp,
                             vsyncEnabled,
                             renderDeviceIdx);
 
         renderer.window.set_message_handler(default_window_message_handler);
-
-        trirot_initialize_screen_geometry(renderResolution.width, renderResolution.height);
     }
 
     /* Create the triangle that will be rendered in the middle of the screen.*/
@@ -101,6 +107,8 @@ int main(int argc, char *argv[])
         struct kelpo_polygon_triangle_s triangle;
 
         memset(&triangle, 0, sizeof(triangle));
+
+        triangle.texture = NULL;
 
         triangle.vertex[0].x = -1;
         triangle.vertex[0].y = -1;
@@ -147,26 +155,42 @@ int main(int argc, char *argv[])
         kelpoa_generic_stack__push_copy(triangles, &triangle);
     }
 
+    kelpoa_matrix44__make_clip_space_matrix(&clipSpaceMatrix,
+                                            KELPOA_DEG_TO_RAD(60),
+                                            (RENDER_RESOLUTION.width / (float)RENDER_RESOLUTION.height),
+                                            0.1,
+                                            100);
+
+    kelpoa_matrix44__make_screen_space_matrix(&screenSpaceMatrix,
+                                              (RENDER_RESOLUTION.width / 2.0f),
+                                              (RENDER_RESOLUTION.height / 2.0f));
+
     /* Render.*/
     while (renderer.window.is_open())
     {
+        static float rotX = 0, rotY = 0, rotZ = 0;
+        rotY += 0.01;
+
         renderer.window.process_events();
 
-        kelpoa_generic_stack__clear(transformedTriangles);
-        trirot_transform_and_rotate_triangles(triangles,
-                                              transformedTriangles,
-                                              0, 0, 3,
-                                              0, 0.01, 0);
+        /* Transform the scene's triangles into screen space.*/
+        kelpoa_generic_stack__clear(worldSpaceTriangles);
+        kelpoa_generic_stack__clear(screenSpaceTriangles);
+        kelpoa_triprepr__duplicate_triangles(triangles, worldSpaceTriangles);
+        kelpoa_triprepr__rotate_triangles(worldSpaceTriangles, rotX, rotY, rotZ);
+        kelpoa_triprepr__translate_triangles(worldSpaceTriangles, 0, 0, 3);
+        kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles, screenSpaceTriangles, &clipSpaceMatrix, &screenSpaceMatrix, 0);
 
         renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(transformedTriangles->data,
-                                           transformedTriangles->count);
+        renderer.rasterizer.draw_triangles(screenSpaceTriangles->data,
+                                           screenSpaceTriangles->count);
 
         renderer.window.flip_surface();
     }
 
     kelpoa_generic_stack__free(triangles);
-    kelpoa_generic_stack__free(transformedTriangles);
+    kelpoa_generic_stack__free(worldSpaceTriangles);
+    kelpoa_generic_stack__free(screenSpaceTriangles);
 
     return 0;
 }

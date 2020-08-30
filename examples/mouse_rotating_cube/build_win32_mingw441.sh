@@ -12,6 +12,7 @@ src/main.c
 ../../src/kelpo_auxiliary/triangle_preparer.c
 ../../src/kelpo_auxiliary/generic_stack.c
 ../../src/kelpo_auxiliary/matrix_44.c
+../../src/kelpo_auxiliary/vector_3.c
 ../../src/kelpo_auxiliary/triangle_clipper.c
 ../../src/kelpo_auxiliary/load_kac_1_0_mesh.c
 ../../src/kelpo_auxiliary/import_kac_1_0.c

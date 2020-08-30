@@ -18,7 +18,6 @@
 #include <kelpo_auxiliary/misc.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/interface.h>
-#include "../../common_src/transform_and_rotate_triangles.h"
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
 
@@ -231,19 +230,25 @@ int main(int argc, char *argv[])
         kelpoa_triprepr__duplicate_triangles(triangles, worldSpaceTriangles);
         kelpoa_triprepr__rotate_triangles(worldSpaceTriangles, rotX, rotY, 0);
         kelpoa_triprepr__translate_triangles(worldSpaceTriangles, 0, 0, zoom);
-        kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles, screenSpaceTriangles, &clipSpaceMatrix, &screenSpaceMatrix);
+        kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles, screenSpaceTriangles, &clipSpaceMatrix, &screenSpaceMatrix, 1);
 
         /* Print the UI text.*/
         {
             /* Name of the renderer; and the current FPS.*/
             {
                 char fpsString[10];
+                char polyString[50];
+                const unsigned numScreenPolys = screenSpaceTriangles->count;
+                const unsigned numWorldPolys = worldSpaceTriangles->count;
                 const unsigned fps = framerate();
 
                 sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
+                sprintf(polyString, "Polygons: %d/%d", ((numScreenPolys > 9999999)? 9999999 : numScreenPolys),
+                                                       ((numWorldPolys > 9999999)? 9999999 : numWorldPolys));
 
                 kelpoa_text_mesh__print(screenSpaceTriangles, renderer.metadata.rendererName, 25, 30, 255, 255, 255, 1);
-                kelpoa_text_mesh__print(screenSpaceTriangles, fpsString, 25, 60, 200, 200, 200, 1);
+                kelpoa_text_mesh__print(screenSpaceTriangles, polyString, 25, 60, 200, 200, 200, 1);
+                kelpoa_text_mesh__print(screenSpaceTriangles, fpsString, 25, 90, 200, 200, 200, 1);
             }
 
             /* Usage instructions.*/

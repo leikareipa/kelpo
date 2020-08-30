@@ -156,8 +156,13 @@ void kelpo_rasterizer_opengl_1_2__draw_triangles(struct kelpo_polygon_triangle_s
     {
         if (!triangles[i].texture)
         {
-            glDisable(GL_TEXTURE_2D);
+            if (lastBoundTexture)
+            {
+                glDisable(GL_TEXTURE_2D);
+            }
             
+            lastBoundTexture = 0;
+
             glBegin(GL_TRIANGLES);
                 for (v = 0; v < 3; v++)
                 {
@@ -168,10 +173,11 @@ void kelpo_rasterizer_opengl_1_2__draw_triangles(struct kelpo_polygon_triangle_s
         }
         else
         {
-            glEnable(GL_TEXTURE_2D);
-
             if (triangles[i].texture->apiId != lastBoundTexture)
             {
+                lastBoundTexture = triangles[i].texture->apiId;
+
+                glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, triangles[i].texture->apiId);
             }
 

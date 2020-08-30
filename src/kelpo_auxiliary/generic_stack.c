@@ -35,8 +35,6 @@ struct kelpoa_generic_stack_s* kelpoa_generic_stack__create(const uint32_t initi
 void kelpoa_generic_stack__grow(struct kelpoa_generic_stack_s *const stack,
                                 uint32_t newElementCount)
 {
-    void *newStackBuffer = NULL;
-
     if (newElementCount < MINIMUM_STACK_SIZE)
     {
         newElementCount = MINIMUM_STACK_SIZE;
@@ -52,16 +50,9 @@ void kelpoa_generic_stack__grow(struct kelpoa_generic_stack_s *const stack,
     assert((stack->count <= stack->capacity) &&
            "Attempting to grow a malformed stack.");
 
-    newStackBuffer = calloc(newElementCount, stack->elementByteSize);
-    assert(newStackBuffer && "Failed to allocate memory to grow the stack.");
+    stack->data = realloc(stack->data, (newElementCount * stack->elementByteSize));
+    assert(stack->data && "Failed to allocate memory to grow the stack.");
 
-    if (stack->data)
-    {
-        memcpy(newStackBuffer, stack->data, (stack->count * stack->elementByteSize));
-        free(stack->data);
-    }
-
-    stack->data = newStackBuffer;
     stack->capacity = newElementCount;
 
     return;

@@ -254,6 +254,11 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
     unsigned numTrianglesInBatch = 0;
     const struct kelpo_polygon_triangle_s *triangle = triangles;
 
+    if (!numTriangles)
+    {
+        return;
+    }
+
     if ((3 * numTriangles) > GL3_VERTEX_CACHE->capacity)
     {
         kelpoa_generic_stack__grow(GL3_VERTEX_CACHE, (3 * numTriangles));

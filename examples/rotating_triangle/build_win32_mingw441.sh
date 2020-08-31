@@ -20,6 +20,7 @@ src/main.c
 BUILD_OPTIONS="
 -nostdinc
 -g
+-O2
 -std=c89
 -pedantic
 -Wall

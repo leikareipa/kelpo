@@ -21,6 +21,7 @@ BUILD_OPTIONS="
 -shared
 -nostdinc
 -g
+-O2
 -std=c89
 -pedantic
 -Wall

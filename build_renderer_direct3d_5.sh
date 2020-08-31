@@ -25,6 +25,7 @@ BUILD_OPTIONS="
 -shared
 -nostdinc
 -g
+-O2
 -std=c++98
 -w
 -Wall

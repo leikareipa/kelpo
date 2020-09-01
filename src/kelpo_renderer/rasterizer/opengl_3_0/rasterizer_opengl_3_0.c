@@ -241,6 +241,7 @@ void kelpo_rasterizer_opengl_3_0__update_texture(struct kelpo_polygon_texture_s 
 
 void kelpo_rasterizer_opengl_3_0__purge_textures(void)
 {
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteTextures(UPLOADED_TEXTURES->count, UPLOADED_TEXTURES->data);
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 

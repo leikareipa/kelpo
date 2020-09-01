@@ -48,7 +48,7 @@ void kelpo_rasterizer_opengl_3_0__initialize(void)
     glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0);
+    glAlphaFunc(GL_GREATER, 0.5);
 
     /* We'll generally provide our own mipmaps, so don't want OpenGL messing with them.*/
     #ifdef GL_GENERATE_MIPMAP

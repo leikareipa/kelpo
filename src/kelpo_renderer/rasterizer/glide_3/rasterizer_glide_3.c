@@ -61,7 +61,7 @@ void kelpo_rasterizer_glide_3__initialize(void)
     grDepthMask(FXTRUE);
 
     grAlphaTestFunction(GR_CMP_GREATER);
-    grAlphaTestReferenceValue(0);
+    grAlphaTestReferenceValue(127);
     grAlphaCombine(GR_COMBINE_FUNCTION_SCALE_OTHER,
                    GR_COMBINE_FACTOR_LOCAL,
                    GR_COMBINE_LOCAL_ITERATED,

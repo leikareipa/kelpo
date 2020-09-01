@@ -5,6 +5,7 @@
  */
 
 #include <string.h>
+#include <math.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_auxiliary/triangle_preparer.h>
@@ -188,7 +189,41 @@ void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_st
         {
             unsigned k = 0;
             struct kelpo_polygon_triangle_s *clippedTris;
-            const unsigned numClippedTris = kelpoa_triclipr__clip_triangle(triangle, &clippedTris);
+            unsigned numClippedTris = 0;
+
+           /* Test the triangle against the view frustum. If all of its vertices are
+            * inside the frustum, the triangle doesn't need to be clipped.*/
+            if ((fabs(triangle->vertex[0].x) <= fabs(triangle->vertex[0].w)) &&
+                (fabs(triangle->vertex[0].y) <= fabs(triangle->vertex[0].w)) &&
+                (fabs(triangle->vertex[0].z) <= fabs(triangle->vertex[0].w)) &&
+                (fabs(triangle->vertex[1].x) <= fabs(triangle->vertex[1].w)) &&
+                (fabs(triangle->vertex[1].y) <= fabs(triangle->vertex[1].w)) &&
+                (fabs(triangle->vertex[1].z) <= fabs(triangle->vertex[1].w)) &&
+                (fabs(triangle->vertex[2].x) <= fabs(triangle->vertex[2].w)) &&
+                (fabs(triangle->vertex[2].y) <= fabs(triangle->vertex[2].w)) &&
+                (fabs(triangle->vertex[2].z) <= fabs(triangle->vertex[2].w)))
+            {
+                clippedTris = triangle;
+                numClippedTris = 1;
+            }
+            /* If all of the triangle's vertices are outside of the view
+             * frustum, the triangle is fully invisible and can be ignored.*/
+            else if ((fabs(triangle->vertex[0].x) > fabs(triangle->vertex[0].w)) &&
+                     (fabs(triangle->vertex[0].y) > fabs(triangle->vertex[0].w)) &&
+                     (fabs(triangle->vertex[0].z) > fabs(triangle->vertex[0].w)) &&
+                     (fabs(triangle->vertex[1].x) > fabs(triangle->vertex[1].w)) &&
+                     (fabs(triangle->vertex[1].y) > fabs(triangle->vertex[1].w)) &&
+                     (fabs(triangle->vertex[1].z) > fabs(triangle->vertex[1].w)) &&
+                     (fabs(triangle->vertex[2].x) > fabs(triangle->vertex[2].w)) &&
+                     (fabs(triangle->vertex[2].y) > fabs(triangle->vertex[2].w)) &&
+                     (fabs(triangle->vertex[2].z) > fabs(triangle->vertex[2].w)))
+            {
+                continue;
+            }
+            else
+            {
+                numClippedTris = kelpoa_triclipr__clip_triangle(triangle, &clippedTris);
+            }
 
             for (k = 0; k < numClippedTris; k++)
             {

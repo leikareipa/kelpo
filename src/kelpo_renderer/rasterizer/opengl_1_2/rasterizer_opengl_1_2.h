@@ -21,7 +21,7 @@ void kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s 
 
 void kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s *const texture);
 
-void kelpo_rasterizer_opengl_1_2__purge_textures(void);
+void kelpo_rasterizer_opengl_1_2__unload_textures(void);
 
 void kelpo_rasterizer_opengl_1_2__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles);

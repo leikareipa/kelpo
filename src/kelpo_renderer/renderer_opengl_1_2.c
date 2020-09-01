@@ -35,7 +35,7 @@ void import_renderer(struct kelpo_interface_s *const interface)
     interface->rasterizer.draw_triangles = kelpo_rasterizer_opengl_1_2__draw_triangles;
     interface->rasterizer.upload_texture = kelpo_rasterizer_opengl_1_2__upload_texture;
     interface->rasterizer.update_texture = kelpo_rasterizer_opengl_1_2__update_texture;
-    interface->rasterizer.purge_textures = kelpo_rasterizer_opengl_1_2__purge_textures;
+    interface->rasterizer.unload_textures = kelpo_rasterizer_opengl_1_2__unload_textures;
 
     interface->metadata.rendererName = RENDERER_NAME;
     interface->metadata.rendererVersionMajor = RENDERER_VERSION[0];

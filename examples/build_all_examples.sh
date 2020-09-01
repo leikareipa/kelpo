@@ -12,4 +12,4 @@ for exampleDirectory in $(find ./ -mindepth 1 -maxdepth 1 -type d); do
     fi
 done
 
-echo "Done. Asset files will need to be copied manually."
+echo "Done. Any asset files will need to be copied manually."

@@ -196,7 +196,7 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
     return;
 }
 
-void kelpo_rasterizer_direct3d_5__purge_textures(void)
+void kelpo_rasterizer_direct3d_5__unload_textures(void)
 {
     unsigned i = 0;
 

@@ -182,7 +182,7 @@ void kelpo_rasterizer_direct3d_7__update_texture(struct kelpo_polygon_texture_s 
     return;
 }
 
-void kelpo_rasterizer_direct3d_7__purge_textures(void)
+void kelpo_rasterizer_direct3d_7__unload_textures(void)
 {
     unsigned i = 0;
 

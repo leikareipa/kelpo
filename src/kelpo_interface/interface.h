@@ -45,7 +45,7 @@ struct kelpo_interface_s
 
         void (*update_texture)(struct kelpo_polygon_texture_s *const texture);
         
-        void (*purge_textures)(void);
+        void (*unload_textures)(void);
 
         void (*draw_triangles)(struct kelpo_polygon_triangle_s *const triangles,
                                const unsigned numTriangles);

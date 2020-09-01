@@ -216,7 +216,7 @@ void kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *co
     return;
 }
 
-void kelpo_rasterizer_glide_3__purge_textures(void)
+void kelpo_rasterizer_glide_3__unload_textures(void)
 {
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);

@@ -27,8 +27,17 @@ struct kelpo_polygon_texture_s
     /* Note: Assume that each flag will be initialized to 0 by default.*/
     struct kelpo_polygon_texture_flags_s
     {
-        unsigned noFiltering : 1;    /* Sample... 1 = nearest neighbor, 0 = bilinear (or the like)  */
-        unsigned clamped : 1;        /* UV wrap... 1 = clamp, 0 = repeat                            */
+        /* Sample... 1 = nearest neighbor, 0 = bilinear (or the like).*/
+        unsigned noFiltering : 1;
+
+        /* UV wrap... 1 = clamp, 0 = repeat.*/
+        unsigned clamped : 1;
+
+        /* Mipmapping... 1 = off regardless of 'mipLevel', 0 = enabled as per
+         * 'mipLevel'. Note that the texture's full mip levels may still be
+         * uploaded into video memory even if rendering them is disabled via
+         * this flag.*/
+        unsigned noMipmapping : 1;
     } flags;
 };
 

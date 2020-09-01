@@ -57,27 +57,71 @@ void kelpo_rasterizer_opengl_1_2__clear_frame(void)
     return;
 }
 
+static void set_parameters_for_texture(const struct kelpo_polygon_texture_s *const texture)
+{
+    assert(texture && texture->apiId
+           && "OpenGL 1.2: Invalid texture.");
+    
+    glBindTexture(GL_TEXTURE_2D, texture->apiId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
+
+    if ((texture->numMipLevels <= 1) ||
+        texture->flags.noMipmapping)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
+    }
+
+    return;
+}
+
+static void upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *const texture)
+{
+    unsigned m = 0;
+
+    assert(texture && texture->apiId
+           && "OpenGL 1.2: Invalid texture.");
+
+    glBindTexture(GL_TEXTURE_2D, texture->apiId);
+
+    for (m = 0; m < texture->numMipLevels; m++)
+    {
+        const unsigned mipLevelSideLength = (texture->width / pow(2, m));
+
+        glTexSubImage2D(GL_TEXTURE_2D, m,
+                        0, 0,
+                        mipLevelSideLength, mipLevelSideLength,
+                        GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                        texture->mipLevel[m]);
+    }
+
+    return;
+}
+
 /* Uploads the given texture's data to the graphics device. An entry for this
  * texture must already have been created with glGenTextures() prior to calling
  * this function; the corresponding texture id must be stored in the texture's
  * 'apiId' property.*/
-static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
+static void upload_texture_data(const struct kelpo_polygon_texture_s *const texture)
 {
     uint32_t m = 0;
+    const unsigned numMipLevels = (texture->flags.noMipmapping? 1 : texture->numMipLevels);
 
     assert(texture &&
            "OpenGL 1.2: Attempting to process a NULL texture");
 
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
 
-    if (texture->numMipLevels > 1)
+    if (numMipLevels > 1)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
-
-        for (m = 0; m < texture->numMipLevels; m++)
+        for (m = 0; m < numMipLevels; m++)
         {
             const unsigned resDiv = (pow(2, m));
             glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, (texture->width / resDiv), (texture->height / resDiv), 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[m]);
@@ -85,8 +129,6 @@ static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
     }
     else
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
     }
 
@@ -102,6 +144,7 @@ void kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s 
     kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
 
     upload_texture_data(texture);
+    set_parameters_for_texture(texture);
     
     return;
 }
@@ -117,23 +160,8 @@ void kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s 
     /* TODO: Make sure the texture's dimensions and color depth haven't changed
      * since it was first uploaded.*/
 
-    /* Copy each mip level's pixel data into the OpenGL texture.*/
-    {
-        unsigned m = 0;
-        
-        glBindTexture(GL_TEXTURE_2D, texture->apiId);
-
-        for (m = 0; m < texture->numMipLevels; m++)
-        {
-            const unsigned mipLevelSideLength = (texture->width / pow(2, m));
-
-            glTexSubImage2D(GL_TEXTURE_2D, m,
-                            0, 0,
-                            mipLevelSideLength, mipLevelSideLength,
-                            GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV,
-                            texture->mipLevel[m]);
-        }
-    }
+    set_parameters_for_texture(texture);
+    upload_texture_mipmap_data(texture);
 
     return;
 }

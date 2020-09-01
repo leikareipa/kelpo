@@ -273,7 +273,8 @@ void kelpo_rasterizer_direct3d_7__draw_triangles(struct kelpo_polygon_triangle_s
                 }
                 else
                 {
-                    const int mipmapEnabled = (triangle->texture->numMipLevels > 1);
+                    const int mipmapEnabled = ((triangle->texture->numMipLevels > 1) &&
+                                               !triangle->texture->flags.noMipmapping);
                     const int mipmapFilter = (triangle->texture->flags.noFiltering? D3DTFP_POINT : D3DTFP_LINEAR);
 
                     IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, (LPDIRECTDRAWSURFACE7)triangle->texture->apiId);

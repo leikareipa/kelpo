@@ -292,6 +292,9 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
                 }
                 else
                 {
+                    const int mipmapEnabled = ((triangle->texture->numMipLevels > 1) &&
+                                               !triangle->texture->flags.noMipmapping);
+
                     GrTexInfo texInfo = generate_glide_texture_info(triangle->texture);
 
                     grTexFilterMode(GR_TMU0,
@@ -303,7 +306,7 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
                                    (triangle->texture->flags.clamped? GR_TEXTURECLAMP_CLAMP : GR_TEXTURECLAMP_WRAP));
 
                     grTexMipMapMode(GR_TMU0,
-                                    ((triangle->texture->numMipLevels > 1)? GR_MIPMAP_NEAREST : GR_MIPMAP_DISABLE),
+                                    (mipmapEnabled? GR_MIPMAP_NEAREST : GR_MIPMAP_DISABLE),
                                     FXTRUE);
 
                     grTexSource(GR_TMU0, triangle->texture->apiId, GR_MIPMAPLEVELMASK_BOTH, &texInfo);

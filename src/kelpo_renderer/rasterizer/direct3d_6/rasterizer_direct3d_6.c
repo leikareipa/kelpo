@@ -291,7 +291,8 @@ void kelpo_rasterizer_direct3d_6__draw_triangles(struct kelpo_polygon_triangle_s
                 }
                 else
                 {
-                    const int mipmapEnabled = (triangle->texture->numMipLevels > 1);
+                    const int mipmapEnabled = ((triangle->texture->numMipLevels > 1) &&
+                                               !triangle->texture->flags.noMipmapping);
                     const int mipmapFilter = mipmapEnabled
                                              ? (triangle->texture->flags.noFiltering? D3DFILTER_LINEARMIPNEAREST : D3DFILTER_LINEARMIPLINEAR)
                                              : (triangle->texture->flags.noFiltering? D3DFILTER_NEAREST : D3DFILTER_LINEAR);

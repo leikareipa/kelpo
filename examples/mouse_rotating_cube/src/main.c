@@ -117,6 +117,10 @@ int main(int argc, char *argv[])
      * effect, however.*/
     unsigned vsyncEnabled = 1;
 
+    /* The location, in world units, of the near and far clipping planes.*/
+    const float zNear = 0.1;
+    const float zFar = 100;
+
     struct kelpo_interface_s renderer = kelpo_create_interface("opengl_1_2");
     
     uint32_t numTextures = 0;
@@ -212,8 +216,8 @@ int main(int argc, char *argv[])
     kelpoa_matrix44__make_clip_space_matrix(&clipSpaceMatrix,
                                             KELPOA_DEG_TO_RAD(60),
                                             (RENDER_RESOLUTION.width / (float)RENDER_RESOLUTION.height),
-                                            0.1,
-                                            100);
+                                            zNear,
+                                            zFar);
 
     kelpoa_matrix44__make_screen_space_matrix(&screenSpaceMatrix,
                                               (RENDER_RESOLUTION.width / 2.0f),
@@ -230,7 +234,13 @@ int main(int argc, char *argv[])
         kelpoa_triprepr__duplicate_triangles(triangles, worldSpaceTriangles);
         kelpoa_triprepr__rotate_triangles(worldSpaceTriangles, rotX, rotY, 0);
         kelpoa_triprepr__translate_triangles(worldSpaceTriangles, 0, 0, zoom);
-        kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles, screenSpaceTriangles, &clipSpaceMatrix, &screenSpaceMatrix, 1);
+        kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles,
+                                                     screenSpaceTriangles,
+                                                     &clipSpaceMatrix,
+                                                     &screenSpaceMatrix,
+                                                     zNear,
+                                                     zFar,
+                                                     1);
 
         /* Print the UI text.*/
         {

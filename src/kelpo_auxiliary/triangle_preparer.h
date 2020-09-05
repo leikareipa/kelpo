@@ -46,14 +46,20 @@ void kelpoa_triprepr__scale_triangles(struct kelpoa_generic_stack_s *const trian
 
 /* Clips the given triangles against the view frustum. Expects the triangles
  * to be in world space, having been translated, rotated, and/or scaled to
- * their final positions for rendering. The vertices will be transformed into
- * screen space. The results of the clipping and transformation will be placed
- * in the given 'screenSpaceTriangles' stack (the original triangles will not
- * be modified).*/
+ * their final positions for rendering. The clipped triangles will be placed
+ * into the given 'screenSpaceTriangles' stack (the original triangles will not
+ * be modified).
+ * 
+ * The clipped vertices will be transformed into screen space. Vertices' Z
+ * coordinates will be scaled to the range [0,1] relative to the given distances
+ * to the near and far planes (these should be the same distance values as what
+ * the given clip space matrix was constructed with).*/
 void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_stack_s *const triangles,
                                                   struct kelpoa_generic_stack_s *const screenSpaceTriangles,
                                                   const struct kelpoa_matrix44_s *const clipSpaceMatrix,
                                                   const struct kelpoa_matrix44_s *const screenSpaceMatrix,
+                                                  const float zNear,
+                                                  const float zFar,
                                                   const int backfaceCull);
 
 #endif

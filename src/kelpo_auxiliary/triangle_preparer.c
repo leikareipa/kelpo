@@ -43,7 +43,9 @@ static void transform_normal(struct kelpo_polygon_vertex_s *const v,
     return;
 }
 
-static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
+static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t,
+                                   const float zNear,
+                                   const float zFar)
 {
     unsigned i;
 
@@ -51,8 +53,10 @@ static void tri_perspective_divide(struct kelpo_polygon_triangle_s *const t)
     {
         t->vertex[i].x /= t->vertex[i].w;
         t->vertex[i].y /= t->vertex[i].w;
-        t->vertex[i].z /= t->vertex[i].w;
         t->vertex[i].w = (1 / t->vertex[i].w);
+
+        /* Scale the depth value to the range [0,1].*/
+        t->vertex[i].z = ((t->vertex[i].z - zNear) / (zFar - zNear));
     }
 
     return;
@@ -153,6 +157,8 @@ void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_st
                                                   struct kelpoa_generic_stack_s *const screenSpaceTriangles,
                                                   const struct kelpoa_matrix44_s *const clipSpaceMatrix,
                                                   const struct kelpoa_matrix44_s *const screenSpaceMatrix,
+                                                  const float zNear,
+                                                  const float zFar,
                                                   const int backfaceCull)
 {
     unsigned i = 0;
@@ -230,7 +236,7 @@ void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_st
                 transform_vert(&clippedTris[k].vertex[0], screenSpaceMatrix);
                 transform_vert(&clippedTris[k].vertex[1], screenSpaceMatrix);
                 transform_vert(&clippedTris[k].vertex[2], screenSpaceMatrix);
-                tri_perspective_divide(&clippedTris[k]);
+                tri_perspective_divide(&clippedTris[k], zNear, zFar);
 
                 kelpoa_generic_stack__push_copy(screenSpaceTriangles, &clippedTris[k]);
             }

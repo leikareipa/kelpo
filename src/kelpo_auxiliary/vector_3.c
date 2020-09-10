@@ -9,6 +9,19 @@
 #include <kelpo_auxiliary/vector_3.h>
 #include <kelpo_auxiliary/matrix_44.h>
 
+struct kelpoa_vector3_s kelpoa_vector3(const float x,
+                                       const float y,
+                                       const float z)
+{
+    struct kelpoa_vector3_s v;
+
+    v.x = x;
+    v.y = y;
+    v.z = z;
+
+    return v;
+}
+
 float kelpoa_vector3__dot(const struct kelpoa_vector3_s *a,
                           const struct kelpoa_vector3_s *b)
 {

@@ -15,6 +15,10 @@ struct kelpoa_vector3_s
 
 struct kelpoa_matrix44_s;
 
+struct kelpoa_vector3_s kelpoa_vector3(const float x,
+                                       const float y,
+                                       const float z);
+
 float kelpoa_vector3__dot(const struct kelpoa_vector3_s *a,
                           const struct kelpoa_vector3_s *b);
 

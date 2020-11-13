@@ -93,13 +93,6 @@ LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, L
             break;
         }
 
-        /* Hide the mouse cursor by preventing the window from handling the
-         * WM_SETCURSOR message.*/
-        case WM_SETCURSOR:
-        {
-            return 1;
-        }
-
         default: break;
     }
 

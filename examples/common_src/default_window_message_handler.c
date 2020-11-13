@@ -26,6 +26,14 @@ LRESULT default_window_message_handler(HWND windowHandle, UINT message, WPARAM w
 
             break;
         }
+
+        /* Hide the mouse cursor.*/
+        case WM_SETCURSOR:
+        {
+            SetCursor(NULL);
+            return 1;
+        }
+
         default: return 0;
     }
 

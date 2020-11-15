@@ -9,22 +9,20 @@ static const unsigned RENDERER_VERSION[3] = {KELPO_INTERFACE_VERSION_MAJOR,
                                              1,   /* Minor.*/
                                              0};  /* Patch.*/
 
-static void initialize_renderer(const unsigned windowWidth,
-                                const unsigned windowHeight,
-                                const unsigned bpp,
-                                const int vsyncEnabled,
-                                const unsigned deviceID)
+static int initialize(const unsigned deviceId,
+                      const unsigned screenWidth,
+                      const unsigned screenHeight,
+                      const unsigned screenBPP)
 {
-    kelpo_surface_glide_3__create_surface(windowWidth, windowHeight, bpp, vsyncEnabled, deviceID);
+    kelpo_surface_glide_3__create_surface(screenWidth, screenHeight, screenBPP, 1, deviceId);
     kelpo_rasterizer_glide_3__initialize();
 
-    return;
+    return 1;
 }
 
 void import_renderer(struct kelpo_interface_s *const interface)
 {
-    interface->initialize = initialize_renderer;
-
+    interface->window.open = initialize;
     interface->window.is_open = kelpo_window__is_window_open;
     interface->window.process_events = kelpo_window__process_window_events;
     interface->window.flip_surface = kelpo_surface_glide_3__flip_surface;

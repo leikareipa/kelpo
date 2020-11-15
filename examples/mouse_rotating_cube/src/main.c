@@ -176,11 +176,10 @@ int main(int argc, char *argv[])
 
     /* Initialize the renderer.*/
     {
-        renderer.initialize(RENDER_RESOLUTION.width,
-                            RENDER_RESOLUTION.height,
-                            RENDER_RESOLUTION.bpp,
-                            vsyncEnabled,
-                            renderDeviceIdx);
+        renderer.window.open(renderDeviceIdx,
+                             RENDER_RESOLUTION.width,
+                             RENDER_RESOLUTION.height,
+                             RENDER_RESOLUTION.bpp);
                             
         renderer.window.set_message_handler(window_message_handler);
 

@@ -14,7 +14,7 @@ typedef void *(*dll_init_t)(struct kelpo_interface_s *const);
 struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName)
 {
     dll_init_t import_renderer = NULL;
-    struct kelpo_interface_s renderer = {NULL};
+    struct kelpo_interface_s renderer = {{0}};
 
     if (strcmp("opengl_1_2", rasterizerName) == 0)
     {

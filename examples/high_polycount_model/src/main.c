@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
         static float rotX = 0, rotY = 0, rotZ = 0;
         rotY += 0.01;
 
-        renderer.window.process_events();
+        renderer.window.process_messages();
 
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);

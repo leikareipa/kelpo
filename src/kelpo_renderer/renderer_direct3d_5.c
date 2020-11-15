@@ -29,7 +29,7 @@ void import_renderer(struct kelpo_interface_s *const interface)
 {
     interface->window.open = initialize;
     interface->window.is_open = kelpo_window__is_window_open;
-    interface->window.process_events = kelpo_window__process_window_events;
+    interface->window.process_messages = kelpo_window__process_window_messages;
     interface->window.flip_surface = kelpo_surface_direct3d_5__flip_surface;
     interface->window.get_handle = kelpo_window__get_window_handle;
     interface->window.set_message_handler = kelpo_window__set_external_message_handler;

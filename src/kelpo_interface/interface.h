@@ -27,7 +27,7 @@ struct kelpo_interface_s
 
         void (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
 
-        void (*process_events)(void);
+        void (*process_messages)(void);
 
         void (*flip_surface)(void);
 

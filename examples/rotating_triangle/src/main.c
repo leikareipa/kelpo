@@ -107,6 +107,8 @@ int main(int argc, char *argv[])
         triangle.vertex[2].g = 0;
         triangle.vertex[2].b = 255;
         triangle.vertex[2].a = 255;
+
+        triangle.flags.twoSided = 1;
         
         kelpoa_generic_stack__push_copy(triangles, &triangle);
     }

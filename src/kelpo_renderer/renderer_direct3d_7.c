@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-void import_renderer(struct kelpo_interface_s *const interface)
+void export_interface(struct kelpo_interface_s *const interface)
 {
     interface->window.open = initialize;
     interface->window.is_open = kelpo_window__is_window_open;

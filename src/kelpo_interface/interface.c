@@ -14,8 +14,8 @@ typedef void *(*dll_init_t)(struct kelpo_interface_s *const);
 struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName)
 {
     const char *dllFilename = NULL;
-    dll_init_t initialize_renderer = NULL;
-    struct kelpo_interface_s renderer = {{0}};
+    dll_init_t get_kelpo_interface = NULL;
+    struct kelpo_interface_s kelpoInterface = {{0}};
 
          if (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
     else if (strcmp(rasterizerName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
@@ -24,16 +24,16 @@ struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName
     else if (strcmp(rasterizerName, "direct3d_6") == 0) dllFilename = "kelpo_renderer_direct3d_6.dll";
     else if (strcmp(rasterizerName, "direct3d_7") == 0) dllFilename = "kelpo_renderer_direct3d_7.dll";
 
-    assert(dllFilename && "Invalid renderer name.");
-    initialize_renderer = (dll_init_t)DLL_FUNC_ADDRESS(dllFilename, "import_renderer");
+    assert(dllFilename && "Unknown renderer name.");
+    get_kelpo_interface = (dll_init_t)DLL_FUNC_ADDRESS(dllFilename, "export_interface");
 
-    assert(initialize_renderer && "Could not import the renderer DLL.");
-    initialize_renderer(&renderer);
+    assert(get_kelpo_interface && "Could not import the renderer DLL.");
+    get_kelpo_interface(&kelpoInterface);
 
-    assert((renderer.metadata.rendererVersionMajor == KELPO_INTERFACE_VERSION_MAJOR) &&
+    assert((kelpoInterface.metadata.rendererVersionMajor == KELPO_INTERFACE_VERSION_MAJOR) &&
            "The renderer's version is not compatible with this version of Kelpo.");
 
-    return renderer;
+    return kelpoInterface;
 }
 
 #undef DLL_FUNC_ADDRESS

@@ -16,6 +16,10 @@ struct kelpo_polygon_texture_s;
 
 struct kelpo_interface_s
 {
+    /* A handle to the DLL file from which this interface was loaded, as
+       returned by LoadLibraryA().*/
+    HMODULE dllHandle;
+
     struct kelpo_interface_window_s
     {
         uint32_t (*get_handle)(void);

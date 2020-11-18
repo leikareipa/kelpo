@@ -22,10 +22,6 @@
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
 
-/* The default render resolution. Note: The render resolution may be modified
- * by command-line arguments.*/
-static struct { unsigned width; unsigned height; unsigned bpp; } RENDER_RESOLUTION = {640, 480, 16};
-
 /* Call this function once per frame and it'll tell you an estimate of the frame
  * rate (FPS).*/
 static unsigned framerate(void)
@@ -82,20 +78,9 @@ static void regenerate_texture_mipmaps(struct kelpo_polygon_texture_s *const tex
 
 int main(int argc, char *argv[])
 {
-    /* An index in an enumeration of API-compatible devices on the system,
-     * identifying the devide to be used in rendering.*/
-    unsigned renderDeviceIdx = 0;
-
-    /* If set to 1, we'll request the renderer to use vsync. Otherwise, we'll
-     * ask for vsync to be off. On some hardware, this option will have no
-     * effect, however.*/
-    unsigned vsyncEnabled = 1;
-
     /* The location, in world units, of the near and far clipping planes.*/
     const float zNear = 0.1;
     const float zFar = 100;
-
-    struct kelpo_interface_s renderer = kelpo_create_interface("opengl_1_2");
     
     uint32_t numTextures = 0;
     struct kelpo_polygon_texture_s *textures = NULL;
@@ -107,60 +92,28 @@ int main(int argc, char *argv[])
     struct kelpoa_matrix44_s clipSpaceMatrix;
     struct kelpoa_matrix44_s screenSpaceMatrix;
 
-    /* Process any relevant command-line parameters.*/
+    struct kelpo_interface_s renderer;
+
+    /* Set up default rendering options, and parse the command-line to see if
+     * the user has provided any overrides for them.*/
+    struct kelpo_cliparse_params_s cliParams = {0};
     {
-        int c = 0;
-        while ((c = kelpo_cliparse(argc, argv)) != -1)
-        {
-            switch (c)
-            {
-                case 'r':
-                {
-                    renderer = kelpo_create_interface(kelpo_cliparse_optarg());
-                    break;
-                }
-                case 'v':
-                {
-                    vsyncEnabled = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    break;
-                }
-                case 'w':
-                {
-                    RENDER_RESOLUTION.width = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((RENDER_RESOLUTION.width != 0u) && "Invalid render width.");
-                    break;
-                }
-                case 'h':
-                {
-                    RENDER_RESOLUTION.height = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((RENDER_RESOLUTION.height != 0u) && "Invalid render height.");
-                    break;
-                }
-                case 'b':
-                {
-                    RENDER_RESOLUTION.bpp = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((RENDER_RESOLUTION.bpp != 0u) && "Invalid render bit depth.");
-                    break;
-                }
-                case 'd':
-                {
-                    /* The device index is expected to be 1-indexed (device #1 is 1).*/
-                    renderDeviceIdx = strtoul(kelpo_cliparse_optarg(), NULL, 10);
-                    assert((renderDeviceIdx != 0u) && "Invalid render device index.");
-                    renderDeviceIdx--;
-                    break;
-                }
-                default: break;
-            }
-        }
+        cliParams.rendererName = "opengl_1_2";
+        cliParams.windowWidth = 1920;
+        cliParams.windowHeight = 1080;
+        cliParams.windowBPP = 32;
+
+        kelpo_cliparse_get_params(argc, argv, &cliParams);
     }
 
     /* Initialize the renderer.*/
     {
-        renderer.window.open(renderDeviceIdx,
-                             RENDER_RESOLUTION.width,
-                             RENDER_RESOLUTION.height,
-                             RENDER_RESOLUTION.bpp);
+        renderer = kelpo_create_interface(cliParams.rendererName);
+
+        renderer.window.open(cliParams.renderDeviceIdx,
+                             cliParams.windowWidth,
+                             cliParams.windowHeight,
+                             cliParams.windowBPP);
                             
         renderer.window.set_message_handler(default_window_message_handler);
 
@@ -169,7 +122,7 @@ int main(int argc, char *argv[])
         fontTexture->mipLevel[0] = NULL;
     }
 
-    /* Load in the cube model.*/
+    /* Load the cube model.*/
     {
         uint32_t i = 0;
 
@@ -191,13 +144,13 @@ int main(int argc, char *argv[])
 
     kelpoa_matrix44__make_clip_space_matrix(&clipSpaceMatrix,
                                             KELPOA_DEG_TO_RAD(60),
-                                            (RENDER_RESOLUTION.width / (float)RENDER_RESOLUTION.height),
+                                            (cliParams.windowWidth / (float)cliParams.windowHeight),
                                             zNear,
                                             zFar);
 
     kelpoa_matrix44__make_screen_space_matrix(&screenSpaceMatrix,
-                                              (RENDER_RESOLUTION.width / 2.0f),
-                                              (RENDER_RESOLUTION.height / 2.0f));
+                                              (cliParams.windowWidth / 2.0f),
+                                              (cliParams.windowHeight / 2.0f));
 
 
     /* Render.*/

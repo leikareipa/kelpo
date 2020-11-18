@@ -5,32 +5,51 @@
  * 
  */
 
-#include <kelpo_interface/polygon/triangle/triangle.h>
+#include <windows.h>
 #include <kelpo_interface/interface.h>
-#include "../../common_src/default_window_message_handler.h"
-#include "../../common_src/parse_command_line.h"
+#include <kelpo_interface/polygon/triangle/triangle.h>
+
+LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    /* Exit the program on ESC.*/
+    if ((message == WM_KEYDOWN) &&
+        (wParam == VK_ESCAPE))
+    {
+        PostMessage(windowHandle, WM_CLOSE, 0, 0);
+        return 1;
+    }
+    
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
-    struct kelpo_interface_s renderer = {0};
-    struct kelpo_cliparse_params_s cliParams = {0};
+    struct kelpo_interface_s kelpo;
     struct kelpo_polygon_triangle_s triangle;
 
-    /* Set up default rendering options, and parse the command-line to see if
-     * the user has provided any overrides for them.*/
-    {
-        cliParams.rendererName = "opengl_1_2";
-        cliParams.windowWidth = 1920;
-        cliParams.windowHeight = 1080;
-        cliParams.windowBPP = 32;
+    /* Default rendering options.*/
+    const char *rendererName = "opengl_1_2";
+    const unsigned renderDeviceIdx = 0;
+    const unsigned windowWidth = 1920;
+    const unsigned windowHeight = 1080;
+    const unsigned windowBPP = 32;
 
-        kelpo_cliparse_get_params(argc, argv, &cliParams);
+    /* Initialize the renderer.*/
+    {
+        kelpo = kelpo_create_interface(rendererName);
+
+        kelpo.window.open(renderDeviceIdx,
+                          windowWidth,
+                          windowHeight,
+                          windowBPP);
+
+        kelpo.window.set_message_handler(window_message_handler);
     }
 
     /* Create the triangle that will be rendered in the middle of the screen.*/
     {
-        const int widthHalf = (cliParams.windowWidth / 2);
-        const int heightHalf = (cliParams.windowHeight / 2);
+        const int widthHalf = (windowWidth / 2);
+        const int heightHalf = (windowHeight / 2);
         const int widthQuarter = (widthHalf / 2);
         const int heightQuarter = (heightHalf / 2);
 
@@ -55,27 +74,15 @@ int main(int argc, char *argv[])
         triangle.vertex[2].a = 255;
     }
 
-    /* Initialize the renderer.*/
-    {
-        renderer = kelpo_create_interface(cliParams.rendererName);
-
-        renderer.window.open(cliParams.renderDeviceIdx,
-                             cliParams.windowWidth,
-                             cliParams.windowHeight,
-                             cliParams.windowBPP);
-
-        renderer.window.set_message_handler(default_window_message_handler);
-    }
-
     /* Render the triangle.*/
-    while (renderer.window.is_open())
+    while (kelpo.window.is_open())
     {
-        renderer.window.process_messages();
+        kelpo.window.process_messages();
 
-        renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(&triangle, 1);
+        kelpo.rasterizer.clear_frame();
+        kelpo.rasterizer.draw_triangles(&triangle, 1);
 
-        renderer.window.flip_surface();
+        kelpo.window.flip_surface();
     }
 
     return 0;

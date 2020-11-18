@@ -24,7 +24,7 @@
 #include <windows.h>
 #include <windowsx.h>
 
-static struct kelpo_cliparse_params_s cliParams = {0};
+static struct cliparse_params_s cliParams = {0};
 
 /* Call this function once per frame and it'll tell you an estimate of the frame
  * rate (FPS).*/
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
         cliParams.windowHeight = 1080;
         cliParams.windowBPP = 32;
 
-        kelpo_cliparse_get_params(argc, argv, &cliParams);
+        cliparse_get_params(argc, argv, &cliParams);
     }
 
     /* Initialize the renderer.*/

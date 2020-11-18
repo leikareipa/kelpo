@@ -96,14 +96,14 @@ int main(int argc, char *argv[])
 
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
-    struct kelpo_cliparse_params_s cliParams = {0};
+    struct cliparse_params_s cliParams = {0};
     {
         cliParams.rendererName = "opengl_1_2";
         cliParams.windowWidth = 1920;
         cliParams.windowHeight = 1080;
         cliParams.windowBPP = 32;
 
-        kelpo_cliparse_get_params(argc, argv, &cliParams);
+        cliparse_get_params(argc, argv, &cliParams);
     }
 
     /* Initialize the renderer.*/

@@ -167,7 +167,8 @@ void kelpoa_triprepr__project_triangles_to_screen(const struct kelpoa_generic_st
     {
         struct kelpo_polygon_triangle_s *const triangle = &((struct kelpo_polygon_triangle_s*)triangles->data)[i];
 
-        if (backfaceCull)
+        if (backfaceCull &&
+            !triangle->flags.twoSided)
         {
             struct kelpoa_vector3_s viewVector;
             struct kelpoa_vector3_s surfaceNormal;

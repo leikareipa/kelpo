@@ -13,48 +13,25 @@ typedef void *(*dll_init_t)(struct kelpo_interface_s *const);
 
 struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName)
 {
-    dll_init_t import_renderer = NULL;
+    const char *dllFilename = NULL;
+    dll_init_t initialize_renderer = NULL;
     struct kelpo_interface_s renderer = {{0}};
 
-    if (strcmp("opengl_1_2", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_opengl_1_2.dll", "import_renderer");
-    }
-    else if (strcmp("opengl_3_0", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_opengl_3_0.dll", "import_renderer");
-    }
-    else if (strcmp("glide_3", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_glide_3.dll", "import_renderer");
-    }
-    else if (strcmp("direct3d_5", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_direct3d_5.dll", "import_renderer");
-    }
-    else if (strcmp("direct3d_6", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_direct3d_6.dll", "import_renderer");
-    }
-    else if (strcmp("direct3d_7", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_direct3d_7.dll", "import_renderer");
-    }
-    else if (strcmp("software_directdraw_7", rasterizerName) == 0)
-    {
-        import_renderer = (dll_init_t)DLL_FUNC_ADDRESS("kelpo_renderer_software_directdraw_7.dll", "import_renderer");
-    }
-    else
-    {
-        assert(0 && "Unrecognized renderer.");
-    }
+         if (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
+    else if (strcmp(rasterizerName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
+    else if (strcmp(rasterizerName, "glide_3")    == 0) dllFilename = "kelpo_renderer_glide_3.dll";
+    else if (strcmp(rasterizerName, "direct3d_5") == 0) dllFilename = "kelpo_renderer_direct3d_5.dll";
+    else if (strcmp(rasterizerName, "direct3d_6") == 0) dllFilename = "kelpo_renderer_direct3d_6.dll";
+    else if (strcmp(rasterizerName, "direct3d_7") == 0) dllFilename = "kelpo_renderer_direct3d_7.dll";
 
-    assert(import_renderer && "Failed to load the renderer library.");
+    assert(dllFilename && "Invalid renderer name.");
+    initialize_renderer = (dll_init_t)DLL_FUNC_ADDRESS(dllFilename, "import_renderer");
 
-    import_renderer(&renderer);
+    assert(initialize_renderer && "Could not import the renderer DLL.");
+    initialize_renderer(&renderer);
 
     assert((renderer.metadata.rendererVersionMajor == KELPO_INTERFACE_VERSION_MAJOR) &&
-           "The renderer library's version is incompatible with this version of Kelpo.");
+           "The renderer's version is not compatible with this version of Kelpo.");
 
     return renderer;
 }

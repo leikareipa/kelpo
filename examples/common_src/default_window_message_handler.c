@@ -31,6 +31,8 @@ LRESULT default_window_message_handler(HWND windowHandle, UINT message, WPARAM w
         case WM_SETCURSOR:
         {
             SetCursor(NULL);
+            ShowCursor(FALSE);
+            
             return 1;
         }
 

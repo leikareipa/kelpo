@@ -152,6 +152,8 @@ int main(int argc, char *argv[])
         renderer.window.flip_surface();
     }
 
+    kelpo_release_interface(&renderer);
+
     kelpoa_generic_stack__free(triangles);
     kelpoa_generic_stack__free(worldSpaceTriangles);
     kelpoa_generic_stack__free(screenSpaceTriangles);

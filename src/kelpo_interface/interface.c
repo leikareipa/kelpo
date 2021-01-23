@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 #include "kelpo_interface/interface.h"
 
 #include <windows.h>
@@ -37,17 +38,24 @@ struct kelpo_interface_s kelpo_create_interface(const char *const rasterizerName
 /* Returns 1 on success; 0 otherwise.*/
 int kelpo_release_interface(struct kelpo_interface_s *const kelpoInterface)
 {
-    /* TODO: Make sure the render window isn't open, and if it is, close it.*/
-    
-    if (kelpoInterface &&
-        kelpoInterface->dllHandle &&
-        FreeLibrary(kelpoInterface->dllHandle))
+    assert(kelpoInterface && "Received a NULL Kelpo interface.");
+
+    if (kelpoInterface->window.is_open())
     {
-        memset(kelpoInterface, 0, sizeof(*kelpoInterface));
-        return 1;
+        kelpoInterface->window.destroy();
     }
+
+    if (kelpoInterface->dllHandle &&
+        !FreeLibrary(kelpoInterface->dllHandle))
+    {
+        fprintf(stderr, "ERROR: Could not release the Kelpo renderer library.\n");
+
+        return 0;
+    }
+
+    memset(kelpoInterface, 0, sizeof(*kelpoInterface));
     
-    return 0;
+    return 1;
 }
 
 #undef DLL_FUNC_ADDRESS

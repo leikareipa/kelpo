@@ -15,7 +15,7 @@ static char WINDOW_TITLE[64];
 static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
-static int WINDOW_ACTIVE = 0;
+static int IS_WINDOW_ACTIVE = 0;
 
 /* A pointer to a function provided by the creator of this window. The function
  * will receive the window's messages.*/
@@ -28,7 +28,7 @@ static kelpo_custom_window_message_handler_t *EXTERNAL_MESSAGE_HANDLER = 0;
 
 int kelpo_window__is_window_open(void)
 {
-    return (WINDOW_HANDLE != NULL);
+    return (WINDOW_HANDLE != 0);
 }
 
 static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -49,15 +49,14 @@ static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, 
     {
         case WM_ACTIVATE:
         {
-            WINDOW_ACTIVE = !HIWORD(wParam);
+            IS_WINDOW_ACTIVE = !HIWORD(wParam);
             
             break;
         }
 
-        case WM_DESTROY:
+        case WM_NCDESTROY:
         {
-            PostQuitMessage(0);
-            WINDOW_HANDLE = NULL;
+            WINDOW_HANDLE = 0;
 
             break;
         }
@@ -77,6 +76,16 @@ void kelpo_window__set_external_message_handler(kelpo_custom_window_message_hand
 {
     EXTERNAL_MESSAGE_HANDLER = messageHandler;
     
+    return;
+}
+
+void kelpo_window__release_window(void)
+{
+    if (WINDOW_HANDLE)
+    {
+        PostMessage(WINDOW_HANDLE, WM_CLOSE, 0, 0);
+    }
+
     return;
 }
 

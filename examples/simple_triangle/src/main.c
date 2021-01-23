@@ -85,5 +85,7 @@ int main(int argc, char *argv[])
         kelpo.window.flip_surface();
     }
 
+    kelpo_release_interface(&kelpo);
+
     return 0;
 }

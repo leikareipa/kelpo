@@ -29,6 +29,8 @@ struct kelpo_interface_s
                     const unsigned screenHeight,
                     const unsigned screenBPP);
 
+        int (*destroy)(void);
+
         void (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
 
         void (*process_messages)(void);
@@ -68,5 +70,7 @@ struct kelpo_interface_s
 };
 
 struct kelpo_interface_s kelpo_create_interface(const char *const rendererName);
+
+int kelpo_release_interface(struct kelpo_interface_s *const kelpoInterface);
 
 #endif

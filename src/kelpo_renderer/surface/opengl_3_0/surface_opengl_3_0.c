@@ -193,6 +193,8 @@ void kelpo_surface_opengl_3_0__release_surface(void)
 
     kelpo_rasterizer_opengl_3_0__release();
 
+    kelpo_window__release_window();
+
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
 

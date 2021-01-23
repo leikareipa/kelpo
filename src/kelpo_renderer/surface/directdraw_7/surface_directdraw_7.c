@@ -61,6 +61,8 @@ void kelpo_surface_directdraw_7__release_surface(void)
 {
     kelpo_rasterizer_direct3d_7__release();
 
+    kelpo_window__release_window();
+
     if (FRONT_BUFFER) IDirectDrawSurface7_Release(FRONT_BUFFER);
     if (BACK_BUFFER) IDirectDrawSurface7_Release(BACK_BUFFER);
     if (Z_BUFFER) IDirectDrawSurface7_Release(Z_BUFFER);

@@ -236,6 +236,8 @@ int main(int argc, char *argv[])
         renderer.window.flip_surface();
     }
 
+    kelpo_release_interface(&renderer);
+
     /* Release any leftover memory.*/
     {
         /* Release textures.*/

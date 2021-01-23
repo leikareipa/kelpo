@@ -101,7 +101,7 @@ void kelpo_window__create_window(const unsigned width,
     wc.lpfnWndProc = window_message_handler;
     wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = NULL;
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     RegisterClassA(&wc);
 
@@ -124,7 +124,7 @@ void kelpo_window__create_window(const unsigned width,
     return;
 }
 
-void kelpo_window__process_window_events(void)
+void kelpo_window__process_window_messages(void)
 {
     MSG m;
 
@@ -136,10 +136,5 @@ void kelpo_window__process_window_events(void)
         DispatchMessage(&m);
     }
 
-    return;
-}
-
-void kelpo_window__get_window_size(void)
-{
     return;
 }

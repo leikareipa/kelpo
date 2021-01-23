@@ -14,9 +14,7 @@ void kelpo_window__create_window(const unsigned width,
                                  const char *const title,
                                  kelpo_custom_window_message_handler_t *const messageHandler);
 
-void kelpo_window__get_window_size(void);
-
-void kelpo_window__process_window_events(void);
+void kelpo_window__process_window_messages(void);
 
 int kelpo_window__is_window_open(void);
 

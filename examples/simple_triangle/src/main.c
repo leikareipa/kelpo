@@ -24,7 +24,7 @@ LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, L
 
 int main(int argc, char *argv[])
 {
-    struct kelpo_interface_s kelpo;
+    const struct kelpo_interface_s *kelpo = NULL;
     struct kelpo_polygon_triangle_s triangle;
 
     /* Default rendering options.*/
@@ -38,12 +38,12 @@ int main(int argc, char *argv[])
     {
         kelpo = kelpo_create_interface(rendererName);
 
-        kelpo.window.open(renderDeviceIdx,
-                          windowWidth,
-                          windowHeight,
-                          windowBPP);
+        kelpo->window.open(renderDeviceIdx,
+                           windowWidth,
+                           windowHeight,
+                           windowBPP);
 
-        kelpo.window.set_message_handler(window_message_handler);
+        kelpo->window.set_message_handler(window_message_handler);
     }
 
     /* Create the triangle that will be rendered in the middle of the screen.*/
@@ -75,17 +75,17 @@ int main(int argc, char *argv[])
     }
 
     /* Render the triangle.*/
-    while (kelpo.window.is_open())
+    while (kelpo->window.is_open())
     {
-        kelpo.window.process_messages();
+        kelpo->window.process_messages();
 
-        kelpo.rasterizer.clear_frame();
-        kelpo.rasterizer.draw_triangles(&triangle, 1);
+        kelpo->rasterizer.clear_frame();
+        kelpo->rasterizer.draw_triangles(&triangle, 1);
 
-        kelpo.window.flip_surface();
+        kelpo->window.flip_surface();
     }
 
-    kelpo_release_interface(&kelpo);
+    kelpo_release_interface(kelpo);
 
     return 0;
 }

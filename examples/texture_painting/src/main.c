@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     struct kelpoa_matrix44_s clipSpaceMatrix;
     struct kelpoa_matrix44_s screenSpaceMatrix;
 
-    struct kelpo_interface_s renderer;
+    const struct kelpo_interface_s *renderer = NULL;
 
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
@@ -110,14 +110,14 @@ int main(int argc, char *argv[])
     {
         renderer = kelpo_create_interface(cliParams.rendererName);
 
-        renderer.window.open(cliParams.renderDeviceIdx,
-                             cliParams.windowWidth,
-                             cliParams.windowHeight,
-                             cliParams.windowBPP);
+        renderer->window.open(cliParams.renderDeviceIdx,
+                              cliParams.windowWidth,
+                              cliParams.windowHeight,
+                              cliParams.windowBPP);
                             
-        renderer.window.set_message_handler(default_window_message_handler);
+        renderer->window.set_message_handler(default_window_message_handler);
 
-        renderer.rasterizer.upload_texture(fontTexture);
+        renderer->rasterizer.upload_texture(fontTexture);
         free(fontTexture->mipLevel[0]);
         fontTexture->mipLevel[0] = NULL;
     }
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
         for (i = 0; i < numTextures; i++)
         {
-            renderer.rasterizer.upload_texture(&textures[i]);
+            renderer->rasterizer.upload_texture(&textures[i]);
         }
     }
 
@@ -154,14 +154,14 @@ int main(int argc, char *argv[])
 
 
     /* Render.*/
-    while (renderer.window.is_open())
+    while (renderer->window.is_open())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
         rotX += 0.0035;
         rotY += 0.006;
         rotZ += 0.0035;
 
-        renderer.window.process_messages();
+        renderer->window.process_messages();
 
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
             sprintf(polyString, "Polygons: %d/%d", ((numScreenPolys > 9999999)? 9999999 : numScreenPolys),
                                                    ((numWorldPolys > 9999999)? 9999999 : numWorldPolys));
 
-            kelpoa_text_mesh__print(screenSpaceTriangles, renderer.metadata.rendererName, 25, 30, 255, 255, 255, 1);
+            kelpoa_text_mesh__print(screenSpaceTriangles, renderer->metadata.rendererName, 25, 30, 255, 255, 255, 1);
             kelpoa_text_mesh__print(screenSpaceTriangles, polyString, 25, 60, 200, 200, 200, 1);
             kelpoa_text_mesh__print(screenSpaceTriangles, fpsString, 25, 90, 200, 200, 200, 1);
         }
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 
             /* Ask the render API to re-download the texture's pixel data, so
              * the drawing we've done shows up in the rendered image.*/
-            renderer.rasterizer.update_texture(&textures[0]);
+            renderer->rasterizer.update_texture(&textures[0]);
 
             /* Start with a new circle every time we've finished drawing the
              * previous one.*/
@@ -220,14 +220,14 @@ int main(int argc, char *argv[])
             }
         }
 
-        renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(screenSpaceTriangles->data,
-                                           screenSpaceTriangles->count);
+        renderer->rasterizer.clear_frame();
+        renderer->rasterizer.draw_triangles(screenSpaceTriangles->data,
+                                            screenSpaceTriangles->count);
 
-        renderer.window.flip_surface();
+        renderer->window.flip_surface();
     }
 
-    kelpo_release_interface(&renderer);
+    kelpo_release_interface(renderer);
 
     /* Release any leftover memory.*/
     {

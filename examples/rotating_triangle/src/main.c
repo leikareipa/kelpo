@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     struct kelpoa_matrix44_s clipSpaceMatrix;
     struct kelpoa_matrix44_s screenSpaceMatrix;
 
-    struct kelpo_interface_s renderer;
+    const struct kelpo_interface_s *renderer = NULL;
 
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
@@ -50,12 +50,12 @@ int main(int argc, char *argv[])
     {
         renderer = kelpo_create_interface(cliParams.rendererName);
 
-        renderer.window.open(cliParams.renderDeviceIdx,
-                             cliParams.windowWidth,
-                             cliParams.windowHeight,
-                             cliParams.windowBPP);
+        renderer->window.open(cliParams.renderDeviceIdx,
+                              cliParams.windowWidth,
+                              cliParams.windowHeight,
+                              cliParams.windowBPP);
 
-        renderer.window.set_message_handler(default_window_message_handler);
+        renderer->window.set_message_handler(default_window_message_handler);
     }
 
     /* Create the triangle that will be rendered in the middle of the screen.*/
@@ -124,12 +124,12 @@ int main(int argc, char *argv[])
                                               (cliParams.windowHeight / 2.0f));
 
     /* Render.*/
-    while (renderer.window.is_open())
+    while (renderer->window.is_open())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
         rotY += 0.01;
 
-        renderer.window.process_messages();
+        renderer->window.process_messages();
 
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);
@@ -145,14 +145,14 @@ int main(int argc, char *argv[])
                                                      zFar,
                                                      1);
 
-        renderer.rasterizer.clear_frame();
-        renderer.rasterizer.draw_triangles(screenSpaceTriangles->data,
-                                           screenSpaceTriangles->count);
+        renderer->rasterizer.clear_frame();
+        renderer->rasterizer.draw_triangles(screenSpaceTriangles->data,
+                                            screenSpaceTriangles->count);
 
-        renderer.window.flip_surface();
+        renderer->window.flip_surface();
     }
 
-    kelpo_release_interface(&renderer);
+    kelpo_release_interface(renderer);
 
     kelpoa_generic_stack__free(triangles);
     kelpoa_generic_stack__free(worldSpaceTriangles);

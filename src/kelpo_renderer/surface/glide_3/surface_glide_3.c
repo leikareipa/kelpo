@@ -25,8 +25,6 @@ void kelpo_surface_glide_3__release_surface(void)
     assert(GLIDE_RENDER_CONTEXT &&
            "Glide 3: Can't release a NULL render context.");
 
-    kelpo_rasterizer_glide_3__release();
-
     grSstWinClose(GLIDE_RENDER_CONTEXT);
 
     kelpo_window__release_window();

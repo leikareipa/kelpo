@@ -16,6 +16,7 @@ static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static int IS_WINDOW_ACTIVE = 0;
+static HINSTANCE WINDOW_H_INSTANCE = 0;
 
 /* A pointer to a function provided by the creator of this window. The function
  * will receive the window's messages.*/
@@ -83,7 +84,13 @@ void kelpo_window__release_window(void)
 {
     if (WINDOW_HANDLE)
     {
-        PostMessage(WINDOW_HANDLE, WM_CLOSE, 0, 0);
+        ShowCursor(TRUE);
+        SendMessage(WINDOW_HANDLE, WM_CLOSE, 0, 0);
+
+        if (WINDOW_H_INSTANCE)
+        {
+            UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE);
+        }
     }
 
     return;
@@ -94,9 +101,9 @@ void kelpo_window__create_window(const unsigned width,
                                  const char *const title,
                                  kelpo_custom_window_message_handler_t *const messageHandler)
 {
-    const HINSTANCE hInstance = GetModuleHandle(NULL);
     WNDCLASSA wc;
 
+    WINDOW_H_INSTANCE = GetModuleHandle(NULL);
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     WINDOW_OWNER_MESSAGE_HANDLER = messageHandler;
@@ -108,7 +115,7 @@ void kelpo_window__create_window(const unsigned width,
     wc.style = 0;
     wc.lpszClassName = WINDOW_CLASS_NAME;
     wc.lpfnWndProc = window_message_handler;
-    wc.hInstance = hInstance;
+    wc.hInstance = WINDOW_H_INSTANCE;
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = NULL;
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
@@ -124,7 +131,7 @@ void kelpo_window__create_window(const unsigned width,
                                    WINDOW_HEIGHT,
                                    NULL,
                                    NULL,
-                                   hInstance,
+                                   WINDOW_H_INSTANCE,
                                    NULL);
 
     assert((WINDOW_HANDLE != NULL) &&
@@ -136,7 +143,7 @@ void kelpo_window__create_window(const unsigned width,
 void kelpo_window__process_window_messages(void)
 {
     MSG m;
-
+    
     InvalidateRect(WINDOW_HANDLE, NULL, FALSE);
 
     while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))

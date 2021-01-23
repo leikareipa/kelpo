@@ -20,9 +20,18 @@ static int initialize(const unsigned deviceId,
     return 1;
 }
 
+static int release(void)
+{
+    kelpo_surface_opengl_1_2__release_surface();
+    kelpo_rasterizer_opengl_1_2__release();
+
+    return 1;
+}
+
 void export_interface(struct kelpo_interface_s *const interface)
 {
     interface->window.open = initialize;
+    interface->window.destroy = release;
     interface->window.is_open = kelpo_window__is_window_open;
     interface->window.process_messages = kelpo_window__process_window_messages;
     interface->window.flip_surface = kelpo_surface_opengl_1_2__flip_surface;

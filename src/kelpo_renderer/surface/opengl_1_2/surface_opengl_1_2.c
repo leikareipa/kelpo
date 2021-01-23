@@ -54,7 +54,7 @@ static void set_opengl_vsync_enabled(const int vsyncOn)
     }
     else
     {
-        fprintf(stderr, "OpenGL 1.2: This device does not allow vsync to be toggled on/off.");
+        fprintf(stderr, "OpenGL 1.2: This device does not allow vsync to be toggled on/off.\n");
     }
 
     return;
@@ -66,19 +66,17 @@ void kelpo_surface_opengl_1_2__release_surface(void)
             RENDER_CONTEXT) &&
            "OpenGL 1.2: Attempting to release the display surface before it has been acquired.");
 
-    kelpo_rasterizer_opengl_1_2__release();
+    if (!wglMakeCurrent(NULL, NULL) ||
+        !wglDeleteContext(RENDER_CONTEXT) ||
+        !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
+    {
+        fprintf(stderr, "OpenGL 1.2: Failed to properly release the display surface.\n");
+    }
 
     kelpo_window__release_window();
 
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
-
-    if (!wglMakeCurrent(NULL, NULL) ||
-        !wglDeleteContext(RENDER_CONTEXT) ||
-        !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
-    {
-        fprintf(stderr, "OpenGL 1.2: Failed to properly release the display surface.");
-    }
 
     return;
 }

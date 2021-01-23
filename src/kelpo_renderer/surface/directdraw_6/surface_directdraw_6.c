@@ -59,8 +59,6 @@ int kelpo_surface_directdraw_6__unlock_surface(void)
 
 void kelpo_surface_directdraw_6__release_surface(void)
 {
-    kelpo_rasterizer_direct3d_6__release();
-    
     kelpo_window__release_window();
 
     if (FRONT_BUFFER) IDirectDrawSurface3_Release(FRONT_BUFFER);

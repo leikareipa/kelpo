@@ -49,7 +49,7 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
 {
     assert(kelpoInterface && "Asked to release a NULL interface.");
 
-    assert((kelpoInterface == &ACTIVE_INTERFACE) &&
+    assert((kelpoInterface == &ACTIVE_INTERFACE) && 
            "Can't release an interface that isn't active.");
 
     if (ACTIVE_INTERFACE.window.is_open())

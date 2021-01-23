@@ -189,21 +189,19 @@ void kelpo_surface_opengl_3_0__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
-           "OpenGL 3.0: Attempting to release the display surface before it has been acquired.");
-
-    kelpo_rasterizer_opengl_3_0__release();
-
-    kelpo_window__release_window();
-
-    /* Return from fullscreen.*/
-    ChangeDisplaySettings(NULL, 0);
+           "OpenGL 3.0: Attempting to release the display surface before it has been acquired."); 
 
     if (!wglMakeCurrent(NULL, NULL) ||
         !wglDeleteContext(RENDER_CONTEXT) ||
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
-        fprintf(stderr, "OpenGL 3.0: Failed to properly release the display surface.");
+        fprintf(stderr, "OpenGL 3.0: Failed to properly release the display surface.\n");
     }
+
+    kelpo_window__release_window();
+
+    /* Return from fullscreen.*/
+    ChangeDisplaySettings(NULL, 0);
 
     return;
 }
@@ -319,7 +317,7 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
         }
     }
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 3.3", window_proc);
+    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 3.0", window_proc);
 
     if (!(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()) ||
         !(WINDOW_DC = GetDC(WINDOW_HANDLE)) ||

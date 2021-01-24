@@ -52,6 +52,7 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
     assert((kelpoInterface == &ACTIVE_INTERFACE) && 
            "Can't release an interface that isn't active.");
     
+    ACTIVE_INTERFACE.rasterizer.unload_textures();
     ACTIVE_INTERFACE.window.release();
 
     if (kelpoInterface->dllHandle &&

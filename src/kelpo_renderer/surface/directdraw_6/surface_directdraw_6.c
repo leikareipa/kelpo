@@ -91,7 +91,7 @@ HRESULT kelpo_surface_directdraw_6__initialize_direct3d_6_interface(LPDIRECT3D2 
         return hr;
     }
 
-    if (FAILED(hr = IDirect3D2_CreateDevice(*d3d, IID_IDirect3DHALDevice, BACK_BUFFER, &*d3dDevice)))
+    if (FAILED(hr = IDirect3D2_CreateDevice(*d3d, IID_IDirect3DHALDevice, BACK_BUFFER, d3dDevice)))
     {
         fprintf(stderr, "DirectDraw 6: Failed to create a Direct3D device (error 0x%x).\n", hr);
         return hr;

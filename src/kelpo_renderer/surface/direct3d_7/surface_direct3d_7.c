@@ -100,15 +100,9 @@ static HRESULT setup_direct3d(GUID deviceGUID)
 
 void kelpo_surface_direct3d_7__release_surface(void)
 {
+    if (D3DDEVICE_7) IDirect3DDevice7_Release(D3DDEVICE_7);
     kelpo_surface_directdraw_7__release_surface();
-
     if (DIRECT3D_7) IDirect3D7_Release(DIRECT3D_7);
-
-    /* FIXME: This line crashes with a page fault, at least in Wine.
-     *        Does this object need to be released? Is it still in
-     *        use by something? Why does it crash? I don't have a way
-     *        to debug memory right now, so.*/
-    /*if (D3DDEVICE_7) IDirect3DDevice7_Release(D3DDEVICE_7);*/
 
     return;
 }

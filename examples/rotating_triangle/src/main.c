@@ -124,12 +124,11 @@ int main(int argc, char *argv[])
                                               (cliParams.windowHeight / 2.0f));
 
     /* Render.*/
-    while (renderer->window.is_open())
+    while (renderer->window.process_messages(),
+           renderer->window.is_open())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
         rotY += 0.01;
-
-        renderer->window.process_messages();
 
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);

@@ -197,9 +197,7 @@ void kelpo_surface_opengl_3_0__release_surface(void)
     {
         fprintf(stderr, "OpenGL 3.0: Failed to properly release the display surface.\n");
     }
-
-    kelpo_window__release_window();
-
+    
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
 

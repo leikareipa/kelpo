@@ -44,7 +44,7 @@ static unsigned framerate(void)
 }
 
 /* Generates mipmaps for the given texture of its base mip level down to 1 x 1.*/
-static void regenerate_texture_mipmaps(struct kelpo_polygon_texture_s *const texture)
+static void regenerate_mipmaps_for_texture(struct kelpo_polygon_texture_s *const texture)
 {
     unsigned m = 0;
     
@@ -154,14 +154,14 @@ int main(int argc, char *argv[])
 
 
     /* Render.*/
-    while (renderer->window.is_open())
+    while (renderer->window.process_messages(),
+           renderer->window.is_open())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
+        
         rotX += 0.0035;
         rotY += 0.006;
         rotZ += 0.0035;
-
-        renderer->window.process_messages();
 
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 
             textures[0].mipLevel[0][(offset + x) + (offset + y) * textures[0].width] = 0xffff;
             
-            regenerate_texture_mipmaps(&textures[0]);
+            regenerate_mipmaps_for_texture(&textures[0]);
 
             /* Ask the render API to re-download the texture's pixel data, so
              * the drawing we've done shows up in the rendered image.*/

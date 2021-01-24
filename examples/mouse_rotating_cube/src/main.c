@@ -51,7 +51,7 @@ static float rotX = 0;
 static float rotY = 0;
 static float zoom = 4.7;
 
-LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static int prevMousePosX = 0;
     static int prevMousePosY = 0;
@@ -170,10 +170,9 @@ int main(int argc, char *argv[])
                                               (cliParams.windowHeight / 2.0f));
 
     /* Render.*/
-    while (renderer->window.is_open())
+    while (renderer->window.process_messages(),
+           renderer->window.is_open())
     {
-        renderer->window.process_messages();
-
         /* Transform the scene's triangles into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);
         kelpoa_generic_stack__clear(screenSpaceTriangles);

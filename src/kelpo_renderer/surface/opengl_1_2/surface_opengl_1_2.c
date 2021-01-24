@@ -73,8 +73,6 @@ void kelpo_surface_opengl_1_2__release_surface(void)
         fprintf(stderr, "OpenGL 1.2: Failed to properly release the display surface.\n");
     }
 
-    kelpo_window__release_window();
-
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
 

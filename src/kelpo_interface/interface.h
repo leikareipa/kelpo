@@ -29,7 +29,7 @@ struct kelpo_interface_s
                     const unsigned screenHeight,
                     const unsigned screenBPP);
 
-        int (*destroy)(void);
+        int (*release)(void);
 
         void (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
 

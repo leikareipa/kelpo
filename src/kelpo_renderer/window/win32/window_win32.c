@@ -15,7 +15,7 @@ static char WINDOW_TITLE[64];
 static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
-static int IS_WINDOW_ACTIVE = 0;
+static int DOES_WINDOW_EXIST = 0;
 static HINSTANCE WINDOW_H_INSTANCE = 0;
 
 /* A pointer to a function provided by the creator of this window. The function
@@ -29,7 +29,7 @@ static kelpo_custom_window_message_handler_t *EXTERNAL_MESSAGE_HANDLER = 0;
 
 int kelpo_window__is_window_open(void)
 {
-    return (WINDOW_HANDLE != 0);
+    return DOES_WINDOW_EXIST;
 }
 
 static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -48,16 +48,10 @@ static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, 
 
     switch (message)
     {
-        case WM_ACTIVATE:
-        {
-            IS_WINDOW_ACTIVE = !HIWORD(wParam);
-            
-            break;
-        }
-
-        case WM_NCDESTROY:
+        case WM_CLOSE:
         {
             WINDOW_HANDLE = 0;
+            kelpo_window__release_window();
 
             break;
         }
@@ -84,14 +78,22 @@ void kelpo_window__release_window(void)
 {
     if (WINDOW_HANDLE)
     {
-        ShowCursor(TRUE);
-        SendMessage(WINDOW_HANDLE, WM_CLOSE, 0, 0);
-
-        if (WINDOW_H_INSTANCE)
+        if (!DestroyWindow(WINDOW_HANDLE))
         {
-            UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE);
+            fprintf(stderr, "ERROR: Failed to release the Kelpo window.\n");
         }
+
+        if (WINDOW_H_INSTANCE &&
+            !UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE))
+        {
+            fprintf(stderr, "ERROR: Failed to unregister the Kelpo window class.\n");
+        }
+
+        WINDOW_HANDLE = 0;
     }
+
+    WINDOW_H_INSTANCE = 0;
+    DOES_WINDOW_EXIST = 0;
 
     return;
 }
@@ -137,13 +139,15 @@ void kelpo_window__create_window(const unsigned width,
     assert((WINDOW_HANDLE != NULL) &&
            "Failed to create a window for the program. Can't continue.");
 
+    DOES_WINDOW_EXIST = 1;
+
     return;
 }
 
 void kelpo_window__process_window_messages(void)
 {
     MSG m;
-    
+
     InvalidateRect(WINDOW_HANDLE, NULL, FALSE);
 
     while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))

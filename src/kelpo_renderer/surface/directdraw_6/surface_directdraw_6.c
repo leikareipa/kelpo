@@ -59,9 +59,10 @@ int kelpo_surface_directdraw_6__unlock_surface(void)
 
 void kelpo_surface_directdraw_6__release_surface(void)
 {
-    if (FRONT_BUFFER) IDirectDrawSurface3_Release(FRONT_BUFFER);
+    if (BACK_BUFFER) IDirectDrawSurface3_DeleteAttachedSurface(BACK_BUFFER, 0, NULL);
     if (BACK_BUFFER) IDirectDrawSurface3_Release(BACK_BUFFER);
     if (Z_BUFFER) IDirectDrawSurface3_Release(Z_BUFFER);
+    if (FRONT_BUFFER) IDirectDrawSurface3_Release(FRONT_BUFFER);
     if (DIRECTDRAW_6) IDirectDraw_Release(DIRECTDRAW_6);
 
     return;

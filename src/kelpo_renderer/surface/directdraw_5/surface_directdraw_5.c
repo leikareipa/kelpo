@@ -59,9 +59,10 @@ int kelpo_surface_directdraw_5__unlock_surface(void)
 
 void kelpo_surface_directdraw_5__release_surface(void)
 {
-    if (FRONT_BUFFER) IDirectDrawSurface3_Release(FRONT_BUFFER);
+    if (BACK_BUFFER) IDirectDrawSurface3_DeleteAttachedSurface(BACK_BUFFER, 0, NULL);
     if (BACK_BUFFER) IDirectDrawSurface3_Release(BACK_BUFFER);
     if (Z_BUFFER) IDirectDrawSurface3_Release(Z_BUFFER);
+    if (FRONT_BUFFER) IDirectDrawSurface3_Release(FRONT_BUFFER);
     if (DIRECTDRAW_5) IDirectDraw_Release(DIRECTDRAW_5);
 
     return;
@@ -69,7 +70,7 @@ void kelpo_surface_directdraw_5__release_surface(void)
 
 void kelpo_surface_directdraw_5__flip_surface(const int vsyncEnabled)
 {
-    /* TODO: Disabling vsync doesn't work. DirectDraw 7 has the DDFLIP_NOVSYNC
+    /* FIXME: Disabling vsync doesn't work. DirectDraw 7 has the DDFLIP_NOVSYNC
      * flag (c.f. DDFLIP_WAIT), but it doesn't seem to exist in DirectDraw 5.*/
     IDirectDrawSurface3_Flip(FRONT_BUFFER, NULL, (vsyncEnabled? DDFLIP_WAIT : 0));
 

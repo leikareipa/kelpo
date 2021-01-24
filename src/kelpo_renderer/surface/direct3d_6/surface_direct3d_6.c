@@ -94,10 +94,10 @@ void kelpo_surface_direct3d_6__release_surface(void)
 {
     kelpo_surface_directdraw_6__release_surface();
 
-    if (DIRECT3D_6) IDirect3D2_Release(DIRECT3D_6);
     if (D3DDEVICE_6) IDirect3DDevice2_Release(D3DDEVICE_6);
     if (D3DVIEWPORT_6) IDirect3DViewport2_Release(D3DVIEWPORT_6);
-
+    if (DIRECT3D_6) IDirect3D2_Release(DIRECT3D_6);
+    
     return;
 }
 

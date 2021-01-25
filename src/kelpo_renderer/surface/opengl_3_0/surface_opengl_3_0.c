@@ -181,7 +181,7 @@ static void set_vsync_enabled(const int vsyncOn)
     return;
 }
 
-void kelpo_surface_opengl_3_0__release_surface(void)
+int kelpo_surface_opengl_3_0__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
@@ -192,19 +192,20 @@ void kelpo_surface_opengl_3_0__release_surface(void)
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
         kelpo_error(KELPOERR_API_CALL_FAILED);
+        return 0;
     }
     
     /* Return from fullscreen.*/
     ChangeDisplaySettings(NULL, 0);
 
-    return;
+    return 1;
 }
 
-void kelpo_surface_opengl_3_0__flip_surface(void)
+int kelpo_surface_opengl_3_0__flip_surface(void)
 {
     SwapBuffers(WINDOW_DC);
 
-    return;
+    return 1;
 }
 
 static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -271,11 +272,11 @@ static int create_opengl_3_context(void)
     return 1;
 }
 
-void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
-                                              const unsigned height,
-                                              const unsigned bpp,
-                                              const int vsyncEnabled,
-                                              const unsigned deviceIdx)
+int kelpo_surface_opengl_3_0__create_surface(const unsigned width,
+                                             const unsigned height,
+                                             const unsigned bpp,
+                                             const int vsyncEnabled,
+                                             const unsigned deviceIdx)
 {
     PIXELFORMATDESCRIPTOR pfd;
 
@@ -306,25 +307,27 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
         {
             kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
-            return;
+            return 0;
         }
     }
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 3.0", window_proc);
+    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 3.0", window_proc) ||
+        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()) ||
+        !(WINDOW_DC = GetDC(WINDOW_HANDLE)))
+    {
+        return 0;
+    }
 
-    if (!(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()) ||
-        !(WINDOW_DC = GetDC(WINDOW_HANDLE)) ||
-        !SetPixelFormat(WINDOW_DC, ChoosePixelFormat(WINDOW_DC, &pfd), &pfd))
+    if (!SetPixelFormat(WINDOW_DC, ChoosePixelFormat(WINDOW_DC, &pfd), &pfd))
     {
         kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
-        return;
+        return 0;
     }
 
     if (!create_opengl_3_context() ||
         !initialize_extensions())
     {
-        /* TODO: Return false.*/
-        return;
+        return 0;
     }
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
@@ -334,5 +337,5 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
     set_vsync_enabled(vsyncEnabled? 1 : 0);
     UpdateWindow(WINDOW_HANDLE);
 
-    return;
+    return 1;
 }

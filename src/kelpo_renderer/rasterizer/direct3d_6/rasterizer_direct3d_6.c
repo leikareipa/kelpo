@@ -36,13 +36,16 @@ extern LPDIRECT3DDEVICE2 D3DDEVICE_6;
 extern LPDIRECT3DVIEWPORT2 D3DVIEWPORT_6;
 static D3DVIEWPORT SURFACE_VIEWPORT;
 
-void kelpo_rasterizer_direct3d_6__initialize(void)
+int kelpo_rasterizer_direct3d_6__initialize(void)
 {
     assert(D3DVIEWPORT_6 && D3DDEVICE_6 &&
            "Attempting to initialize the rasterizer before the render device has been created.");
 
     UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(LPDIRECTDRAWSURFACE3));
     D3D6_VERTEX_CACHE = kelpoa_generic_stack__create(1000, sizeof(D3DTLVERTEX));
+
+    assert((UPLOADED_TEXTURES && D3D6_VERTEX_CACHE) &&
+           "Failed to create data stacks.");
 
     IDirect3DDevice2_SetRenderState(D3DDEVICE_6, D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
     IDirect3DDevice2_SetRenderState(D3DDEVICE_6, D3DRENDERSTATE_ZENABLE, TRUE);
@@ -56,53 +59,66 @@ void kelpo_rasterizer_direct3d_6__initialize(void)
     SURFACE_VIEWPORT.dwSize = sizeof(SURFACE_VIEWPORT);
     IDirect3DViewport2_GetViewport(D3DVIEWPORT_6, &SURFACE_VIEWPORT);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__release(void)
+int kelpo_rasterizer_direct3d_6__release(void)
 {
+    assert((UPLOADED_TEXTURES && D3D6_VERTEX_CACHE) &&
+           "The data stacks haven't been initialized.");
+
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
     kelpoa_generic_stack__free(D3D6_VERTEX_CACHE);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__clear_frame(void)
+int kelpo_rasterizer_direct3d_6__clear_frame(void)
 {
+    HRESULT hr = 0;
     D3DRECT screenRect = {0, 0, SURFACE_VIEWPORT.dwWidth, SURFACE_VIEWPORT.dwHeight};
 
-    IDirect3DViewport2_Clear(D3DVIEWPORT_6, 1, &screenRect, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER));
+    if (FAILED(hr = IDirect3DViewport2_Clear(D3DVIEWPORT_6, 1, &screenRect, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER))))
+    {
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
+        return 0;
+    }
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__upload_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_direct3d_6__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
+    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
+
     HRESULT hr = 0;
     D3DTEXTUREHANDLE d3dTextureHandle;
     LPDIRECT3DTEXTURE2 textureObject;
     LPDIRECTDRAWSURFACE d3dTexture = kelpo_create_directdraw_6_surface_from_texture(texture, D3DDEVICE_6);
 
-    assert(d3dTexture && "Direct3D 6: Failed to create a Direct3D texture.");
+    if (!d3dTexture)
+    {
+        return 0;
+    }
 
-    if (FAILED(hr = IDirectDraw2_QueryInterface(d3dTexture, IID_IDirect3DTexture2, (LPVOID *)&textureObject)))
+    if (FAILED(hr = IDirectDraw2_QueryInterface(d3dTexture, IID_IDirect3DTexture2, (LPVOID *)&textureObject)) ||
+        FAILED(hr = IDirect3DTexture_GetHandle(textureObject, D3DDEVICE_6, &d3dTextureHandle)) ||
+        FAILED(hr = IDirect3DTexture_Release(textureObject)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return;
+        return 0;
     }
-
-	IDirect3DTexture_GetHandle(textureObject, D3DDEVICE_6, &d3dTextureHandle);
-	IDirect3DTexture_Release(textureObject);
 
     texture->apiId = (uint32_t)d3dTextureHandle;
     texture->apiAuxData = d3dTexture;
     kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &d3dTexture);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
     unsigned m = 0;
     HRESULT hr = 0; 
@@ -119,7 +135,7 @@ void kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s 
         {
             fprintf(stderr, "Direct3D error 0x%x\n", hr);
             kelpo_error(KELPOERR_API_CALL_FAILED);
-            return;
+            return 0;
         }
 
         assert(((textureSurfaceDesc.dwWidth == texture->width) &&
@@ -145,7 +161,7 @@ void kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s 
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
                 kelpo_error(KELPOERR_API_CALL_FAILED);
-                return;
+                return 0;
             }
 
             assert(((mipSurfaceDesc.dwWidth == mipLevelSideLength) &&
@@ -182,7 +198,7 @@ void kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s 
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
                 kelpo_error(KELPOERR_API_CALL_FAILED);
-                return;
+                return 0;
             }
         }
 
@@ -202,16 +218,18 @@ void kelpo_rasterizer_direct3d_6__update_texture(struct kelpo_polygon_texture_s 
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
                 kelpo_error(KELPOERR_API_CALL_FAILED);
-                return;
+                return 0;
             }
         }
     }
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__unload_textures(void)
+int kelpo_rasterizer_direct3d_6__unload_textures(void)
 {
+    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
+
     unsigned i = 0;
 
     IDirect3DDevice2_SetRenderState(D3DDEVICE_6,
@@ -226,12 +244,14 @@ void kelpo_rasterizer_direct3d_6__unload_textures(void)
 
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_direct3d_6__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
-                                                 const unsigned numTriangles)
+int kelpo_rasterizer_direct3d_6__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
+                                                const unsigned numTriangles)
 {
+    assert(D3D6_VERTEX_CACHE && "The vertex stack hasn't been initialized.");
+
     HRESULT hr = 0;
     unsigned numTrianglesProcessed = 0;
     unsigned numTrianglesInBatch = 0;
@@ -246,7 +266,7 @@ void kelpo_rasterizer_direct3d_6__draw_triangles(struct kelpo_polygon_triangle_s
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return;
+        return 0;
     }
 
     /* Render the triangles in batches. Each batch consists of consecutive
@@ -344,7 +364,12 @@ void kelpo_rasterizer_direct3d_6__draw_triangles(struct kelpo_polygon_triangle_s
         triangle++;
     }
 
-    IDirect3DDevice2_EndScene(D3DDEVICE_6);
+    if (FAILED(hr = IDirect3DDevice2_EndScene(D3DDEVICE_6)))
+    {
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
+        return 0;
+    }
 
-    return;
+    return 1;
 }

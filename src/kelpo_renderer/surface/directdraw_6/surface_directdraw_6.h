@@ -56,15 +56,15 @@
 
 #include <d3d.h>
 
-HRESULT kelpo_surface_directdraw_6__initialize_surface(const unsigned width,
-                                                       const unsigned height,
-                                                       const unsigned bpp,
-                                                       const HWND windowHandle,
-                                                       GUID directDrawDeviceGUID);
+int kelpo_surface_directdraw_6__initialize_surface(const unsigned width,
+                                                   const unsigned height,
+                                                   const unsigned bpp,
+                                                   const HWND windowHandle,
+                                                   GUID directDrawDeviceGUID);
 
-void kelpo_surface_directdraw_6__release_surface(void);
+int kelpo_surface_directdraw_6__release_surface(void);
 
-void kelpo_surface_directdraw_6__flip_surface(const int vsyncEnabled);
+int kelpo_surface_directdraw_6__flip_surface(const int vsyncEnabled);
 
 /* TODO.
 void kelpo_surface_directdraw_6__resize_surface(void);*/
@@ -83,13 +83,13 @@ int kelpo_surface_directdraw_6__unlock_surface(void);
 
 /* Initializes a hardware Direct3D interface to the current DirectDraw surface,
  * and assigns the given pointers-to-pointers to point to the interface.*/
-HRESULT kelpo_surface_directdraw_6__initialize_direct3d_6_interface(LPDIRECT3D2 *d3d,
-                                                                    LPDIRECT3DDEVICE2 *d3dDevice);
+int kelpo_surface_directdraw_6__initialize_direct3d_6_interface(LPDIRECT3D2 *d3d,
+                                                                LPDIRECT3DDEVICE2 *d3dDevice);
 
 /* Creates and attaches a Z buffer of the given pixel format to the current back
  * buffer. The Z buffer will inherit the back buffer's dimensions. The Direct3D
  * device is obtained from __initialize_direct3d_6_interface().*/
-HRESULT kelpo_surface_directdraw_6__initialize_direct3d_6_zbuffer(LPDIRECT3DDEVICE2 d3dDevice,
-                                                                  const unsigned bitDepth);
+int kelpo_surface_directdraw_6__initialize_direct3d_6_zbuffer(LPDIRECT3DDEVICE2 d3dDevice,
+                                                              const unsigned bitDepth);
 
 #endif

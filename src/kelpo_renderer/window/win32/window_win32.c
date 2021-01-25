@@ -68,26 +68,28 @@ uint32_t kelpo_window__get_window_handle(void)
     return (uint32_t)WINDOW_HANDLE;
 }
 
-void kelpo_window__set_external_message_handler(kelpo_custom_window_message_handler_t *const messageHandler)
+int kelpo_window__set_external_message_handler(kelpo_custom_window_message_handler_t *const messageHandler)
 {
     EXTERNAL_MESSAGE_HANDLER = messageHandler;
     
-    return;
+    return 1;
 }
 
-void kelpo_window__release_window(void)
+int kelpo_window__release_window(void)
 {
     if (WINDOW_HANDLE)
     {
         if (!DestroyWindow(WINDOW_HANDLE))
         {
             kelpo_error(KELPOERR_API_CALL_FAILED);
+            return 0;
         }
 
         if (WINDOW_H_INSTANCE &&
             !UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE))
         {
             kelpo_error(KELPOERR_API_CALL_FAILED);
+            return 0;
         }
 
         WINDOW_HANDLE = 0;
@@ -96,16 +98,15 @@ void kelpo_window__release_window(void)
     WINDOW_H_INSTANCE = 0;
     DOES_WINDOW_EXIST = 0;
 
-    return;
+    return 1;
 }
 
-void kelpo_window__create_window(const unsigned width,
-                                 const unsigned height,
-                                 const char *const title,
-                                 kelpo_custom_window_message_handler_t *const messageHandler)
+int kelpo_window__create_window(const unsigned width,
+                                const unsigned height,
+                                const char *const title,
+                                kelpo_custom_window_message_handler_t *const messageHandler)
 {
     WNDCLASSA wc;
-
     WINDOW_H_INSTANCE = GetModuleHandle(NULL);
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
@@ -122,33 +123,31 @@ void kelpo_window__create_window(const unsigned width,
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = NULL;
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    RegisterClassA(&wc);
 
-    WINDOW_HANDLE = CreateWindowEx(WS_EX_TOPMOST,
-                                   WINDOW_CLASS_NAME,
-                                   WINDOW_TITLE,
-                                   WS_POPUP,
-                                   0,
-                                   0,
-                                   WINDOW_WIDTH,
-                                   WINDOW_HEIGHT,
-                                   NULL,
-                                   NULL,
-                                   WINDOW_H_INSTANCE,
-                                   NULL);
-
-    if (!WINDOW_HANDLE)
+    if (!WINDOW_H_INSTANCE ||
+        !RegisterClassA(&wc) ||
+        !(WINDOW_HANDLE = CreateWindowEx(WS_EX_TOPMOST,
+                                         WINDOW_CLASS_NAME,
+                                         WINDOW_TITLE,
+                                         WS_POPUP,
+                                         0,
+                                         0,
+                                         WINDOW_WIDTH,
+                                         WINDOW_HEIGHT,
+                                         NULL,
+                                         NULL,
+                                         WINDOW_H_INSTANCE,
+                                         NULL)))
     {
-        /* TODO: Return false.*/
-        return;
+        kelpo_error(KELPOERR_API_CALL_FAILED);
+        return 0;
     }
     
     DOES_WINDOW_EXIST = 1;
-
-    return;
+    return 1;
 }
 
-void kelpo_window__process_window_messages(void)
+int kelpo_window__process_window_messages(void)
 {
     MSG m;
 
@@ -160,5 +159,5 @@ void kelpo_window__process_window_messages(void)
         DispatchMessage(&m);
     }
 
-    return;
+    return 1;
 }

@@ -44,7 +44,7 @@ struct glide3_vertex_s
     uint32_t rgba; /* Each of the four color channels takes 1 byte.*/
 };
 
-void kelpo_rasterizer_glide_3__initialize(void)
+int kelpo_rasterizer_glide_3__initialize(void)
 {
     UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(FxU32));
     GR3_VERTEX_CACHE = kelpoa_generic_stack__create(1000, sizeof(struct glide3_vertex_s));
@@ -80,22 +80,22 @@ void kelpo_rasterizer_glide_3__initialize(void)
 
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);  
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_glide_3__release(void)
+int kelpo_rasterizer_glide_3__release(void)
 {
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
     kelpoa_generic_stack__free(GR3_VERTEX_CACHE);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_glide_3__clear_frame(void)
+int kelpo_rasterizer_glide_3__clear_frame(void)
 {
     grBufferClear(0, 0, ~0u);
 
-    return;
+    return 1;
 }
 
 static GrLOD_t lod_for_size(const unsigned size)
@@ -176,7 +176,7 @@ static void upload_texture_data(struct kelpo_polygon_texture_s *const texture,
     return;
 }
 
-void kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
     FxU32 textureSize = 0;
     GrTexInfo textureInfo = {0};
@@ -189,7 +189,7 @@ void kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *co
     if ((CURRENT_TEXTURE_ADDRESS + textureSize) > grTexMaxAddress(GR_TMU0))
     {
         kelpo_error(KELPOERR_OUT_OF_VIDEO_MEMORY);
-        return;
+        return 0;
     }
 
     texture->apiId = CURRENT_TEXTURE_ADDRESS;
@@ -197,10 +197,10 @@ void kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *co
 
     CURRENT_TEXTURE_ADDRESS += textureSize;
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
     GrTexInfo textureInfo = {0};
     
@@ -210,19 +210,19 @@ void kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *co
 
     upload_texture_data(texture, &textureInfo);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_glide_3__unload_textures(void)
+int kelpo_rasterizer_glide_3__unload_textures(void)
 {
     CURRENT_TEXTURE_ADDRESS = grTexMinAddress(GR_TMU0);
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
-                                              const unsigned numTriangles)
+int kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
+                                             const unsigned numTriangles)
 {
     unsigned numTrianglesProcessed = 0;
     unsigned numTrianglesInBatch = 0;
@@ -336,5 +336,5 @@ void kelpo_rasterizer_glide_3__draw_triangles(struct kelpo_polygon_triangle_s *c
         triangle++;
     }
 
-    return;
+    return 1;
 }

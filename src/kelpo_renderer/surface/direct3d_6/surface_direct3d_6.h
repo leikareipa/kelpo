@@ -11,14 +11,14 @@
 #ifndef KELPO_RENDERER_SURFACE_DIRECT3D_6_SURFACE_DIRECT3D_6_H
 #define KELPO_RENDERER_SURFACE_DIRECT3D_6_SURFACE_DIRECT3D_6_H
 
-void kelpo_surface_direct3d_6__release_surface(void);
+int kelpo_surface_direct3d_6__release_surface(void);
 
-void kelpo_surface_direct3d_6__flip_surface(void);
+int kelpo_surface_direct3d_6__flip_surface(void);
 
-void kelpo_surface_direct3d_6__create_surface(const unsigned width,
-                                              const unsigned height,
-                                              const unsigned bpp,
-                                              const int vsyncEnabled,
-                                              const unsigned deviceIdx);
+int kelpo_surface_direct3d_6__create_surface(const unsigned width,
+                                             const unsigned height,
+                                             const unsigned bpp,
+                                             const int vsyncEnabled,
+                                             const unsigned deviceIdx);
 
 #endif

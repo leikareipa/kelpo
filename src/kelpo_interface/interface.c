@@ -12,15 +12,17 @@ typedef void *(*dll_import_fn_t)(struct kelpo_interface_s *const);
  * kelpo_create_interface(). Only one interface can be active at a time.*/
 static struct kelpo_interface_s ACTIVE_INTERFACE = {0};
 
+/* Returns NULL on failure.*/
 const struct kelpo_interface_s* kelpo_create_interface(const char *const rasterizerName)
 {
     const char *dllFilename = NULL;
     dll_import_fn_t get_kelpo_interface = NULL;
 
     /* If we currently have an active interface that hasn't yet been released.*/
-    if (ACTIVE_INTERFACE.dllHandle)
+    if (ACTIVE_INTERFACE.dllHandle &&
+        !kelpo_release_interface(&ACTIVE_INTERFACE))
     {
-        kelpo_release_interface(&ACTIVE_INTERFACE);
+        return NULL;
     }
 
     if      (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
@@ -48,13 +50,14 @@ const struct kelpo_interface_s* kelpo_create_interface(const char *const rasteri
 /* Returns 1 on success; 0 otherwise.*/
 int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface)
 {
-    assert(kelpoInterface && "Asked to release a NULL interface.");
-
     assert((kelpoInterface == &ACTIVE_INTERFACE) && 
            "Can't release an interface that isn't active.");
     
-    ACTIVE_INTERFACE.rasterizer.unload_textures();
-    ACTIVE_INTERFACE.window.release();
+    if (!ACTIVE_INTERFACE.rasterizer.unload_textures() ||
+        !ACTIVE_INTERFACE.window.release())
+    {
+        return 0;
+    }
 
     if (kelpoInterface->dllHandle &&
         !FreeLibrary(ACTIVE_INTERFACE.dllHandle))
@@ -74,5 +77,3 @@ const char* kelpo_active_renderer_name(void)
            ? ACTIVE_INTERFACE.metadata.rendererName
            : "No active renderer";
 }
-
-#undef DLL_FUNC_ADDRESS

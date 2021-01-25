@@ -21,22 +21,25 @@ static const unsigned WINDOW_BIT_DEPTH = 16;
 static unsigned IS_VSYNC_ENABLED = 0; /* Either 1 or 0, to set whether to use vsync.*/
 static HWND WINDOW_HANDLE = 0;
 
-void kelpo_surface_glide_3__release_surface(void)
+int kelpo_surface_glide_3__release_surface(void)
 {
     assert(GLIDE_RENDER_CONTEXT && "Can't release a NULL render context.");
 
     grSstWinClose(GLIDE_RENDER_CONTEXT);
 
-    kelpo_window__release_window();
+    if (!kelpo_window__release_window())
+    {
+        return 0;
+    }
 
-    return;
+    return 1;
 }
 
-void kelpo_surface_glide_3__flip_surface(void)
+int kelpo_surface_glide_3__flip_surface(void)
 {
     grBufferSwap(IS_VSYNC_ENABLED);
 
-    return;
+    return 1;
 }
 
 static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -49,11 +52,11 @@ static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARA
     return 0;
 }
 
-void kelpo_surface_glide_3__create_surface(const unsigned width,
-                                           const unsigned height,
-                                           const unsigned bpp,
-                                           const int vsyncEnabled,
-                                           const unsigned deviceIdx)
+int kelpo_surface_glide_3__create_surface(const unsigned width,
+                                          const unsigned height,
+                                          const unsigned bpp,
+                                          const int vsyncEnabled,
+                                          const unsigned deviceIdx)
 {
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
     GrScreenRefresh_t glideRefreshRate = GR_REFRESH_60Hz;
@@ -77,14 +80,25 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
     else if ((width == 1024) && (height == 768))  glideResolution = GR_RESOLUTION_1024x768;
     else if ((width == 1280) && (height == 1024)) glideResolution = GR_RESOLUTION_1280x1024;
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
-    else assert(0 && "Unsupported resolution.");
+    else
+    {
+        kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
+        return 0;
+    };
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc);
-    WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
+    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc) ||
+        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
+    {
+        return 0;
+    }
 
-    ShowWindow(WINDOW_HANDLE, SW_SHOW);
-    SetForegroundWindow(WINDOW_HANDLE);
-    SetFocus(WINDOW_HANDLE);
+    if (!ShowWindow(WINDOW_HANDLE, SW_SHOW) ||
+        !SetForegroundWindow(WINDOW_HANDLE) ||
+        !SetFocus(WINDOW_HANDLE))
+    {
+        kelpo_error(KELPOERR_API_CALL_FAILED);
+        return 0;
+    }
 
     grGlideInit();
     grSstSelect(deviceIdx);
@@ -98,9 +112,9 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
 
     if (!GLIDE_RENDER_CONTEXT)
     {
-        /* TODO: Return false.*/
         kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
+        return 0;
     }
 
-    return;
+    return 1;
 }

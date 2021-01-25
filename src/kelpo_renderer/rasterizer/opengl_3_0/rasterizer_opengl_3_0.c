@@ -36,7 +36,7 @@ struct gl3_vertex_s
     float r, g, b, a;
 };
 
-void kelpo_rasterizer_opengl_3_0__initialize(void)
+int kelpo_rasterizer_opengl_3_0__initialize(void)
 {
     GLuint shaderProgram = glCreateProgram();
 
@@ -141,25 +141,25 @@ void kelpo_rasterizer_opengl_3_0__initialize(void)
         glEnableVertexAttribArray(color);
     }
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__release(void)
+int kelpo_rasterizer_opengl_3_0__release(void)
 {
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
     kelpoa_generic_stack__free(GL3_VERTEX_CACHE);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__clear_frame(void)
+int kelpo_rasterizer_opengl_3_0__clear_frame(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    return;
+    return 1;
 }
 
-static void set_parameters_for_texture(const struct kelpo_polygon_texture_s *const texture)
+static int set_parameters_for_texture(const struct kelpo_polygon_texture_s *const texture)
 {
     assert((texture && texture->apiId) && "Invalid texture.");
     
@@ -180,10 +180,10 @@ static void set_parameters_for_texture(const struct kelpo_polygon_texture_s *con
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture->flags.noFiltering? GL_NEAREST : GL_LINEAR));
     }
 
-    return;
+    return 1;
 }
 
-static void upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *const texture)
+static int upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *const texture)
 {
     unsigned m = 0;
 
@@ -202,14 +202,14 @@ static void upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *con
                         texture->mipLevel[m]);
     }
 
-    return;
+    return 1;
 }
 
 /* Uploads the given texture's data to the graphics device. An entry for this
  * texture must already have been created with glGenTextures() prior to calling
  * this function; the corresponding texture id must be stored in the texture's
  * 'apiId' property.*/
-static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
+static int upload_texture_data(struct kelpo_polygon_texture_s *const texture)
 {
     uint32_t m = 0;
 
@@ -237,10 +237,10 @@ static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
     }
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__upload_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_opengl_3_0__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(!glIsTexture(texture->apiId) &&
            "This texture has already been registered. Use update_texture() instead.");
@@ -248,13 +248,16 @@ void kelpo_rasterizer_opengl_3_0__upload_texture(struct kelpo_polygon_texture_s 
     glGenTextures(1, (GLuint*)&texture->apiId);
     kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
 
-    upload_texture_data(texture);
-    set_parameters_for_texture(texture);
+    if (!upload_texture_data(texture) ||
+        !set_parameters_for_texture(texture))
+    {
+        return 0;
+    }
     
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__update_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_opengl_3_0__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(texture && "Attempting to update a NULL texture");
 
@@ -264,23 +267,26 @@ void kelpo_rasterizer_opengl_3_0__update_texture(struct kelpo_polygon_texture_s 
     /* TODO: Make sure the texture's dimensions and color depth haven't changed
      * since it was first uploaded.*/
 
-    set_parameters_for_texture(texture);
-    upload_texture_mipmap_data(texture);
+    if (!set_parameters_for_texture(texture) ||
+        !upload_texture_mipmap_data(texture))
+    {
+        return 0;
+    }
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__unload_textures(void)
+int kelpo_rasterizer_opengl_3_0__unload_textures(void)
 {
     glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteTextures(UPLOADED_TEXTURES->count, UPLOADED_TEXTURES->data);
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);
 
-    return;
+    return 1;
 }
 
-void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
-                                                 const unsigned numTriangles)
+int kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
+                                                const unsigned numTriangles)
 {
     unsigned numTrianglesProcessed = 0;
     unsigned numTrianglesInBatch = 0;
@@ -288,7 +294,7 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
 
     if (!numTriangles)
     {
-        return;
+        return 1;
     }
 
     if ((3 * numTriangles) > GL3_VERTEX_CACHE->capacity)
@@ -375,5 +381,5 @@ void kelpo_rasterizer_opengl_3_0__draw_triangles(struct kelpo_polygon_triangle_s
         triangle++;
     }
 
-    return;
+    return 1;
 }

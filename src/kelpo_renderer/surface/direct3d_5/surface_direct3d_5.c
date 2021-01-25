@@ -31,7 +31,7 @@ LPDIRECT3DDEVICE2 D3DDEVICE_5 = NULL; /* This will be accessed by the rasterizer
 
 /* Sets up a hardware Direct3D rasterizer along with a DirectDraw surface to
  * render into.*/
-static HRESULT setup_direct3d(GUID deviceGUID)
+static int setup_direct3d(GUID deviceGUID)
 {
     HRESULT hr = 0;
     D3DVIEWPORT viewport;
@@ -46,54 +46,57 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     viewport.dvScaleX = WINDOW_WIDTH;
     viewport.dvScaleY = WINDOW_HEIGHT;
 
-     if (FAILED(hr = kelpo_surface_directdraw_5__initialize_surface(WINDOW_WIDTH,
-                                                                    WINDOW_HEIGHT,
-                                                                    WINDOW_BIT_DEPTH,
-                                                                    WINDOW_HANDLE,
-                                                                    deviceGUID)))
+     if (!kelpo_surface_directdraw_5__initialize_surface(WINDOW_WIDTH,
+                                                         WINDOW_HEIGHT,
+                                                         WINDOW_BIT_DEPTH,
+                                                         WINDOW_HANDLE,
+                                                         deviceGUID))
     {
-        return hr;
+        return 0;
     }
 
-    if (FAILED(hr = kelpo_surface_directdraw_5__initialize_direct3d_5_interface(&DIRECT3D_5, &D3DDEVICE_5)))
+    if (!kelpo_surface_directdraw_5__initialize_direct3d_5_interface(&DIRECT3D_5, &D3DDEVICE_5))
     {
-        return hr;
+        return 0;
     }
 
     if (FAILED(hr = IDirect3D2_CreateViewport(DIRECT3D_5, &D3DVIEWPORT_5, NULL)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return hr;
+        return 0;
     }
 
     if (FAILED(hr = IDirect3DDevice2_AddViewport(D3DDEVICE_5, D3DVIEWPORT_5)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return hr;
+        return 0;
     }
 
     if (FAILED(hr = IDirect3DViewport2_SetViewport(D3DVIEWPORT_5, &viewport)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return hr;
+        return 0;
     }
 
     if (FAILED(hr = IDirect3DDevice2_SetCurrentViewport(D3DDEVICE_5, D3DVIEWPORT_5)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
         kelpo_error(KELPOERR_API_CALL_FAILED);
-        return hr;
+        return 0;
     }
 
-    kelpo_surface_directdraw_5__initialize_direct3d_5_zbuffer(D3DDEVICE_5, 16);
+    if (!kelpo_surface_directdraw_5__initialize_direct3d_5_zbuffer(D3DDEVICE_5, 16))
+    {
+        return 0;
+    }
 
-    return S_OK;
+    return 1;
 }
 
-void kelpo_surface_direct3d_5__release_surface(void)
+int kelpo_surface_direct3d_5__release_surface(void)
 {
     kelpo_surface_directdraw_5__release_surface();
 
@@ -101,14 +104,12 @@ void kelpo_surface_direct3d_5__release_surface(void)
     if (D3DVIEWPORT_5) IDirect3DViewport2_Release(D3DVIEWPORT_5);
     if (DIRECT3D_5) IDirect3D2_Release(DIRECT3D_5);
 
-    return;
+    return 1;
 }
 
-void kelpo_surface_direct3d_5__flip_surface(void)
+int kelpo_surface_direct3d_5__flip_surface(void)
 {
-    kelpo_surface_directdraw_5__flip_surface(IS_VSYNC_ENABLED);
-
-    return;
+    return kelpo_surface_directdraw_5__flip_surface(IS_VSYNC_ENABLED);;
 }
 
 static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -121,29 +122,32 @@ static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARA
     return 0;
 }
 
-void kelpo_surface_direct3d_5__create_surface(const unsigned width,
-                                              const unsigned height,
-                                              const unsigned bpp,
-                                              const int vsyncEnabled,
-                                              const unsigned deviceIdx)
+int kelpo_surface_direct3d_5__create_surface(const unsigned width,
+                                             const unsigned height,
+                                             const unsigned bpp,
+                                             const int vsyncEnabled,
+                                             const unsigned deviceIdx)
 {
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     WINDOW_BIT_DEPTH = bpp;
     IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
-    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Direct3D 5", window_proc);
-    WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
+    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Direct3D 5", window_proc) ||
+        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
+    {
+        return 0;
+    }
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);
     SetForegroundWindow(WINDOW_HANDLE);
     SetFocus(WINDOW_HANDLE);
     UpdateWindow(WINDOW_HANDLE);
 
-    if (FAILED(setup_direct3d(kelpo_directdraw5_device_guid(deviceIdx))))
+    if (!setup_direct3d(kelpo_directdraw5_device_guid(deviceIdx)))
     {
-        /* TODO: Return false.*/
+        return 0;
     }
 
-    return;
+    return 1;
 }

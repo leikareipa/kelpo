@@ -6,7 +6,7 @@
 #include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
-#define KELPO_INTERFACE_VERSION_MINOR 6 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
+#define KELPO_INTERFACE_VERSION_MINOR 7 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
 
 /* Utility function for renderers. Copies the renderer name (src) into an
@@ -42,11 +42,11 @@ struct kelpo_interface_s
 
         int (*release)(void);
 
-        void (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
+        int (*set_message_handler)(kelpo_custom_window_message_handler_t *const customHandlerFn);
 
-        void (*process_messages)(void);
+        int (*process_messages)(void);
 
-        void (*flip_surface)(void);
+        int (*flip_surface)(void);
 
         int (*is_open)(void);
 
@@ -55,16 +55,16 @@ struct kelpo_interface_s
 
     struct kelpo_interface_rasterizer_s
     {
-        void (*clear_frame)(void);
+        int (*clear_frame)(void);
 
-        void (*upload_texture)(struct kelpo_polygon_texture_s *const texture);
+        int (*upload_texture)(struct kelpo_polygon_texture_s *const texture);
 
-        void (*update_texture)(struct kelpo_polygon_texture_s *const texture);
+        int (*update_texture)(struct kelpo_polygon_texture_s *const texture);
         
-        void (*unload_textures)(void);
+        int (*unload_textures)(void);
 
-        void (*draw_triangles)(struct kelpo_polygon_triangle_s *const triangles,
-                               const unsigned numTriangles);
+        int (*draw_triangles)(struct kelpo_polygon_triangle_s *const triangles,
+                              const unsigned numTriangles);
 
         /*release*/
 

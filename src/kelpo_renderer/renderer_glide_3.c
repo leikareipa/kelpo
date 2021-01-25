@@ -3,6 +3,7 @@
 #include <kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
 #include <kelpo_interface/interface.h>
+#include <kelpo_interface/error.h>
 
 static const char RENDERER_NAME[] = "Glide 3.x";
 static const unsigned RENDERER_VERSION[3] = {KELPO_INTERFACE_VERSION_MAJOR,
@@ -14,19 +15,15 @@ static int initialize(const unsigned deviceId,
                       const unsigned screenHeight,
                       const unsigned screenBPP)
 {
-    kelpo_surface_glide_3__create_surface(screenWidth, screenHeight, screenBPP, 1, deviceId);
-    kelpo_rasterizer_glide_3__initialize();
-
-    return 1;
+    return (kelpo_surface_glide_3__create_surface(screenWidth, screenHeight, screenBPP, 1, deviceId) &&
+            kelpo_rasterizer_glide_3__initialize());
 }
 
 static int release(void)
 {
-    kelpo_surface_glide_3__release_surface();
-    kelpo_rasterizer_glide_3__release();
-    kelpo_window__release_window();
-
-    return 1;
+    return (kelpo_surface_glide_3__release_surface() &&
+            kelpo_rasterizer_glide_3__release() &&
+            kelpo_window__release_window());
 }
 
 void export_interface(struct kelpo_interface_s *const interface)

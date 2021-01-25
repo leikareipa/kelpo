@@ -72,7 +72,7 @@ GUID kelpo_directdraw6_device_guid(unsigned deviceIdx)
         free(entry);
     }
 
-    assert(guidFound && "DirectDraw 5: Unknown device.");
+    assert(guidFound && "Unknown device.");
 
     return guid;
 }

@@ -80,7 +80,6 @@ int main(int argc, char *argv[])
     {
         kelpo->rasterizer.clear_frame();
         kelpo->rasterizer.draw_triangles(&triangle, 1);
-
         kelpo->window.flip_surface();
     }
 

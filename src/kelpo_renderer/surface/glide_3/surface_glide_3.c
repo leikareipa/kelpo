@@ -79,7 +79,7 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
     else assert(0 && "Unsupported resolution.");
 
-    kelpo_window__open_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc);
+    kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc);
     WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);

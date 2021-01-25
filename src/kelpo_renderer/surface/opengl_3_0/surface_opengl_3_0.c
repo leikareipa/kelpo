@@ -80,7 +80,7 @@ static int initialize_extensions(void)
             !(WGL_EXTENSIONS_STRING = wglGetExtensionsStringARB(WINDOW_DC)))
         {
             fprintf(stderr, "OpenGL error: \"WGL_ARB_extensions_string\" not supported by hardware.\n");
-            kelpo_error(KELPOERR_OGL_REQUIRED_EXTENSION_NOT_SUPPORTED);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return 0;
         }
     }
@@ -172,11 +172,8 @@ static void resize_opengl_display(GLsizei width, GLsizei height)
 
 static void set_vsync_enabled(const int vsyncOn)
 {
-    if (wglSwapIntervalEXT)
-    {
-        wglSwapIntervalEXT(vsyncOn);
-    }
-    else
+    if (!wglSwapIntervalEXT ||
+        !wglSwapIntervalEXT(vsyncOn))
     {
         kelpo_error(KELPOERR_VSYNC_CONTROL_NOT_SUPPORTED);
     }
@@ -194,7 +191,7 @@ void kelpo_surface_opengl_3_0__release_surface(void)
         !wglDeleteContext(RENDER_CONTEXT) ||
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_RELEASE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
     }
     
     /* Return from fullscreen.*/
@@ -232,10 +229,8 @@ static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARA
 /* Returns 1 if successful; 0 otherwise.*/
 static int create_opengl_3_context(void)
 {
-    HGLRC dummyContext = NULL;
-
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-
+    HGLRC dummyContext = NULL;
     int contextAttributes[] =
     {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -249,7 +244,7 @@ static int create_opengl_3_context(void)
     if (!(dummyContext = wglCreateContext(WINDOW_DC)) ||
         !wglMakeCurrent(WINDOW_DC, dummyContext))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return 0;
     }
 
@@ -261,7 +256,7 @@ static int create_opengl_3_context(void)
         !(RENDER_CONTEXT = wglCreateContextAttribsARB(WINDOW_DC, 0, contextAttributes)))
     {
         fprintf(stderr, "OpenGL error: \"WGL_ARB_create_context\" not supported by hardware.\n");
-        kelpo_error(KELPOERR_OGL_REQUIRED_EXTENSION_NOT_SUPPORTED);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return 0;
     }
 
@@ -269,7 +264,7 @@ static int create_opengl_3_context(void)
         !wglDeleteContext(dummyContext) ||
         !wglMakeCurrent(WINDOW_DC, RENDER_CONTEXT))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return 0;
     }
 
@@ -310,7 +305,7 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
 
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
         {
-            kelpo_error(KELPOERR_OGL_COULDNT_SET_DISPLAY_MODE);
+            kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
             return;
         }
     }
@@ -321,14 +316,14 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
         !(WINDOW_DC = GetDC(WINDOW_HANDLE)) ||
         !SetPixelFormat(WINDOW_DC, ChoosePixelFormat(WINDOW_DC, &pfd), &pfd))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
         return;
     }
 
     if (!create_opengl_3_context() ||
         !initialize_extensions())
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        /* TODO: Return false.*/
         return;
     }
 

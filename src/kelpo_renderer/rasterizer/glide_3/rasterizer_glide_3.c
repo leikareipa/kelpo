@@ -181,17 +181,14 @@ void kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *co
     FxU32 textureSize = 0;
     GrTexInfo textureInfo = {0};
 
-    if (!texture)
-    {
-        return;
-    }
+    assert(texture && "Attempting to upload a NULL texture.");
 
     textureInfo = generate_glide_texture_info(texture);
     textureSize = grTexTextureMemRequired(GR_MIPMAPLEVELMASK_BOTH, &textureInfo);
 
     if ((CURRENT_TEXTURE_ADDRESS + textureSize) > grTexMaxAddress(GR_TMU0))
     {
-        kelpo_error(KELPOERR_GLIDE_OUT_OF_VRAM);
+        kelpo_error(KELPOERR_OUT_OF_VIDEO_MEMORY);
         return;
     }
 
@@ -207,10 +204,7 @@ void kelpo_rasterizer_glide_3__update_texture(struct kelpo_polygon_texture_s *co
 {
     GrTexInfo textureInfo = {0};
     
-    if (!texture)
-    {
-        return;
-    }
+    assert(texture && "Attempting to update a NULL texture.");
 
     textureInfo = generate_glide_texture_info(texture);
 

@@ -42,18 +42,13 @@ static void resize_opengl_display(GLsizei width, GLsizei height)
     return;
 }
 
-/* Enable/disable vsync.*/
 static void set_opengl_vsync_enabled(const int vsyncOn)
 {
     typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC) (int interval);
-    const char *const extensions = (char*)glGetString(GL_EXTENSIONS);
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 
-    if (strstr(extensions,"WGL_EXT_swap_control"))
-    {
-        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-        wglSwapIntervalEXT(vsyncOn);
-    }
-    else
+    if (!wglSwapIntervalEXT ||
+        !wglSwapIntervalEXT(vsyncOn))
     {
         kelpo_error(KELPOERR_VSYNC_CONTROL_NOT_SUPPORTED);
     }
@@ -71,7 +66,7 @@ void kelpo_surface_opengl_1_2__release_surface(void)
         !wglDeleteContext(RENDER_CONTEXT) ||
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_RELEASE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
     }
 
     /* Return from fullscreen.*/
@@ -140,7 +135,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
 
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
         {
-            kelpo_error(KELPOERR_OGL_COULDNT_SET_DISPLAY_MODE);
+            kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
             return;
         }
     }
@@ -156,7 +151,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
         !(RENDER_CONTEXT = wglCreateContext(WINDOW_DC)) ||
         !wglMakeCurrent(WINDOW_DC, RENDER_CONTEXT))
     {
-        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return;
     }
 

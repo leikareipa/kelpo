@@ -81,13 +81,13 @@ void kelpo_window__release_window(void)
     {
         if (!DestroyWindow(WINDOW_HANDLE))
         {
-            kelpo_error(KELPOERR_WIN32_COULDNT_RELEASE_WINDOW);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
         }
 
         if (WINDOW_H_INSTANCE &&
             !UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE))
         {
-            kelpo_error(KELPOERR_WIN32_COULDNT_UNREGISTER_WINDOW_CLASS);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
         }
 
         WINDOW_HANDLE = 0;
@@ -139,7 +139,7 @@ void kelpo_window__create_window(const unsigned width,
 
     if (!WINDOW_HANDLE)
     {
-        kelpo_error(KELPOERR_WIN32_COULDNT_CREATE_WINDOW);
+        /* TODO: Return false.*/
         return;
     }
     

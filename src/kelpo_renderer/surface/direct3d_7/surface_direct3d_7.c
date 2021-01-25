@@ -66,7 +66,7 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     if (FAILED(hr = IDirect3DDevice7_SetViewport(D3DDEVICE_7, &vp)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 

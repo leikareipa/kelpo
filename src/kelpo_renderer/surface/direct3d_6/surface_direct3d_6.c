@@ -63,28 +63,28 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     if (FAILED(hr = IDirect3D2_CreateViewport(DIRECT3D_6, &D3DVIEWPORT_6, NULL)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice2_AddViewport(D3DDEVICE_6, D3DVIEWPORT_6)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DViewport2_SetViewport(D3DVIEWPORT_6, &viewport)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice2_SetCurrentViewport(D3DDEVICE_6, D3DVIEWPORT_6)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 

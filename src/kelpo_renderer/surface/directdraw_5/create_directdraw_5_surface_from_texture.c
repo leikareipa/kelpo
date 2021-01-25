@@ -70,7 +70,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
         if (FAILED(hr = IDirectDraw2_CreateSurface(DIRECTDRAW_5, &surfaceDescription, &d3dTexture, NULL)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return NULL;
         }
     }
@@ -94,7 +94,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
             if (FAILED(hr = IDirectDrawSurface_Lock(mipSurface, NULL, &mipSurfaceDesc, (DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR), NULL)))
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
 
@@ -131,7 +131,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
             if (FAILED(hr = IDirectDrawSurface_Unlock(mipSurface, NULL)))
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
         }
@@ -151,7 +151,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
             else
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
         }

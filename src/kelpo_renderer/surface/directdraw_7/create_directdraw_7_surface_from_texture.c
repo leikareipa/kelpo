@@ -53,7 +53,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
         if (FAILED(hr = IDirect3DDevice7_GetCaps(d3dDevice, &deviceDescription)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_D3D_COULDNT_QUERY_DEVICE_CAPS);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return NULL;
         }
 
@@ -90,7 +90,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
         if (FAILED(hr = IDirectDraw7_CreateSurface(directDrawInterface, &surfaceDescription, &d3dTexture, NULL)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             IDirectDraw7_Release(directDrawInterface);
             return NULL;
         }
@@ -116,7 +116,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             if (FAILED(hr = IDirectDrawSurface7_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
 
@@ -153,7 +153,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             if (FAILED(hr = IDirectDrawSurface7_Unlock(mipSurface, NULL)))
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
         }
@@ -176,7 +176,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             else
             {
                 fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return NULL;
             }
         }

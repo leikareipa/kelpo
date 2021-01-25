@@ -99,7 +99,7 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
     if (!GLIDE_RENDER_CONTEXT)
     {
         /* TODO: Return false.*/
-        kelpo_error(KELPOERR_GLIDE_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
     }
 
     return;

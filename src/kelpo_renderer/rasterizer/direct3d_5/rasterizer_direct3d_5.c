@@ -88,7 +88,7 @@ void kelpo_rasterizer_direct3d_5__upload_texture(struct kelpo_polygon_texture_s 
     if (FAILED(hr = IDirectDraw2_QueryInterface(d3dTexture, IID_IDirect3DTexture2, (LPVOID *)&textureObject)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_INTERFACE_NOT_AVAILABLE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return;
     }
 
@@ -118,7 +118,7 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
         if (FAILED(hr = IDirectDrawSurface3_GetSurfaceDesc(textureSurface, &textureSurfaceDesc)))
         {
             fprintf(stderr, "Direct3D error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return;
         }
 
@@ -144,7 +144,7 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
             if (FAILED(hr = IDirectDrawSurface3_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return;
             }
 
@@ -181,7 +181,7 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
             if (FAILED(hr = IDirectDrawSurface3_Unlock(mipSurface, NULL)))
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return;
             }
         }
@@ -201,7 +201,7 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
             else
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
-                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+                kelpo_error(KELPOERR_API_CALL_FAILED);
                 return;
             }
         }
@@ -245,7 +245,7 @@ void kelpo_rasterizer_direct3d_5__draw_triangles(struct kelpo_polygon_triangle_s
     if (FAILED(hr = IDirect3DDevice2_BeginScene(D3DDEVICE_5)))
     {
         fprintf(stderr, "Direct3D error 0x%x\n", hr);
-        kelpo_error(KELPOERR_D3D_COULDNT_BEGIN_SCENE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return;
     }
 

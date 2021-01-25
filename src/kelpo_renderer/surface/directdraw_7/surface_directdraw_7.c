@@ -44,7 +44,7 @@ int kelpo_surface_directdraw_7__lock_surface(LPDDSURFACEDESC2 surfaceDesc)
     if (FAILED(hr = IDirectDrawSurface7_Lock(BACK_BUFFER, NULL, surfaceDesc, DDLOCK_WAIT, NULL)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         memset(surfaceDesc, 0, sizeof(surfaceDesc[0]));
         return 0;
     }
@@ -59,7 +59,7 @@ int kelpo_surface_directdraw_7__unlock_surface(void)
     if (FAILED(hr = IDirectDrawSurface7_Unlock(BACK_BUFFER, NULL)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return 0;
     }
     
@@ -84,7 +84,7 @@ void kelpo_surface_directdraw_7__flip_surface(const int vsyncEnabled)
     if (FAILED(hr = IDirectDrawSurface7_Flip(FRONT_BUFFER, NULL, (vsyncEnabled? DDFLIP_WAIT : DDFLIP_NOVSYNC))))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_FLIP_SURFACE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
     }
 
     return;
@@ -106,7 +106,7 @@ HRESULT kelpo_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 
 #endif
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_INTERFACE_NOT_AVAILABLE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
@@ -117,7 +117,7 @@ HRESULT kelpo_surface_directdraw_7__initialize_direct3d_7_interface(LPDIRECT3D7 
 #endif
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_D3D_DEVICE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
@@ -141,7 +141,7 @@ HRESULT kelpo_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVI
     if (FAILED(hr = IDirectDrawSurface7_GetSurfaceDesc(BACK_BUFFER, &zBufferSurfaceDesc)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
@@ -152,21 +152,21 @@ HRESULT kelpo_surface_directdraw_7__initialize_direct3d_7_zbuffer(LPDIRECT3DDEVI
     if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &zBufferSurfaceDesc, &Z_BUFFER, NULL)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
     if (FAILED(hr = IDirectDrawSurface7_AddAttachedSurface(BACK_BUFFER, Z_BUFFER)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_ATTACH_SURFACE);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice7_SetRenderTarget(d3dDevice, BACK_BUFFER, 0)))
     {
         fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-        kelpo_error(KELPOERR_DDRAW_COULDNT_SET_D3D_RENDER_TARGET);
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return hr;
     }
     
@@ -207,21 +207,21 @@ HRESULT kelpo_surface_directdraw_7__initialize_surface(const unsigned width,
 #endif
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_DDRAW);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return hr;
         }
 
         if (FAILED(hr = IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, cooperativeLevel)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_SET_COOPERATIVE_LEVEL);
+            kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
             return hr;
         }
 
         if (FAILED(hr = IDirectDraw7_SetDisplayMode(DIRECTDRAW_7, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BIT_DEPTH, 0, 0)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_SET_DISPLAY_MODE);
+            kelpo_error(KELPOERR_DISPLAY_MODE_NOT_SUPPORTED);
             return hr;
         }
     }
@@ -243,14 +243,14 @@ HRESULT kelpo_surface_directdraw_7__initialize_surface(const unsigned width,
         if (FAILED(hr = IDirectDraw7_CreateSurface(DIRECTDRAW_7, &frontBufferSurfaceDesc, &FRONT_BUFFER, NULL)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return hr;
         }
 
         if (FAILED(hr = IDirectDrawSurface7_GetAttachedSurface(FRONT_BUFFER, &backBufferCaps, &BACK_BUFFER)))
         {
             fprintf(stderr, "DirectDraw error 0x%x\n", hr);
-            kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
             return hr;
         }
     }

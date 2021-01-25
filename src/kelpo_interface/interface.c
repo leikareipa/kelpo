@@ -59,8 +59,7 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
     if (kelpoInterface->dllHandle &&
         !FreeLibrary(ACTIVE_INTERFACE.dllHandle))
     {
-        kelpo_error(KELPOERR_INTERFACE_COULDNT_RELEASE_RENDERER_DLL);
-
+        kelpo_error(KELPOERR_API_CALL_FAILED);
         return 0;
     }
 

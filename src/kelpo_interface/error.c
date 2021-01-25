@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
 #include <stddef.h>
 #include <kelpo_interface/error.h>
 #include <kelpo_interface/interface.h>
@@ -30,6 +31,9 @@ void kelpo_error_reset(void)
 
 enum kelpo_error_code_e kelpo_error_peek(void)
 {
+    assert((NUM_REPORTED_ERRORS <= MAX_NUM_REPORTED_ERRORS) &&
+           "Malformed error queue.");
+
     return !NUM_REPORTED_ERRORS
            ? KELPOERR_NO_ERROR
            : REPORTED_ERRORS[NUM_REPORTED_ERRORS - 1];
@@ -37,6 +41,9 @@ enum kelpo_error_code_e kelpo_error_peek(void)
 
 enum kelpo_error_code_e kelpo_error_code(void)
 {
+    assert((NUM_REPORTED_ERRORS <= MAX_NUM_REPORTED_ERRORS) &&
+           "Malformed error queue.");
+
     return !NUM_REPORTED_ERRORS
            ? KELPOERR_NO_ERROR
            : REPORTED_ERRORS[--NUM_REPORTED_ERRORS];
@@ -44,6 +51,12 @@ enum kelpo_error_code_e kelpo_error_code(void)
 
 void kelpo_error(enum kelpo_error_code_e errorCode)
 {
+    assert((errorCode != KELPOERR_NO_ERROR) &&
+           "This is a reserved error meant for internal use only. It can't be reported.");
+
+    assert((NUM_REPORTED_ERRORS <= MAX_NUM_REPORTED_ERRORS) &&
+           "Malformed error queue.");
+
     if (NUM_REPORTED_ERRORS >= MAX_NUM_REPORTED_ERRORS)
     {
         return;

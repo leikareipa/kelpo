@@ -39,6 +39,7 @@ void kelpo_error(const enum kelpo_error_code_e errorCode)
     {
         /* TODO: Error string instead of error code.*/
         fprintf(stderr, "KELPO ERROR (%s): %u\n",
+                        kelpo_active_renderer_name(),
                         errorCode);
     }
 

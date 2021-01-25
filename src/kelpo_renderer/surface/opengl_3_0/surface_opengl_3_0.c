@@ -12,6 +12,7 @@
 #include <kelpo_renderer/surface/opengl_3_0/surface_opengl_3_0.h>
 #include <kelpo_renderer/rasterizer/opengl_3_0/rasterizer_opengl_3_0.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <gl/glu.h>
@@ -58,7 +59,7 @@ static int is_ext_available(const char *const extensionName)
 {
     assert(GL_EXTENSIONS_STRING &&
            WGL_EXTENSIONS_STRING
-           && "OpenGL 3.0: Extensions string not initialized.");
+           && "Extensions string not initialized.");
 
     return (strstr(GL_EXTENSIONS_STRING, extensionName) ||
             strstr(WGL_EXTENSIONS_STRING, extensionName));
@@ -67,7 +68,7 @@ static int is_ext_available(const char *const extensionName)
 /* Returns 1 if successful; 0 otherwise.*/
 static int initialize_extensions(void)
 {
-    assert(WINDOW_DC && "OpenGL 3.0: The device context has not been initialized.\n");
+    assert(WINDOW_DC && "The device context has not been initialized.\n");
 
     /* Establish a list of available extensions.*/
     {
@@ -78,7 +79,8 @@ static int initialize_extensions(void)
             !(GL_EXTENSIONS_STRING = (char*)glGetString(GL_EXTENSIONS)) ||
             !(WGL_EXTENSIONS_STRING = wglGetExtensionsStringARB(WINDOW_DC)))
         {
-            fprintf(stderr, "OpenGL 3.0: The required extension \"WGL_ARB_extensions_string\" is not supported by this hardware.\n");
+            fprintf(stderr, "OpenGL error: \"WGL_ARB_extensions_string\" not supported by hardware.\n");
+            kelpo_error(KELPOERR_OGL_REQUIRED_EXTENSION_NOT_SUPPORTED);
             return 0;
         }
     }
@@ -172,14 +174,11 @@ static void set_vsync_enabled(const int vsyncOn)
 {
     if (wglSwapIntervalEXT)
     {
-        if (!wglSwapIntervalEXT(vsyncOn))
-        {
-            fprintf(stderr, "OpenGL 3.0: Failed to %s vsync.\n", (vsyncOn? "enable" : "disable"));
-        }
+        wglSwapIntervalEXT(vsyncOn);
     }
     else
     {
-        fprintf(stderr, "OpenGL 3.0: This hardware does not support vsync control.\n");
+        kelpo_error(KELPOERR_VSYNC_CONTROL_NOT_SUPPORTED);
     }
 
     return;
@@ -189,13 +188,13 @@ void kelpo_surface_opengl_3_0__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
-           "OpenGL 3.0: Attempting to release the display surface before it has been acquired."); 
+           "Attempting to release the display surface before it has been acquired."); 
 
     if (!wglMakeCurrent(NULL, NULL) ||
         !wglDeleteContext(RENDER_CONTEXT) ||
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
-        fprintf(stderr, "OpenGL 3.0: Failed to properly release the display surface.\n");
+        kelpo_error(KELPOERR_OGL_COULDNT_RELEASE_RENDER_CONTEXT);
     }
     
     /* Return from fullscreen.*/
@@ -245,12 +244,12 @@ static int create_opengl_3_context(void)
         0
     };
 
-    assert(WINDOW_DC && "OpenGL 3.0: The window's device context has not been initialized.");
+    assert(WINDOW_DC && "The window's device context has not been initialized.");
 
     if (!(dummyContext = wglCreateContext(WINDOW_DC)) ||
         !wglMakeCurrent(WINDOW_DC, dummyContext))
     {
-        fprintf(stderr, "OpenGL 3.0: Failed to create a temporary render context.");
+        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
         return 0;
     }
 
@@ -261,7 +260,8 @@ static int create_opengl_3_context(void)
     if (!wglCreateContextAttribsARB ||
         !(RENDER_CONTEXT = wglCreateContextAttribsARB(WINDOW_DC, 0, contextAttributes)))
     {
-        fprintf(stderr, "OpenGL 3.0: The required extension \"WGL_ARB_create_context\" is not supported by this hardware.");
+        fprintf(stderr, "OpenGL error: \"WGL_ARB_create_context\" not supported by hardware.\n");
+        kelpo_error(KELPOERR_OGL_REQUIRED_EXTENSION_NOT_SUPPORTED);
         return 0;
     }
 
@@ -269,8 +269,7 @@ static int create_opengl_3_context(void)
         !wglDeleteContext(dummyContext) ||
         !wglMakeCurrent(WINDOW_DC, RENDER_CONTEXT))
     {
-        fprintf(stderr, "OpenGL 3.0: Failed to create the render context.");
-
+        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
         return 0;
     }
 
@@ -311,7 +310,8 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
 
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
         {
-            assert(0 && "Failed to obtain an OpenGL-compatible display.");
+            kelpo_error(KELPOERR_OGL_COULDNT_SET_DISPLAY_MODE);
+            return;
         }
     }
 
@@ -321,13 +321,15 @@ void kelpo_surface_opengl_3_0__create_surface(const unsigned width,
         !(WINDOW_DC = GetDC(WINDOW_HANDLE)) ||
         !SetPixelFormat(WINDOW_DC, ChoosePixelFormat(WINDOW_DC, &pfd), &pfd))
     {
-        assert(0 && "OpenGL 3.0: Could not create an OpenGL-compatible window.");
+        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        return;
     }
 
     if (!create_opengl_3_context() ||
         !initialize_extensions())
     {
-        assert(0 && "OpenGL 3.0: Could not create an OpenGL 3.0 render context.");
+        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
+        return;
     }
 
     ShowWindow(WINDOW_HANDLE, SW_SHOW);

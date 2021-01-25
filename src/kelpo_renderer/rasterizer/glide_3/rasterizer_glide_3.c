@@ -13,6 +13,7 @@
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
 #include <kelpo_auxiliary/generic_stack.h>
+#include <kelpo_interface/error.h>
 
 #include <glide/glide.h>
 
@@ -118,15 +119,14 @@ static GrTexInfo generate_glide_texture_info(const struct kelpo_polygon_texture_
 {
     GrTexInfo info = {0};
 
-    assert(texture &&
-           "Glide 3.x renderer: Received a NULL texture.");
+    assert(texture && "Received a NULL texture.");
 
     assert((texture->width == texture->height) &&
-           "Glide 3.x renderer: The given texture is not square.");
+           "The given texture is not square.");
 
     assert((texture->width >= MIN_TEXTURE_SIZE) &&
            (texture->width <= MAX_TEXTURE_SIZE) &&
-           "Glide 3.x renderer: The given texture's dimensions are out of range.");
+           "The given texture's dimensions are out of range.");
 
     if (texture->numMipLevels > 1)
     {
@@ -189,8 +189,11 @@ void kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *co
     textureInfo = generate_glide_texture_info(texture);
     textureSize = grTexTextureMemRequired(GR_MIPMAPLEVELMASK_BOTH, &textureInfo);
 
-    assert(((CURRENT_TEXTURE_ADDRESS + textureSize) <= grTexMaxAddress(GR_TMU0)) &&
-           "Glide 3.x renderer: Not enough texture memory to store the given texture.");
+    if ((CURRENT_TEXTURE_ADDRESS + textureSize) > grTexMaxAddress(GR_TMU0))
+    {
+        kelpo_error(KELPOERR_GLIDE_OUT_OF_VRAM);
+        return;
+    }
 
     texture->apiId = CURRENT_TEXTURE_ADDRESS;
     upload_texture_data(texture, &textureInfo);

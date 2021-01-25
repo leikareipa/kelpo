@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 static char WINDOW_CLASS_NAME[] = "KelpoDisplay";
 static char WINDOW_TITLE[64];
@@ -80,13 +81,13 @@ void kelpo_window__release_window(void)
     {
         if (!DestroyWindow(WINDOW_HANDLE))
         {
-            fprintf(stderr, "ERROR: Failed to release the Kelpo window.\n");
+            kelpo_error(KELPOERR_WIN32_COULDNT_RELEASE_WINDOW);
         }
 
         if (WINDOW_H_INSTANCE &&
             !UnregisterClass(WINDOW_CLASS_NAME, WINDOW_H_INSTANCE))
         {
-            fprintf(stderr, "ERROR: Failed to unregister the Kelpo window class.\n");
+            kelpo_error(KELPOERR_WIN32_COULDNT_UNREGISTER_WINDOW_CLASS);
         }
 
         WINDOW_HANDLE = 0;
@@ -136,9 +137,12 @@ void kelpo_window__create_window(const unsigned width,
                                    WINDOW_H_INSTANCE,
                                    NULL);
 
-    assert((WINDOW_HANDLE != NULL) &&
-           "Failed to create a window for the program. Can't continue.");
-
+    if (!WINDOW_HANDLE)
+    {
+        kelpo_error(KELPOERR_WIN32_COULDNT_CREATE_WINDOW);
+        return;
+    }
+    
     DOES_WINDOW_EXIST = 1;
 
     return;

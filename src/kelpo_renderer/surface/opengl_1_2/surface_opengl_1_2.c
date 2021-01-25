@@ -10,6 +10,7 @@
 #include <kelpo_renderer/surface/opengl_1_2/surface_opengl_1_2.h>
 #include <kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <gl/glu.h>
@@ -54,7 +55,7 @@ static void set_opengl_vsync_enabled(const int vsyncOn)
     }
     else
     {
-        fprintf(stderr, "OpenGL 1.2: This device does not allow vsync to be toggled on/off.\n");
+        kelpo_error(KELPOERR_VSYNC_CONTROL_NOT_SUPPORTED);
     }
 
     return;
@@ -64,13 +65,13 @@ void kelpo_surface_opengl_1_2__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
-           "OpenGL 1.2: Attempting to release the display surface before it has been acquired.");
+           "Attempting to release the display surface before it has been acquired.");
 
     if (!wglMakeCurrent(NULL, NULL) ||
         !wglDeleteContext(RENDER_CONTEXT) ||
         !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
     {
-        fprintf(stderr, "OpenGL 1.2: Failed to properly release the display surface.\n");
+        kelpo_error(KELPOERR_OGL_COULDNT_RELEASE_RENDER_CONTEXT);
     }
 
     /* Return from fullscreen.*/
@@ -139,7 +140,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
 
         if (ChangeDisplaySettingsA(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
         {
-            assert(0 && "Failed to obtain an OpenGL-compatible display.");
+            kelpo_error(KELPOERR_OGL_COULDNT_SET_DISPLAY_MODE);
             return;
         }
     }
@@ -155,7 +156,7 @@ void kelpo_surface_opengl_1_2__create_surface(const unsigned width,
         !(RENDER_CONTEXT = wglCreateContext(WINDOW_DC)) ||
         !wglMakeCurrent(WINDOW_DC, RENDER_CONTEXT))
     {
-        assert(0 && "OpenGL 1.2: Failed to create the render surface.");
+        kelpo_error(KELPOERR_OGL_COULDNT_INITIALIZE_RENDER_CONTEXT);
         return;
     }
 

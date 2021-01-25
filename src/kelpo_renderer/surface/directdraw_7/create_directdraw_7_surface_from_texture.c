@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <kelpo_interface/polygon/texture.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -39,6 +40,7 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
                                                                     LPDIRECT3DDEVICE7 d3dDevice)
 {
     uint32_t m = 0;
+    HRESULT hr = 0;
     LPDIRECTDRAWSURFACE7 d3dTexture = NULL;
     LPDIRECTDRAWSURFACE7 mipSurface = NULL;
 
@@ -48,8 +50,10 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
     {
         D3DDEVICEDESC7 deviceDescription;
         
-        if (FAILED(IDirect3DDevice7_GetCaps(d3dDevice, &deviceDescription)))
+        if (FAILED(hr = IDirect3DDevice7_GetCaps(d3dDevice, &deviceDescription)))
         {
+            fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+            kelpo_error(KELPOERR_D3D_COULDNT_QUERY_DEVICE_CAPS);
             return NULL;
         }
 
@@ -83,8 +87,10 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
         IDirectDrawSurface7_GetDDInterface(renderTarget, (VOID**)&directDrawInterface);
         IDirectDrawSurface7_Release(renderTarget);
 
-        if (FAILED(IDirectDraw7_CreateSurface(directDrawInterface, &surfaceDescription, &d3dTexture, NULL)))
+        if (FAILED(hr = IDirectDraw7_CreateSurface(directDrawInterface, &surfaceDescription, &d3dTexture, NULL)))
         {
+            fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
             IDirectDraw7_Release(directDrawInterface);
             return NULL;
         }
@@ -106,21 +112,23 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             uint16_t *dstPixels = NULL;
 
             mipSurfaceDesc.dwSize = sizeof(mipSurfaceDesc);
-            if (FAILED(IDirectDrawSurface7_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
+
+            if (FAILED(hr = IDirectDrawSurface7_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
             {
-                fprintf(stderr, "DirectDraw 7: Failed to lock a texture surface.");
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
                 return NULL;
             }
 
             assert(((mipSurfaceDesc.dwWidth == mipLevelSideLength) &&
                     (mipSurfaceDesc.dwHeight == mipLevelSideLength)) &&
-                    "DirectDraw 7: Invalid texture surface dimensions.");
+                    "Invalid texture surface dimensions.");
 
             assert(((mipSurfaceDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
-                    "DirectDraw 7: Invalid pixel format for a texture surface. Expected ARGB 1555.");
+                    "Invalid pixel format for a texture surface. Expected ARGB 1555.");
 
             dstPixels = (uint16_t*)mipSurfaceDesc.lpSurface;
 
@@ -142,9 +150,10 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
                 }
             }
 
-            if (FAILED(IDirectDrawSurface7_Unlock(mipSurface, NULL)))
+            if (FAILED(hr = IDirectDrawSurface7_Unlock(mipSurface, NULL)))
             {
-                fprintf(stderr, "DirectDraw 7: Failed to unlock a texture surface.");
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
                 return NULL;
             }
         }
@@ -160,12 +169,14 @@ LPDIRECTDRAWSURFACE7 kelpo_create_directdraw_7_surface_from_texture(const struct
             ddsCaps.dwCaps3 = 0;
             ddsCaps.dwCaps4 = 0;
 
-            if (SUCCEEDED(IDirectDrawSurface7_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+            if (SUCCEEDED(hr = IDirectDrawSurface7_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
             {
                 IDirectDrawSurface7_Release(mipSurface);
             }
             else
             {
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
                 return NULL;
             }
         }

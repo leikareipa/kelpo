@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <kelpo_interface/polygon/texture.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -68,7 +69,8 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
 
         if (FAILED(hr = IDirectDraw2_CreateSurface(DIRECTDRAW_5, &surfaceDescription, &d3dTexture, NULL)))
         {
-            fprintf(stderr, "DirectDraw 5: Failed to create a DirectDraw surface for a texture (error 0x%x).\n", hr);
+            fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+            kelpo_error(KELPOERR_DDRAW_COULDNT_CREATE_SURFACE);
             return NULL;
         }
     }
@@ -91,19 +93,20 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
 
             if (FAILED(hr = IDirectDrawSurface_Lock(mipSurface, NULL, &mipSurfaceDesc, (DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR), NULL)))
             {
-                fprintf(stderr, "DirectDraw 5: Failed to lock a texture surface (error 0x%x).\n", hr);
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
                 return NULL;
             }
 
             assert(((mipSurfaceDesc.dwWidth == mipLevelSideLength) &&
                     (mipSurfaceDesc.dwHeight == mipLevelSideLength)) &&
-                    "DirectDraw 5: Invalid texture surface dimensions.");
+                    "Invalid texture surface dimensions.");
 
             assert(((mipSurfaceDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
-                    "DirectDraw 5: Invalid pixel format for a texture surface. Expected ARGB 1555.");
+                    "Invalid pixel format for a texture surface. Expected ARGB 1555.");
 
             dstPixels = (uint16_t*)mipSurfaceDesc.lpSurface;
 
@@ -127,7 +130,8 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
 
             if (FAILED(hr = IDirectDrawSurface_Unlock(mipSurface, NULL)))
             {
-                fprintf(stderr, "DirectDraw 5: Failed to unlock a texture surface (error 0x%x).\n", hr);
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
                 return NULL;
             }
         }
@@ -140,12 +144,14 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_5_surface_from_texture(const struct 
 
             ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
 
-            if (SUCCEEDED(IDirectDrawSurface_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+            if (SUCCEEDED(hr = IDirectDrawSurface_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
             {
                 IDirectDrawSurface_Release(mipSurface);
             }
             else
             {
+                fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
                 return NULL;
             }
         }

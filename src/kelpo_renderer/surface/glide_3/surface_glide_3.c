@@ -9,6 +9,7 @@
 #include <kelpo_renderer/surface/glide_3/surface_glide_3.h>
 #include <kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <glide/glide.h>
@@ -22,8 +23,7 @@ static HWND WINDOW_HANDLE = 0;
 
 void kelpo_surface_glide_3__release_surface(void)
 {
-    assert(GLIDE_RENDER_CONTEXT &&
-           "Glide 3: Can't release a NULL render context.");
+    assert(GLIDE_RENDER_CONTEXT && "Can't release a NULL render context.");
 
     grSstWinClose(GLIDE_RENDER_CONTEXT);
 
@@ -58,16 +58,14 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
     GrScreenResolution_t glideResolution = GR_RESOLUTION_NONE;
     GrScreenRefresh_t glideRefreshRate = GR_REFRESH_60Hz;
 
-    assert((bpp == 16) &&
-           "Glide 3: The render window must have 16-bit color.");
+    assert((bpp == 16) && "The render window must have 16-bit color.");
 
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     /* The window bit depth is ignored; must always be 16.*/
     IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
-    assert(!GLIDE_RENDER_CONTEXT &&
-           "Glide 3: A render context already exists.");
+    assert(!GLIDE_RENDER_CONTEXT && "A render context already exists.");
 
     if      ((width == 320)  && (height == 200))  glideResolution = GR_RESOLUTION_320x200;
     else if ((width == 320)  && (height == 240))  glideResolution = GR_RESOLUTION_320x240;
@@ -79,7 +77,7 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
     else if ((width == 1024) && (height == 768))  glideResolution = GR_RESOLUTION_1024x768;
     else if ((width == 1280) && (height == 1024)) glideResolution = GR_RESOLUTION_1280x1024;
     else if ((width == 1600) && (height == 1200)) glideResolution = GR_RESOLUTION_1600x1200;
-    else assert(0 && "Glide 3: Unsupported resolution.");
+    else assert(0 && "Unsupported resolution.");
 
     kelpo_window__open_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc);
     WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle();
@@ -98,8 +96,11 @@ void kelpo_surface_glide_3__create_surface(const unsigned width,
                                         2,
                                         1);
 
-    assert(GLIDE_RENDER_CONTEXT &&
-           "Glide 3: Failed to initialize the renderer.");
+    if (!GLIDE_RENDER_CONTEXT)
+    {
+        /* TODO: Return false.*/
+        kelpo_error(KELPOERR_GLIDE_COULDNT_INITIALIZE_RENDER_CONTEXT);
+    }
 
     return;
 }

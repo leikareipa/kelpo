@@ -15,6 +15,7 @@
 #include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
+#include <kelpo_interface/error.h>
 
 #include <gl/gl.h>
 #include <kelpo_renderer/surface/opengl_3_0/gl3_types.h>
@@ -98,12 +99,12 @@ void kelpo_rasterizer_opengl_3_0__initialize(void)
         glShaderSource(vertexShader, 1, &vertexShaderSrc, NULL);
         glCompileShader(vertexShader);
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-        assert(status && "OpenGL 3.0: Vertex shader compilation failed.");
+        assert(status && "Vertex shader compilation failed.");
 
         glShaderSource(fragmentShader, 1, &fragmentShaderSrc, NULL);
         glCompileShader(fragmentShader);
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-        assert(status && "OpenGL 3.0: fragment shader compilation failed.");
+        assert(status && "fragment shader compilation failed.");
 
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
@@ -160,8 +161,7 @@ void kelpo_rasterizer_opengl_3_0__clear_frame(void)
 
 static void set_parameters_for_texture(const struct kelpo_polygon_texture_s *const texture)
 {
-    assert(texture && texture->apiId
-           && "OpenGL 30: Invalid texture.");
+    assert((texture && texture->apiId) && "Invalid texture.");
     
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
 
@@ -187,8 +187,7 @@ static void upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *con
 {
     unsigned m = 0;
 
-    assert(texture && texture->apiId
-           && "OpenGL 3.0: Invalid texture.");
+    assert((texture && texture->apiId) && "Invalid texture.");
 
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
 
@@ -214,8 +213,7 @@ static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
 {
     uint32_t m = 0;
 
-    assert(texture &&
-           "OpenGL 3.0: Attempting to process a NULL texture");
+    assert(texture && "Attempting to process a NULL texture");
 
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->flags.clamped? GL_CLAMP_TO_EDGE : GL_REPEAT));
@@ -245,7 +243,7 @@ static void upload_texture_data(struct kelpo_polygon_texture_s *const texture)
 void kelpo_rasterizer_opengl_3_0__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(!glIsTexture(texture->apiId) &&
-           "OpenGL 3.0: This texture has already been registered. Use update_texture() instead.");
+           "This texture has already been registered. Use update_texture() instead.");
 
     glGenTextures(1, (GLuint*)&texture->apiId);
     kelpoa_generic_stack__push_copy(UPLOADED_TEXTURES, &texture->apiId);
@@ -258,11 +256,10 @@ void kelpo_rasterizer_opengl_3_0__upload_texture(struct kelpo_polygon_texture_s 
 
 void kelpo_rasterizer_opengl_3_0__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
-    assert(texture &&
-           "OpenGL 3.0: Attempting to update a NULL texture");
+    assert(texture && "Attempting to update a NULL texture");
 
     assert(glIsTexture(texture->apiId) &&
-           "OpenGL 3.0: This texture has not yet been registered. Use upload_texture() instead.");
+           "This texture has not yet been registered. Use upload_texture() instead.");
 
     /* TODO: Make sure the texture's dimensions and color depth haven't changed
      * since it was first uploaded.*/

@@ -19,6 +19,8 @@ src/kelpo_renderer/surface/direct3d_5/surface_direct3d_5.c
 src/kelpo_renderer/surface/directdraw_5/surface_directdraw_5.c
 src/kelpo_renderer/window/win32/window_win32.c
 src/kelpo_auxiliary/generic_stack.c
+src/kelpo_interface/interface.c
+src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

@@ -14,6 +14,7 @@
 #include <kelpo_renderer/surface/directdraw_7/surface_directdraw_7.h>
 #include <kelpo_renderer/surface/direct3d_7/surface_direct3d_7.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -49,7 +50,7 @@ static HRESULT setup_direct3d(GUID deviceGUID)
     D3DVIEWPORT7 vp = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1};
 
     assert(WINDOW_HANDLE &&
-           "Direct3D 7: Attempting to initialize without a valid window handle.");
+           "Attempting to initialize without a valid window handle.");
 
     kelpo_surface_directdraw_7__initialize_surface(WINDOW_WIDTH,
                                                    WINDOW_HEIGHT,
@@ -59,13 +60,13 @@ static HRESULT setup_direct3d(GUID deviceGUID)
 
     if (FAILED(hr = kelpo_surface_directdraw_7__initialize_direct3d_7_interface(&DIRECT3D_7, &D3DDEVICE_7)))
     {
-        fprintf(stderr, "Direct3D 7: Failed to create the Direct3D interface.");
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice7_SetViewport(D3DDEVICE_7, &vp)))
     {
-        fprintf(stderr, "Direct3D 7: A call to IDirect3DDevice7_SetViewport() failed.\n");
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
         return hr;
     }
 
@@ -89,6 +90,7 @@ static HRESULT setup_direct3d(GUID deviceGUID)
          * pixel format was obtained.*/
         if (zBufferPixelFormat.dwSize != sizeof(zBufferPixelFormat))
         {
+            kelpo_error(KELPOERR_Z_BUFFERING_NOT_SUPPORTED);
             return E_FAIL;
         }
 
@@ -145,7 +147,7 @@ void kelpo_surface_direct3d_7__create_surface(const unsigned width,
 
     if (FAILED(setup_direct3d(kelpo_directdraw7_device_guid(deviceIdx))))
     {
-        assert(0 && "Direct3D 7: Failed to initialize the Direct3D surface.");
+        /* TODO: Return false.*/
     }
 
     return;

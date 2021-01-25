@@ -18,6 +18,7 @@
 #include <kelpo_renderer/rasterizer/direct3d_5/rasterizer_direct3d_5.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -41,7 +42,7 @@ void kelpo_rasterizer_direct3d_5__initialize(void)
     D3D5_VERTEX_CACHE = kelpoa_generic_stack__create(1000, sizeof(D3DTLVERTEX));
 
     assert(D3DVIEWPORT_5 && D3DDEVICE_5 &&
-           "Direct3D 5: Attempting to initialize the rasterizer before the render device has been created.");
+           "Attempting to initialize the rasterizer before the render device has been created.");
 
     IDirect3DDevice2_SetRenderState(D3DDEVICE_5, D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
     IDirect3DDevice2_SetRenderState(D3DDEVICE_5, D3DRENDERSTATE_ZENABLE, TRUE);
@@ -77,21 +78,22 @@ void kelpo_rasterizer_direct3d_5__clear_frame(void)
 
 void kelpo_rasterizer_direct3d_5__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
+    HRESULT hr = 0;
     D3DTEXTUREHANDLE d3dTextureHandle;
     LPDIRECT3DTEXTURE2 textureObject;
     LPDIRECTDRAWSURFACE d3dTexture = kelpo_create_directdraw_5_surface_from_texture(texture, D3DDEVICE_5);
 
     assert(d3dTexture && "Direct3D 5: Failed to create a Direct3D texture.");
 
-    if (FAILED(IDirectDraw2_QueryInterface(d3dTexture, IID_IDirect3DTexture2, (LPVOID *)&textureObject)))
+    if (FAILED(hr = IDirectDraw2_QueryInterface(d3dTexture, IID_IDirect3DTexture2, (LPVOID *)&textureObject)))
     {
-        fprintf(stderr, "ERROR: Direct3D 5: Failed to upload a texture.");
-
-		return;
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_DDRAW_INTERFACE_NOT_AVAILABLE);
+        return;
     }
 
-	IDirect3DTexture_GetHandle(textureObject, D3DDEVICE_5, &d3dTextureHandle);
-	IDirect3DTexture_Release(textureObject);
+    IDirect3DTexture_GetHandle(textureObject, D3DDEVICE_5, &d3dTextureHandle);
+    IDirect3DTexture_Release(textureObject);
 
     texture->apiId = (uint32_t)d3dTextureHandle;
     texture->apiAuxData = d3dTexture;
@@ -103,6 +105,7 @@ void kelpo_rasterizer_direct3d_5__upload_texture(struct kelpo_polygon_texture_s 
 void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
     unsigned m = 0;
+    HRESULT hr = 0;
     LPDIRECTDRAWSURFACE textureSurface = (LPDIRECTDRAWSURFACE)texture->apiAuxData;
     LPDIRECTDRAWSURFACE mipSurface = textureSurface;
 
@@ -111,14 +114,17 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
         DDSURFACEDESC textureSurfaceDesc;
 
         textureSurfaceDesc.dwSize = sizeof(textureSurfaceDesc);
-        if (FAILED(IDirectDrawSurface3_GetSurfaceDesc(textureSurface, &textureSurfaceDesc)))
+
+        if (FAILED(hr = IDirectDrawSurface3_GetSurfaceDesc(textureSurface, &textureSurfaceDesc)))
         {
+            fprintf(stderr, "Direct3D error 0x%x\n", hr);
+            kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
             return;
         }
 
         assert(((textureSurfaceDesc.dwWidth == texture->width) &&
                 (textureSurfaceDesc.dwHeight == texture->height)) &&
-               "Direct3D 5: The dimensions of an existing texture cannot be modified.");
+               "The dimensions of an existing texture cannot be modified.");
     }
 
     /* Update the texture's pixel data on all mip levels.*/
@@ -134,20 +140,23 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
             uint16_t *dstPixels = NULL;
 
             mipSurfaceDesc.dwSize = sizeof(mipSurfaceDesc);
-            if (FAILED(IDirectDrawSurface3_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
+
+            if (FAILED(hr = IDirectDrawSurface3_Lock(mipSurface, NULL, &mipSurfaceDesc, DDLOCK_WAIT, NULL)))
             {
+                fprintf(stderr, "Direct3D error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_LOCK_SURFACE);
                 return;
             }
 
             assert(((mipSurfaceDesc.dwWidth == mipLevelSideLength) &&
                     (mipSurfaceDesc.dwHeight == mipLevelSideLength)) &&
-                    "Direct3D 5: Invalid mip level surface dimensions.");
+                    "Invalid mip level surface dimensions.");
 
             assert(((mipSurfaceDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0x8000) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwRBitMask == 0x7c00) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwGBitMask == 0x3e0) &&
                     (mipSurfaceDesc.ddpfPixelFormat.dwBBitMask == 0x1f)) &&
-                    "Direct3D 5: Invalid pixel format for a mip level. Expected ARGB 1555.");
+                    "Invalid pixel format for a mip level. Expected ARGB 1555.");
 
             dstPixels = (uint16_t*)mipSurfaceDesc.lpSurface;
 
@@ -169,8 +178,10 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
                 }
             }
 
-            if (FAILED(IDirectDrawSurface3_Unlock(mipSurface, NULL)))
+            if (FAILED(hr = IDirectDrawSurface3_Unlock(mipSurface, NULL)))
             {
+                fprintf(stderr, "Direct3D error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_COULDNT_UNLOCK_SURFACE);
                 return;
             }
         }
@@ -183,12 +194,14 @@ void kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s 
 
             ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
 
-            if (SUCCEEDED(IDirectDrawSurface3_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+            if (SUCCEEDED(hr = IDirectDrawSurface3_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
             {
                 IDirectDrawSurface3_Release(mipSurface);
             }
             else
             {
+                fprintf(stderr, "Direct3D error 0x%x\n", hr);
+                kelpo_error(KELPOERR_DDRAW_SURFACE_NOT_AVAILABLE);
                 return;
             }
         }
@@ -219,6 +232,7 @@ void kelpo_rasterizer_direct3d_5__unload_textures(void)
 void kelpo_rasterizer_direct3d_5__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                  const unsigned numTriangles)
 {
+    HRESULT hr = 0;
     unsigned numTrianglesProcessed = 0;
     unsigned numTrianglesInBatch = 0;
     const struct kelpo_polygon_triangle_s *triangle = triangles;
@@ -228,8 +242,10 @@ void kelpo_rasterizer_direct3d_5__draw_triangles(struct kelpo_polygon_triangle_s
         kelpoa_generic_stack__grow(D3D5_VERTEX_CACHE, (3 * numTriangles));
     }
 
-    if (FAILED(IDirect3DDevice2_BeginScene(D3DDEVICE_5)))
+    if (FAILED(hr = IDirect3DDevice2_BeginScene(D3DDEVICE_5)))
     {
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_BEGIN_SCENE);
         return;
     }
 
@@ -311,10 +327,10 @@ void kelpo_rasterizer_direct3d_5__draw_triangles(struct kelpo_polygon_triangle_s
                 }
 
                 IDirect3DDevice2_DrawPrimitive(D3DDEVICE_5,
-                                       D3DPT_TRIANGLELIST,
-                                       D3DVT_TLVERTEX,
-                                       vertexCache, numVerts,
-                                       NULL);
+                                               D3DPT_TRIANGLELIST,
+                                               D3DVT_TLVERTEX,
+                                               vertexCache, numVerts,
+                                               NULL);
 
                 if (isEndOfTriangles)
                 {

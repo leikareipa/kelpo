@@ -10,6 +10,8 @@ src/kelpo_renderer/rasterizer/opengl_3_0/rasterizer_opengl_3_0.c
 src/kelpo_renderer/surface/opengl_3_0/surface_opengl_3_0.c
 src/kelpo_renderer/window/win32/window_win32.c
 src/kelpo_auxiliary/generic_stack.c
+src/kelpo_interface/interface.c
+src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

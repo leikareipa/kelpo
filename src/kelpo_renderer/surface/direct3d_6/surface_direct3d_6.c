@@ -14,6 +14,7 @@
 #include <kelpo_renderer/surface/directdraw_6/surface_directdraw_6.h>
 #include <kelpo_renderer/surface/direct3d_6/surface_direct3d_6.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 #include <d3d.h>
@@ -51,37 +52,39 @@ static HRESULT setup_direct3d(GUID deviceGUID)
                                                                     WINDOW_HANDLE,
                                                                     deviceGUID)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to initialize the DirectDraw/Direct3D surface.");
         return hr;
     }
 
     if (FAILED(hr = kelpo_surface_directdraw_6__initialize_direct3d_6_interface(&DIRECT3D_6, &D3DDEVICE_6)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to create the Direct3D interface.");
         return hr;
     }
 
     if (FAILED(hr = IDirect3D2_CreateViewport(DIRECT3D_6, &D3DVIEWPORT_6, NULL)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to create the viewport (error 0x%x).\n", hr);
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice2_AddViewport(D3DDEVICE_6, D3DVIEWPORT_6)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to add the viewport to the Direct3D device (error 0x%x).\n", hr);
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DViewport2_SetViewport(D3DVIEWPORT_6, &viewport)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to assign viewport parameters (error 0x%x).\n", hr);
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
         return hr;
     }
 
     if (FAILED(hr = IDirect3DDevice2_SetCurrentViewport(D3DDEVICE_6, D3DVIEWPORT_6)))
     {
-        fprintf(stderr, "Direct3D 6: Failed to make the viewport current (error 0x%x).\n", hr);
+        fprintf(stderr, "Direct3D error 0x%x\n", hr);
+        kelpo_error(KELPOERR_D3D_COULDNT_CREATE_VIEWPORT);
         return hr;
     }
 
@@ -124,6 +127,8 @@ void kelpo_surface_direct3d_6__create_surface(const unsigned width,
                                               const int vsyncEnabled,
                                               const unsigned deviceIdx)
 {
+    HRESULT hr = 0;
+    
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
     WINDOW_BIT_DEPTH = bpp;
@@ -139,7 +144,7 @@ void kelpo_surface_direct3d_6__create_surface(const unsigned width,
 
     if (FAILED(setup_direct3d(kelpo_directdraw6_device_guid(deviceIdx))))
     {
-        assert(0 && "Direct3D 6: Failed to initialize the Direct3D surface.");
+        /* TODO: Return false.*/
     }
 
     return;

@@ -59,7 +59,9 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
     if (kelpoInterface->dllHandle &&
         !FreeLibrary(ACTIVE_INTERFACE.dllHandle))
     {
-        fprintf(stderr, "ERROR: Could not release the Kelpo renderer library.\n");
+        kelpo_error(KELPOERR_INTERFACE_COULDNT_RELEASE_RENDERER_DLL);
+
+        return 0;
     }
 
     memset(&ACTIVE_INTERFACE, 0, sizeof(ACTIVE_INTERFACE));

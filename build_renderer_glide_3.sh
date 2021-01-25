@@ -15,6 +15,8 @@ src/kelpo_renderer/rasterizer/glide_3/rasterizer_glide_3.c
 src/kelpo_renderer/surface/glide_3/surface_glide_3.c
 src/kelpo_renderer/window/win32/window_win32.c
 src/kelpo_auxiliary/generic_stack.c
+src/kelpo_interface/interface.c
+src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

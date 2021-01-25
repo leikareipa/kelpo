@@ -1,7 +1,8 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
-#include "kelpo_interface/interface.h"
+#include <kelpo_interface/interface.h>
+#include <kelpo_interface/error.h>
 
 #include <windows.h>
 
@@ -22,7 +23,7 @@ const struct kelpo_interface_s* kelpo_create_interface(const char *const rasteri
         kelpo_release_interface(&ACTIVE_INTERFACE);
     }
 
-         if (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
+    if      (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
     else if (strcmp(rasterizerName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
     else if (strcmp(rasterizerName, "glide_3")    == 0) dllFilename = "kelpo_renderer_glide_3.dll";
     else if (strcmp(rasterizerName, "direct3d_5") == 0) dllFilename = "kelpo_renderer_direct3d_5.dll";
@@ -62,8 +63,15 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
     }
 
     memset(&ACTIVE_INTERFACE, 0, sizeof(ACTIVE_INTERFACE));
-    
+
     return 1;
+}
+
+const char* kelpo_active_renderer_name(void)
+{
+    return strlen(ACTIVE_INTERFACE.metadata.rendererName)
+           ? ACTIVE_INTERFACE.metadata.rendererName
+           : "No active renderer";
 }
 
 #undef DLL_FUNC_ADDRESS

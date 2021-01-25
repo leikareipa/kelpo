@@ -50,7 +50,7 @@ void export_interface(struct kelpo_interface_s *const interface)
     interface->rasterizer.update_texture = kelpo_rasterizer_direct3d_7__update_texture;
     interface->rasterizer.unload_textures = kelpo_rasterizer_direct3d_7__unload_textures;
 
-    interface->metadata.rendererName = RENDERER_NAME;
+    KELPO_COPY_RENDERER_NAME(interface->metadata.rendererName, RENDERER_NAME);
     interface->metadata.rendererVersionMajor = RENDERER_VERSION[0];
     interface->metadata.rendererVersionMinor = RENDERER_VERSION[1];
     interface->metadata.rendererVersionPatch = RENDERER_VERSION[2];

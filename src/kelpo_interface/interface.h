@@ -1,12 +1,23 @@
 #ifndef KELPO_INTERFACE_INTERFACE_H
 #define KELPO_INTERFACE_INTERFACE_H
 
+#include <string.h>
 #include <kelpo_interface/stdint.h>
 #include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
 #define KELPO_INTERFACE_VERSION_MINOR 6 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
+
+/* Utility function for renderers. Copies the renderer name (src) into an
+ * interface object's 'metadata.rendererName' string buffer (dst). Expects that
+ * the dst buffer is an array on the stack.*/
+#define KELPO_COPY_RENDERER_NAME(dst, src) {\
+    const unsigned dstLen = (sizeof(dst) / sizeof(char));\
+    const unsigned srcLen = (strlen(src) + 1);\
+    strncpy(dst, src, ((srcLen > dstLen)? dstLen : srcLen));\
+    dst[dstLen - 1] = '\0';\
+}
 
 /* A user-provided function that will receive the renderer window's messages.*/
 typedef LRESULT kelpo_custom_window_message_handler_t(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
@@ -62,7 +73,7 @@ struct kelpo_interface_s
 
     struct kelpo_interface_metadata_s
     {
-        const char *rendererName;
+        char rendererName[64];
         unsigned rendererVersionMajor;
         unsigned rendererVersionMinor;
         unsigned rendererVersionPatch;
@@ -72,5 +83,7 @@ struct kelpo_interface_s
 const struct kelpo_interface_s* kelpo_create_interface(const char *const rendererName);
 
 int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface);
+
+const char* kelpo_active_renderer_name(void);
 
 #endif

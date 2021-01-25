@@ -23,8 +23,16 @@ static enum kelpo_error_code_e REPORTED_ERRORS[MAX_NUM_REPORTED_ERRORS];
 void kelpo_error_reset(void)
 {
     NUM_REPORTED_ERRORS = 0;
+    memset(REPORTED_ERRORS, KELPOERR_NO_ERROR, sizeof(REPORTED_ERRORS));
 
     return;
+}
+
+enum kelpo_error_code_e kelpo_error_peek(void)
+{
+    return !NUM_REPORTED_ERRORS
+           ? KELPOERR_NO_ERROR
+           : REPORTED_ERRORS[NUM_REPORTED_ERRORS - 1];
 }
 
 enum kelpo_error_code_e kelpo_error_code(void)

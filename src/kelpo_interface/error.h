@@ -15,15 +15,19 @@
  * the console (e.g. stderr). Otherwise, no console output will be generated.*/
 extern int KELPO_ERROR_VERBOSE;
 
-/* Returns the most recent error code, or KELPOERR_NO_ERROR if no error has
- * occurred since the error code was last reset (by calling kelpo_error_reset()).*/
+/* Returns and removes the most recent error code. To retrieve all errors codes,
+ * call this function in a loop until KELPOERR_NO_ERROR is returned. Error codes
+ * are accumulated starting from either the latest call to kelpo_error_reset()
+ * or from program startup if no such call has been made.*/
 enum kelpo_error_code_e kelpo_error_code(void);
 
-/* Reset the error code. Immediately after calling this function and until an
- * error occurs, kelpo_error_code() will return KELPOERR_NO_ERROR.*/
+/* Removes all accumulated error codes. Immediately after calling this function
+ * and until one or more errors occur, kelpo_error_code() will return
+ * KELPOERR_NO_ERROR.*/
 void kelpo_error_reset(void);
 
-/* Used by Kelpo's internals to report runtime errors.*/
-void kelpo_error(const enum kelpo_error_code_e errorCode);
+/* Used by Kelpo's internals to report errors. Use kelpo_error_code() to query
+ * them.*/
+void kelpo_error(enum kelpo_error_code_e errorCode);
 
 #endif

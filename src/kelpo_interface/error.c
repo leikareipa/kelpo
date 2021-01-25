@@ -14,26 +14,39 @@
  * errors will only populate the internal error buffers.*/
 int KELPO_ERROR_VERBOSE = 1;
 
-/* The most recent error code, as reported to kelpo_error(). Will evaluate
- * to true if one or more errors have been reported since its value was set
- * to KELPOERR_NO_ERROR, and false if not.*/
-static enum kelpo_error_code_e KELPO_ERROR_CODE = KELPOERR_NO_ERROR;
+/* A list of the errors reported via kelpo_error() since the last time the list
+ * was reset. TODO: Maybe implement a dynamic list instead of a static one.*/
+#define MAX_NUM_REPORTED_ERRORS 32
+static unsigned NUM_REPORTED_ERRORS = 0;
+static enum kelpo_error_code_e REPORTED_ERRORS[MAX_NUM_REPORTED_ERRORS];
 
 void kelpo_error_reset(void)
 {
-    KELPO_ERROR_CODE = KELPOERR_NO_ERROR;
+    NUM_REPORTED_ERRORS = 0;
 
     return;
 }
 
 enum kelpo_error_code_e kelpo_error_code(void)
 {
-    return KELPO_ERROR_CODE;
+    return !NUM_REPORTED_ERRORS
+           ? KELPOERR_NO_ERROR
+           : REPORTED_ERRORS[--NUM_REPORTED_ERRORS];
 }
 
-void kelpo_error(const enum kelpo_error_code_e errorCode)
+void kelpo_error(enum kelpo_error_code_e errorCode)
 {
-    KELPO_ERROR_CODE = errorCode;
+    if (NUM_REPORTED_ERRORS >= MAX_NUM_REPORTED_ERRORS)
+    {
+        return;
+    }
+
+    if (NUM_REPORTED_ERRORS == (MAX_NUM_REPORTED_ERRORS - 1))
+    {
+        errorCode = KELPOERR_TOO_MANY_ERRORS;
+    }
+
+    REPORTED_ERRORS[NUM_REPORTED_ERRORS++] = errorCode;
 
     if (KELPO_ERROR_VERBOSE)
     {

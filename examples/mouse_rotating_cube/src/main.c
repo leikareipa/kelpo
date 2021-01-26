@@ -271,7 +271,6 @@ int main(int argc, char *argv[])
     if (!kelpo_release_interface(kelpo))
     {
         fprintf(stderr, "Failed to release Kelpo.\n");
-        return EXIT_FAILURE;
     }
 
     return (kelpo_error_peek() != KELPOERR_NO_ERROR)

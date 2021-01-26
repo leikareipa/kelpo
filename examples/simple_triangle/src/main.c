@@ -5,13 +5,16 @@
  * 
  */
 
-#include <windows.h>
+#include <stdio.h>
+#include <windows.h> /* For the window message handler.*/
+#include <kelpo_interface/error.h>
 #include <kelpo_interface/interface.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 
 LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    /* Exit the program on ESC.*/
+    /* Close the Kelpo window on Esc. We'll keep testing for kelpo.window.is_open()
+     * in our rendering loop, and shut down once the window is no longer open.*/
     if ((message == WM_KEYDOWN) &&
         (wParam == VK_ESCAPE))
     {
@@ -34,19 +37,16 @@ int main(int argc, char *argv[])
     const unsigned windowHeight = 1080;
     const unsigned windowBPP = 32;
 
-    /* Initialize the renderer.*/
+    /* Initialize Kelpo.*/
+    if (!kelpo_create_interface(&kelpo, rendererName) ||
+        !kelpo->window.open(renderDeviceIdx, windowWidth, windowHeight, windowBPP) ||
+        !kelpo->window.set_message_handler(window_message_handler))
     {
-        kelpo_create_interface(&kelpo, rendererName);
-
-        kelpo->window.open(renderDeviceIdx,
-                           windowWidth,
-                           windowHeight,
-                           windowBPP);
-
-        kelpo->window.set_message_handler(window_message_handler);
+        fprintf(stderr, "Failed to initialize Kelpo.\n");
+        goto cleanup;
     }
 
-    /* Create the triangle that will be rendered in the middle of the screen.*/
+    /* Create the triangle that we'll render.*/
     {
         const int widthHalf = (windowWidth / 2);
         const int heightHalf = (windowHeight / 2);
@@ -74,16 +74,30 @@ int main(int argc, char *argv[])
         triangle.vertex[2].a = 255;
     }
 
-    /* Render the triangle.*/
+    /* Render the triangle (until the user presses Esc).*/
     while (kelpo->window.process_messages(),
            kelpo->window.is_open())
     {
         kelpo->rasterizer.clear_frame();
         kelpo->rasterizer.draw_triangles(&triangle, 1);
         kelpo->window.flip_surface();
+
+        if (kelpo_error_peek() != KELPOERR_NO_ERROR)
+        {
+            fprintf(stderr, "Kelpo has reported an error.\n");
+            goto cleanup;
+        }
     }
 
-    kelpo_release_interface(kelpo);
+    cleanup:
 
-    return 0;
+    if (!kelpo_release_interface(kelpo))
+    {
+        fprintf(stderr, "Failed to release Kelpo.\n");
+        return EXIT_FAILURE;
+    }
+
+    return (kelpo_error_peek() != KELPOERR_NO_ERROR)
+           ? EXIT_SUCCESS
+           : EXIT_FAILURE;
 }

@@ -10,21 +10,26 @@
 #include <assert.h>
 #include <stdio.h>
 #include <time.h>
-#include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_auxiliary/triangle_preparer.h>
-#include <kelpo_auxiliary/matrix_44.h>
 #include <kelpo_auxiliary/load_kac_1_0_mesh.h>
+#include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_auxiliary/text_mesh.h>
+#include <kelpo_auxiliary/matrix_44.h>
 #include <kelpo_auxiliary/misc.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/interface.h>
+#include <kelpo_interface/error.h>
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
 
 #include <windows.h>
 #include <windowsx.h>
 
-static struct cliparse_params_s cliParams = {0};
+/* Will hold any relevant command-line arguments provided by the user.*/
+static struct cliparse_params_s CLI_ARGS = {0};
+
+/* For rotating the cube. These values will be modified by mouse/keyboard input.*/
+static struct { float rotX, rotY, rotZ, zoom; } CAMERA = {0, 0, 0, 4.7};
 
 /* Call this function once per frame and it'll tell you an estimate of the frame
  * rate (FPS).*/
@@ -37,7 +42,7 @@ static unsigned framerate(void)
     numFramesCounted++;
 
     if (!frameRateTimer ||
-        (time(NULL) - frameRateTimer) >= 2)
+        ((time(NULL) - frameRateTimer) >= 2))
     {
         framesPerSecond = (numFramesCounted / (time(NULL) - frameRateTimer));
         frameRateTimer = time(NULL);
@@ -47,10 +52,8 @@ static unsigned framerate(void)
     return framesPerSecond;
 }
 
-static float rotX = 0;
-static float rotY = 0;
-static float zoom = 4.7;
-
+/* A message handler that will be attached to the Kelpo window; to monitor the
+ * user's mouse and keyboard inputs.*/
 static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static int prevMousePosX = 0;
@@ -64,8 +67,8 @@ static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wP
         {
             switch (wParam)
             {
-                case VK_UP:   zoom -= 0.05; break;
-                case VK_DOWN: zoom += 0.05; break;
+                case VK_UP:   CAMERA.zoom -= 0.05; break;
+                case VK_DOWN: CAMERA.zoom += 0.05; break;
                 default: break;
             }
 
@@ -77,15 +80,15 @@ static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wP
             const float deltaX = (prevMousePosX - GET_X_LPARAM(lParam));
             const float deltaY = (prevMousePosY - GET_Y_LPARAM(lParam));
 
-            rotY -= (deltaX / 300.0f);
-            rotX += (deltaY / 300.0f);
+            CAMERA.rotY -= (deltaX / 300.0f);
+            CAMERA.rotX += (deltaY / 300.0f);
 
             if (deltaX || deltaY)
             {
-                SetCursorPos((cliParams.windowWidth / 2), (cliParams.windowHeight / 2));
+                SetCursorPos((CLI_ARGS.windowWidth / 2), (CLI_ARGS.windowHeight / 2));
 
-                prevMousePosX = (cliParams.windowWidth / 2);
-                prevMousePosY = (cliParams.windowHeight / 2);
+                prevMousePosX = (CLI_ARGS.windowWidth / 2);
+                prevMousePosY = (CLI_ARGS.windowHeight / 2);
             }
 
             break;
@@ -99,97 +102,114 @@ static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wP
 
 int main(int argc, char *argv[])
 {
-    /* The location, in world units, of the near and far clipping planes.*/
-    const float zNear = 0.1;
-    const float zFar = 100;
-   
+    const struct kelpo_interface_s *kelpo = NULL;
+
     uint32_t numTextures = 0;
     struct kelpo_polygon_texture_s *textures = NULL;
+    struct kelpo_polygon_texture_s *fontTexture = NULL;
     struct kelpoa_generic_stack_s *triangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
     struct kelpoa_generic_stack_s *worldSpaceTriangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
     struct kelpoa_generic_stack_s *screenSpaceTriangles = kelpoa_generic_stack__create(1, sizeof(struct kelpo_polygon_triangle_s));
-    struct kelpo_polygon_texture_s *fontTexture = kelpoa_text_mesh__create_font();
 
     struct kelpoa_matrix44_s clipSpaceMatrix;
     struct kelpoa_matrix44_s screenSpaceMatrix;
 
-    const struct kelpo_interface_s *renderer = NULL;
-
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
-    {
-        cliParams.rendererName = "opengl_1_2";
-        cliParams.windowWidth = 1920;
-        cliParams.windowHeight = 1080;
-        cliParams.windowBPP = 32;
+    CLI_ARGS.rendererName = "opengl_1_2";
+    CLI_ARGS.windowWidth = 1920;
+    CLI_ARGS.windowHeight = 1080;
+    CLI_ARGS.windowBPP = 32;
+    cliparse_get_params(argc, argv, &CLI_ARGS);
 
-        cliparse_get_params(argc, argv, &cliParams);
+    /* Initialize Kelpo.*/
+    if (!kelpo_create_interface(&kelpo, CLI_ARGS.rendererName) ||
+        !kelpo->window.open(CLI_ARGS.renderDeviceIdx, CLI_ARGS.windowWidth, CLI_ARGS.windowHeight, CLI_ARGS.windowBPP) ||
+        !kelpo->window.set_message_handler(window_message_handler))
+    {
+        fprintf(stderr, "Failed to initialize Kelpo.\n");
+        goto cleanup;
     }
 
-    /* Initialize the renderer.*/
+    /* Load assets from disk and send them to Kelpo. Note that once we've uploaded
+     * textures to Kelpo, we can free their local pixel (mipmap) data, since Kelpo
+     * makes copies of those data (typically in VRAM). The texture object itself
+     * should not be freed or modified until rendering is finished, however.*/
     {
-        kelpo_create_interface(&renderer, cliParams.rendererName);
+        uint32_t i = 0, m = 0;
 
-        renderer->window.open(cliParams.renderDeviceIdx,
-                              cliParams.windowWidth,
-                              cliParams.windowHeight,
-                              cliParams.windowBPP);
-                            
-        renderer->window.set_message_handler(window_message_handler);
-
-        renderer->rasterizer.upload_texture(fontTexture);
-        free(fontTexture->mipLevel[0]);
-        fontTexture->mipLevel[0] = NULL;
-    }
-
-    /* Load in the cube model.*/
-    {
-        uint32_t i = 0;
-
-        if (!kelpoa_load_kac10_mesh("cube.kac", triangles, &textures, &numTextures) ||
-            !triangles->count)
+        /* The cube model.*/
         {
-            fprintf(stderr, "ERROR: Could not load the cube model.\n");
-            return 1;
+            if (!kelpoa_load_kac10_mesh("cube.kac", triangles, &textures, &numTextures) ||
+                !triangles->count)
+            {
+                fprintf(stderr, "Failed to load the cube model's data.\n");
+                goto cleanup;
+            }
+
+            /* Transfer the textures to Kelpo.*/
+            for (i = 0; i < numTextures; i++)
+            {
+                kelpo->rasterizer.upload_texture(&textures[i]);
+
+                for (m = 0; m < textures[i].numMipLevels; m++)
+                {
+                    free(textures[i].mipLevel[m]);
+                    textures[i].mipLevel[m] = NULL;
+                }
+            }
         }
 
-        for (i = 0; i < numTextures; i++)
+        /* The font.*/
         {
-            renderer->rasterizer.upload_texture(&textures[i]);
+            fontTexture = kelpoa_text_mesh__create_font();
+            kelpo->rasterizer.upload_texture(fontTexture);
+            
+            /* Note: We assume that the font only has one mip level.*/
+            free(fontTexture->mipLevel[0]);
+            fontTexture->mipLevel[0] = NULL;
+        }
+
+        /* A catch-all for Kelpo errors that may have occurred while we transferred
+         * asset data to Kelpo.*/
+        if (kelpo_error_peek() != KELPOERR_NO_ERROR)
+        {
+            fprintf(stderr, "Failed to transfer asset data to Kelpo.\n");
+            goto cleanup;
         }
     }
     
-    kelpoa_matrix44__make_clip_space_matrix(&clipSpaceMatrix,
-                                            KELPOA_DEG_TO_RAD(60),
-                                            (cliParams.windowWidth / (float)cliParams.windowHeight),
-                                            zNear,
-                                            zFar);
-
-    kelpoa_matrix44__make_screen_space_matrix(&screenSpaceMatrix,
-                                              (cliParams.windowWidth / 2.0f),
-                                              (cliParams.windowHeight / 2.0f));
-
-    /* Render.*/
-    while (renderer->window.process_messages(),
-           renderer->window.is_open())
+    /* Initialize transformation matrices, for rotating the triangle.*/
     {
-        /* Transform the scene's triangles into screen space.*/
+        kelpoa_matrix44__make_clip_space_matrix(&clipSpaceMatrix,
+                                                KELPOA_DEG_TO_RAD(60),
+                                                (CLI_ARGS.windowWidth / (float)CLI_ARGS.windowHeight),
+                                                0.1, 100);
+
+        kelpoa_matrix44__make_screen_space_matrix(&screenSpaceMatrix,
+                                                  (CLI_ARGS.windowWidth / 2.0f),
+                                                  (CLI_ARGS.windowHeight / 2.0f));
+    }
+
+    /* Render loop.*/
+    while (kelpo->window.process_messages(),
+           kelpo->window.is_open())
+    {
+        /* Rotate the cube and transform its vertices into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);
         kelpoa_generic_stack__clear(screenSpaceTriangles);
         kelpoa_triprepr__duplicate_triangles(triangles, worldSpaceTriangles);
-        kelpoa_triprepr__rotate_triangles(worldSpaceTriangles, rotX, rotY, 0);
-        kelpoa_triprepr__translate_triangles(worldSpaceTriangles, 0, 0, zoom);
+        kelpoa_triprepr__rotate_triangles(worldSpaceTriangles, CAMERA.rotX, CAMERA.rotY, CAMERA.rotZ);
+        kelpoa_triprepr__translate_triangles(worldSpaceTriangles, 0, 0, CAMERA.zoom);
         kelpoa_triprepr__project_triangles_to_screen(worldSpaceTriangles,
                                                      screenSpaceTriangles,
                                                      &clipSpaceMatrix,
                                                      &screenSpaceMatrix,
-                                                     zNear,
-                                                     zFar,
-                                                     1);
+                                                     0.1, 100, 1);
 
         /* Print the UI text.*/
         {
-            /* Name of the renderer; and the current FPS.*/
+            /* Renderer name, and the current FPS.*/
             {
                 char fpsString[10];
                 char polyString[50];
@@ -201,7 +221,7 @@ int main(int argc, char *argv[])
                 sprintf(polyString, "Polygons: %d/%d", ((numScreenPolys > 9999999)? 9999999 : numScreenPolys),
                                                        ((numWorldPolys > 9999999)? 9999999 : numWorldPolys));
 
-                kelpoa_text_mesh__print(screenSpaceTriangles, renderer->metadata.rendererName, 25, 30, 255, 255, 255, 1);
+                kelpoa_text_mesh__print(screenSpaceTriangles, kelpo->metadata.rendererName, 25, 30, 255, 255, 255, 1);
                 kelpoa_text_mesh__print(screenSpaceTriangles, polyString, 25, 60, 200, 200, 200, 1);
                 kelpoa_text_mesh__print(screenSpaceTriangles, fpsString, 25, 90, 200, 200, 200, 1);
             }
@@ -216,48 +236,45 @@ int main(int argc, char *argv[])
 
                 kelpoa_text_mesh__print(screenSpaceTriangles,
                                         infoString1,
-                                        ((cliParams.windowWidth / 2) - (infoString1PixelLen / 2)),
-                                        (cliParams.windowHeight - 100 - 10 - kelpoa_text_mesh__character_height()),
+                                        ((CLI_ARGS.windowWidth / 2) - (infoString1PixelLen / 2)),
+                                        (CLI_ARGS.windowHeight - 100 - 10 - kelpoa_text_mesh__character_height()),
                                         255, 255, 0, infoStringScale);
 
                 kelpoa_text_mesh__print(screenSpaceTriangles,
                                         infoString2,
-                                        ((cliParams.windowWidth / 2) - (infoString2PixelLen / 2)),
-                                        (cliParams.windowHeight - 100),
+                                        ((CLI_ARGS.windowWidth / 2) - (infoString2PixelLen / 2)),
+                                        (CLI_ARGS.windowHeight - 100),
                                         255, 255, 0, infoStringScale);
             }
         }
 
-        renderer->rasterizer.clear_frame();
-        renderer->rasterizer.draw_triangles(screenSpaceTriangles->data,
-                                            screenSpaceTriangles->count);
+        /* Render the cube.*/
+        kelpo->rasterizer.clear_frame();
+        kelpo->rasterizer.draw_triangles(screenSpaceTriangles->data, screenSpaceTriangles->count);
+        kelpo->window.flip_surface();
 
-        renderer->window.flip_surface();
-    }
-
-    kelpo_release_interface(renderer);
-
-    /* Release any leftover memory.*/
-    {
-        /* Release textures.*/
+        if (kelpo_error_peek() != KELPOERR_NO_ERROR)
         {
-            uint32_t i = 0, m = 0;
-
-            for (i = 0; i < numTextures; i++)
-            {
-                for (m = 0; m < textures[i].numMipLevels; m++)
-                {
-                    free(textures[i].mipLevel[m]);
-                }
-            }
-            
-            free(textures);
+            fprintf(stderr, "Kelpo has reported an error.\n");
+            goto cleanup;
         }
-
-        kelpoa_generic_stack__free(triangles);
-        kelpoa_generic_stack__free(worldSpaceTriangles);
-        kelpoa_generic_stack__free(screenSpaceTriangles);
     }
 
-    return 0;
+    cleanup:
+
+    free(textures);
+    free(fontTexture);
+    kelpoa_generic_stack__free(triangles);
+    kelpoa_generic_stack__free(worldSpaceTriangles);
+    kelpoa_generic_stack__free(screenSpaceTriangles);
+
+    if (!kelpo_release_interface(kelpo))
+    {
+        fprintf(stderr, "Failed to release Kelpo.\n");
+        return EXIT_FAILURE;
+    }
+
+    return (kelpo_error_peek() != KELPOERR_NO_ERROR)
+           ? EXIT_SUCCESS
+           : EXIT_FAILURE;
 }

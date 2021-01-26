@@ -15,6 +15,7 @@ src/main.c
 ../../src/kelpo_interface/interface.c
 ../../src/kelpo_auxiliary/generic_stack.c
 ../../src/kelpo_auxiliary/triangle_clipper.c
+../../src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

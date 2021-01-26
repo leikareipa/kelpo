@@ -18,6 +18,7 @@ src/main.c
 ../../src/kelpo_auxiliary/import_kac_1_0.c
 ../../src/kelpo_auxiliary/text_mesh.c
 ../../src/kelpo_interface/interface.c
+../../src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

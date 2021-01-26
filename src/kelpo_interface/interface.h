@@ -6,7 +6,7 @@
 #include <windef.h>
 
 #define KELPO_INTERFACE_VERSION_MAJOR 0 /* Starting from version 1, bumped when introducing breaking interface changes.*/
-#define KELPO_INTERFACE_VERSION_MINOR 7 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
+#define KELPO_INTERFACE_VERSION_MINOR 8 /* Bumped (or not) when such new functionality is added that doesn't break compatibility with existing implementations of current major version.*/
 #define KELPO_INTERFACE_VERSION_PATCH 0 /* Bumped (or not) on minor bug fixes etc.*/
 
 /* Utility function for renderers. Copies the renderer name (src) into an
@@ -80,7 +80,8 @@ struct kelpo_interface_s
     } metadata;
 };
 
-const struct kelpo_interface_s* kelpo_create_interface(const char *const rendererName);
+int kelpo_create_interface(const struct kelpo_interface_s **dst,
+                           const char *const rendererName);
 
 int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface);
 

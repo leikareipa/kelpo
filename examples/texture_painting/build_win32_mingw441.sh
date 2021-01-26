@@ -18,6 +18,7 @@ src/main.c
 ../../src/kelpo_auxiliary/triangle_clipper.c
 ../../src/kelpo_auxiliary/text_mesh.c
 ../../src/kelpo_interface/interface.c
+../../src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

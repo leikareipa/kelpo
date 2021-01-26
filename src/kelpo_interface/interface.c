@@ -12,8 +12,10 @@ typedef void *(*dll_import_fn_t)(struct kelpo_interface_s *const);
  * kelpo_create_interface(). Only one interface can be active at a time.*/
 static struct kelpo_interface_s ACTIVE_INTERFACE = {0};
 
-/* Returns NULL on failure.*/
-const struct kelpo_interface_s* kelpo_create_interface(const char *const rasterizerName)
+/* Initializes a Kelpo interface for the given renderer, and sets 'dst' to point
+ * to that interface. Returns 1 on success; 0 otherwise.*/
+int kelpo_create_interface(const struct kelpo_interface_s **dst,
+                           const char *const rendererName)
 {
     const char *dllFilename = NULL;
     dll_import_fn_t get_kelpo_interface = NULL;
@@ -22,15 +24,15 @@ const struct kelpo_interface_s* kelpo_create_interface(const char *const rasteri
     if (ACTIVE_INTERFACE.dllHandle &&
         !kelpo_release_interface(&ACTIVE_INTERFACE))
     {
-        return NULL;
+        return 0;
     }
 
-    if      (strcmp(rasterizerName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
-    else if (strcmp(rasterizerName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
-    else if (strcmp(rasterizerName, "glide_3")    == 0) dllFilename = "kelpo_renderer_glide_3.dll";
-    else if (strcmp(rasterizerName, "direct3d_5") == 0) dllFilename = "kelpo_renderer_direct3d_5.dll";
-    else if (strcmp(rasterizerName, "direct3d_6") == 0) dllFilename = "kelpo_renderer_direct3d_6.dll";
-    else if (strcmp(rasterizerName, "direct3d_7") == 0) dllFilename = "kelpo_renderer_direct3d_7.dll";
+    if      (strcmp(rendererName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
+    else if (strcmp(rendererName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
+    else if (strcmp(rendererName, "glide_3")    == 0) dllFilename = "kelpo_renderer_glide_3.dll";
+    else if (strcmp(rendererName, "direct3d_5") == 0) dllFilename = "kelpo_renderer_direct3d_5.dll";
+    else if (strcmp(rendererName, "direct3d_6") == 0) dllFilename = "kelpo_renderer_direct3d_6.dll";
+    else if (strcmp(rendererName, "direct3d_7") == 0) dllFilename = "kelpo_renderer_direct3d_7.dll";
 
     assert(dllFilename && "Unknown renderer name.");
 
@@ -44,7 +46,8 @@ const struct kelpo_interface_s* kelpo_create_interface(const char *const rasteri
     assert((ACTIVE_INTERFACE.metadata.rendererVersionMajor == KELPO_INTERFACE_VERSION_MAJOR) &&
            "The renderer's version is not compatible with this version of Kelpo.");
 
-    return &ACTIVE_INTERFACE;
+    *dst = &ACTIVE_INTERFACE;
+    return 1;
 }
 
 /* Returns 1 on success; 0 otherwise.*/

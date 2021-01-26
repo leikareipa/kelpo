@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     /* Initialize the renderer.*/
     {
-        renderer = kelpo_create_interface(cliParams.rendererName);
+        kelpo_create_interface(&renderer, cliParams.rendererName);
 
         renderer->window.open(cliParams.renderDeviceIdx,
                               cliParams.windowWidth,

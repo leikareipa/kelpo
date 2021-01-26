@@ -8,6 +8,7 @@ OUTPUT_FILE="../../bin/simple_triangle.exe"
 SRC_FILES="
 src/main.c
 ../../src/kelpo_interface/interface.c
+../../src/kelpo_interface/error.c
 "
 
 BUILD_OPTIONS="

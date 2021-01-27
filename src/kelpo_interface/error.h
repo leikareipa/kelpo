@@ -21,6 +21,9 @@ extern int KELPO_ERROR_VERBOSE;
  * or from program startup if no such call has been made.*/
 enum kelpo_error_code_e kelpo_error_code(void);
 
+/* Returns a human-readable string corresponding to the given error code.*/
+const char* kelpo_error_string(const enum kelpo_error_code_e errorCode);
+
 /* Returns the most recent error code, or KELPOERR_ALL_GOOD if there are no
  * errors in the error queue (e.g. due to no errors having been reported, or
  * all reported errors having been removed via kelpo_error_code() or

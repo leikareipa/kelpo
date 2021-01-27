@@ -72,10 +72,47 @@ void kelpo_error(enum kelpo_error_code_e errorCode)
     if (KELPO_ERROR_VERBOSE)
     {
         /* TODO: Error string instead of error code.*/
-        fprintf(stderr, "KELPO ERROR (%s): %u\n",
+        fprintf(stderr, "KELPO ERROR (%s): %d / %s\n",
                         kelpo_active_renderer_name(),
-                        errorCode);
+                        errorCode,
+                        kelpo_error_string(errorCode));
     }
 
     return;
+}
+
+const char* kelpo_error_string(const enum kelpo_error_code_e errorCode)
+{
+    switch (errorCode)
+    {
+        case KELPOERR_ALL_GOOD:
+            return "No errors";
+
+        case KELPOERR_TOO_MANY_ERRORS:
+            return "Too many errors";
+
+        case KELPOERR_Z_BUFFERING_NOT_SUPPORTED:
+            return "Z-buffering not supported";
+
+        case KELPOERR_VSYNC_CONTROL_NOT_SUPPORTED:
+            return "Vsync not supported";
+
+        case KELPOERR_DISPLAY_MODE_NOT_SUPPORTED:
+            return "Display mode not supported";
+
+        case KELPOERR_OUT_OF_VIDEO_MEMORY:
+            return "Out of video memory";
+
+        case KELPOERR_API_CALL_FAILED:
+            return "API call failed";
+
+        case KELPOERR_RENDERER_NOT_AVAILABLE:
+            return "Renderer not available";
+
+        case KELPOERR_RENDERER_NOT_COMPATIBLE_WITH_INTERFACE:
+            return "Renderer not compatible with interface";
+
+        default:
+            return "Unnamed error";
+    }
 }

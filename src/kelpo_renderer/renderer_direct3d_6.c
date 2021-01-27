@@ -31,7 +31,9 @@ extern "C"
 {
 #endif
 
-void export_interface(struct kelpo_interface_s *const interface)
+/* Returns 1 on success; 0 on failure. NOTE: On failure, this function must also
+ * call kelpo_error() to report a corresponding error code.*/
+int export_interface(struct kelpo_interface_s *const interface)
 {
     interface->window.open = initialize;
     interface->window.release = release;
@@ -52,7 +54,7 @@ void export_interface(struct kelpo_interface_s *const interface)
     interface->metadata.rendererVersionMinor = RENDERER_VERSION[1];
     interface->metadata.rendererVersionPatch = RENDERER_VERSION[2];
 
-    return;
+    return 1;
 }
 
 #ifdef __cplusplus

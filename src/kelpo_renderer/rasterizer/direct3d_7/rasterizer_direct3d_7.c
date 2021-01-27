@@ -90,6 +90,8 @@ int kelpo_rasterizer_direct3d_7__clear_frame(void)
 
 int kelpo_rasterizer_direct3d_7__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
+    assert(texture && "Attempting to upload a NULL texture");
+    
     assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
 
     LPDIRECTDRAWSURFACE7 d3dTexture = kelpo_create_directdraw_7_surface_from_texture(texture, D3DDEVICE_7);

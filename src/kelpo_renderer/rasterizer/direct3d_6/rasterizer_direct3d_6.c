@@ -90,6 +90,8 @@ int kelpo_rasterizer_direct3d_6__clear_frame(void)
 
 int kelpo_rasterizer_direct3d_6__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
+    assert(texture && "Attempting to upload a NULL texture");
+    
     assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
 
     HRESULT hr = 0;

@@ -180,7 +180,7 @@ int kelpo_rasterizer_glide_3__upload_texture(struct kelpo_polygon_texture_s *con
 {
     FxU32 textureSize = 0;
     GrTexInfo textureInfo = {0};
-
+    
     assert(texture && "Attempting to upload a NULL texture.");
 
     textureInfo = generate_glide_texture_info(texture);

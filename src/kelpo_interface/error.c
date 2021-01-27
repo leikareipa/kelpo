@@ -71,7 +71,6 @@ void kelpo_error(enum kelpo_error_code_e errorCode)
 
     if (KELPO_ERROR_VERBOSE)
     {
-        /* TODO: Error string instead of error code.*/
         fprintf(stderr, "KELPO ERROR (%s): %d / %s\n",
                         kelpo_active_renderer_name(),
                         errorCode,

@@ -135,6 +135,8 @@ static int upload_texture_data(const struct kelpo_polygon_texture_s *const textu
 
 int kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
+    assert(texture && "Attempting to upload a NULL texture");
+
     assert(!glIsTexture(texture->apiId) &&
            "This texture has already been registered. Use update_texture() instead.");
 

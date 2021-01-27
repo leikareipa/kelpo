@@ -51,7 +51,9 @@ enum kelpo_error_code_e kelpo_error_code(void)
            : REPORTED_ERRORS[--NUM_REPORTED_ERRORS];
 }
 
-void kelpo_error(enum kelpo_error_code_e errorCode)
+void kelpo_report_error(enum kelpo_error_code_e errorCode,
+                        const char *const sourceFile,
+                        const int lineNumber)
 {
     assert((errorCode != KELPOERR_ALL_GOOD) &&
            "This is a reserved error meant for internal use only. It can't be reported.");
@@ -73,8 +75,12 @@ void kelpo_error(enum kelpo_error_code_e errorCode)
 
     if (KELPO_ERROR_VERBOSE)
     {
-        fprintf(stderr, "KELPO ERROR (%s): %d / %s\n",
-                        kelpo_active_renderer_name(),
+        fprintf(stderr, "Kelpo v%u.%u.%u error in %s:%d: %d / %s\n",
+                        KELPO_INTERFACE_VERSION_MAJOR,
+                        KELPO_INTERFACE_VERSION_MINOR,
+                        KELPO_INTERFACE_VERSION_PATCH,
+                        sourceFile,
+                        lineNumber,
                         errorCode,
                         kelpo_error_string(errorCode));
     }

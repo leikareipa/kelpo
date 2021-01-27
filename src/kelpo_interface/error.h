@@ -38,8 +38,13 @@ enum kelpo_error_code_e kelpo_error_peek(void);
  * kelpo_error_code() will return KELPOERR_ALL_GOOD.*/
 unsigned kelpo_error_reset(void);
 
-/* Used by Kelpo's internals to report errors. Use kelpo_error_code() to query
- * them.*/
-void kelpo_error(enum kelpo_error_code_e errorCode);
+/* Convenience shortcut for kelpo_report_error().*/
+#define kelpo_error(/*enum kelpo_error_code_e*/ errorCode) kelpo_report_error((errorCode), __FILE__, __LINE__);
+
+/* Used by Kelpo's internals to report errors. Use kelpo_error_code() and/or
+ * kelpo_error_peek() to query them.*/
+void kelpo_report_error(enum kelpo_error_code_e errorCode,
+                        const char *const sourceFile, /* E.g. __FILE__.*/
+                        const int lineNumber); /* E.g. __LINE__.*/
 
 #endif

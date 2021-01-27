@@ -21,12 +21,14 @@ int KELPO_ERROR_VERBOSE = 1;
 static unsigned NUM_REPORTED_ERRORS = 0;
 static enum kelpo_error_code_e REPORTED_ERRORS[MAX_NUM_REPORTED_ERRORS];
 
-void kelpo_error_reset(void)
+unsigned kelpo_error_reset(void)
 {
+    const unsigned numErrors = NUM_REPORTED_ERRORS;
+
     NUM_REPORTED_ERRORS = 0;
     memset(REPORTED_ERRORS, KELPOERR_ALL_GOOD, sizeof(REPORTED_ERRORS));
 
-    return;
+    return numErrors;
 }
 
 enum kelpo_error_code_e kelpo_error_peek(void)

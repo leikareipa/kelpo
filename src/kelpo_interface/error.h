@@ -33,10 +33,10 @@ const char* kelpo_error_string(const enum kelpo_error_code_e errorCode);
  * code from the queue, and can only reveal the most recent error code.*/
 enum kelpo_error_code_e kelpo_error_peek(void);
 
-/* Removes all accumulated error codes. Immediately after calling this function
- * and until one or more errors occur, kelpo_error_code() will return
- * KELPOERR_ALL_GOOD.*/
-void kelpo_error_reset(void);
+/* Removes all accumulated error codes. Returns the number of errors removed.
+ * Immediately after calling this function and until one or more errors occur,
+ * kelpo_error_code() will return KELPOERR_ALL_GOOD.*/
+unsigned kelpo_error_reset(void);
 
 /* Used by Kelpo's internals to report errors. Use kelpo_error_code() to query
  * them.*/

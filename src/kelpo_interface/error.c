@@ -24,7 +24,7 @@ static enum kelpo_error_code_e REPORTED_ERRORS[MAX_NUM_REPORTED_ERRORS];
 void kelpo_error_reset(void)
 {
     NUM_REPORTED_ERRORS = 0;
-    memset(REPORTED_ERRORS, KELPOERR_NO_ERROR, sizeof(REPORTED_ERRORS));
+    memset(REPORTED_ERRORS, KELPOERR_ALL_GOOD, sizeof(REPORTED_ERRORS));
 
     return;
 }
@@ -35,7 +35,7 @@ enum kelpo_error_code_e kelpo_error_peek(void)
            "Malformed error queue.");
 
     return !NUM_REPORTED_ERRORS
-           ? KELPOERR_NO_ERROR
+           ? KELPOERR_ALL_GOOD
            : REPORTED_ERRORS[NUM_REPORTED_ERRORS - 1];
 }
 
@@ -45,13 +45,13 @@ enum kelpo_error_code_e kelpo_error_code(void)
            "Malformed error queue.");
 
     return !NUM_REPORTED_ERRORS
-           ? KELPOERR_NO_ERROR
+           ? KELPOERR_ALL_GOOD
            : REPORTED_ERRORS[--NUM_REPORTED_ERRORS];
 }
 
 void kelpo_error(enum kelpo_error_code_e errorCode)
 {
-    assert((errorCode != KELPOERR_NO_ERROR) &&
+    assert((errorCode != KELPOERR_ALL_GOOD) &&
            "This is a reserved error meant for internal use only. It can't be reported.");
 
     assert((NUM_REPORTED_ERRORS <= MAX_NUM_REPORTED_ERRORS) &&

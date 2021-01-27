@@ -8,7 +8,7 @@ More info to come.
 
 You can find small, contained samples of Kelpo in use under the [examples/](./examples/) directory.
 
-It may be best to start by looking at the `simple_triangle` example. It does nothing but render a single static triangle, and so strips away everything except the bare essentials needed to incorporate Kelpo into an application.
+It may be best to start by examining the `simple_triangle` example. It does nothing but render a single static triangle, and so strips away everything except the bare essentials needed to incorporate Kelpo into an application.
 
 ## Code organization
 
@@ -72,13 +72,13 @@ Every function exposed by the `kelpo_interface_s` struct, as well as all interna
 
 Every such function that returns 0 will also push an error code into Kelpo's error queue, further describing the error. To retrieve these error codes, use the `kelpo_error_code()` and `kelpo_error_peek()` functions.
 
-To retrieve the most recent error code and remove it from the error queue, call `kelpo_error_code()`. Calling this function in a loop until it returns `KELPOERR_NO_ERROR` will return and remove all errors in the queue, with `KELPOERR_NO_ERROR` indicating that the queue is empty.
+To retrieve the most recent error code and remove it from the error queue, call `kelpo_error_code()`. Calling this function in a loop until it returns `KELPOERR_ALL_GOOD` will return and remove all errors in the queue, with `KELPOERR_ALL_GOOD` indicating that the queue is empty.
 
-To retrieve the most recent error code without modifying the error queue, call `kelpo_error_peek()`. Since this function doesn't modify the queue, it can only return the most recent error, or `KELPOERR_NO_ERROR` to indicate that the queue is empty.
+To retrieve the most recent error code without modifying the error queue, call `kelpo_error_peek()`. Since this function doesn't modify the queue, it can only return the most recent error, or `KELPOERR_ALL_GOOD` if the queue is empty.
 
-To find whether Kelpo has reported any errors, you can use e.g. `(kelpo_error_peek() == KELPOERR_NO_ERROR)`. It evaluates to true when there are no errors and false otherwise, without modifying the error queue.
+To find whether Kelpo has reported any errors - regardless of what those errors might be - you can use e.g. `(kelpo_error_peek() == KELPOERR_ALL_GOOD)`. It evaluates to true when there are no errors and false otherwise, without modifying the error queue.
 
-The error queue can be reset (cleared) by calling `kelpo_error_reset()`. All accumulated error codes will be removed, and both `kelpo_error_code()` and `kelpo_error_peek()` will return `KELPOERR_NO_ERROR` until further errors are reported.
+The error queue can be reset (cleared) by calling `kelpo_error_reset()`. All accumulated error codes will be removed, and both `kelpo_error_code()` and `kelpo_error_peek()` will return `KELPOERR_ALL_GOOD` until further errors are reported.
 
 # Screenshots
 

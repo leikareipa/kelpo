@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
         /* A catch-all for Kelpo errors that may have occurred while we transferred
          * asset data to Kelpo.*/
-        if (kelpo_error_peek() != KELPOERR_NO_ERROR)
+        if (kelpo_error_peek() != KELPOERR_ALL_GOOD)
         {
             fprintf(stderr, "Failed to transfer asset data to Kelpo.\n");
             goto cleanup;
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
         kelpo->rasterizer.draw_triangles(screenSpaceTriangles->data, screenSpaceTriangles->count);
         kelpo->window.flip_surface();
 
-        if (kelpo_error_peek() != KELPOERR_NO_ERROR)
+        if (kelpo_error_peek() != KELPOERR_ALL_GOOD)
         {
             fprintf(stderr, "Kelpo has reported an error.\n");
             goto cleanup;
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Failed to release Kelpo.\n");
     }
 
-    return (kelpo_error_peek() == KELPOERR_NO_ERROR)
+    return (kelpo_error_peek() == KELPOERR_ALL_GOOD)
            ? EXIT_SUCCESS
            : EXIT_FAILURE;
 }

@@ -74,6 +74,8 @@ int kelpo_surface_directdraw_7__release_surface(void)
     if (FRONT_BUFFER) IDirectDrawSurface7_Release(FRONT_BUFFER);
     if (DIRECTDRAW_7) IDirectDraw7_Release(DIRECTDRAW_7);
 
+    IDirectDraw7_SetCooperativeLevel(DIRECTDRAW_7, WINDOW_HANDLE, DDSCL_NORMAL);
+
     return 1;
 }
 

@@ -21,9 +21,9 @@ int kelpo_create_interface(const struct kelpo_interface_s **dst,
     const char *dllFilename = NULL;
     dll_import_fn_t get_kelpo_interface = NULL;
 
-    /* If we currently have an active interface that hasn't yet been released.*/
-    if (ACTIVE_INTERFACE.dllHandle &&
-        !kelpo_release_interface(&ACTIVE_INTERFACE))
+    /* In case parts of the interface have already been initialized. We want a
+     * clean slate.*/
+    if (!kelpo_release_interface(&ACTIVE_INTERFACE))
     {
         /* kelpo_release_interface() is expected to have called kelpo_error(), so
          * we can just return.*/
@@ -86,20 +86,27 @@ int kelpo_release_interface(const struct kelpo_interface_s *const kelpoInterface
     assert((kelpoInterface == &ACTIVE_INTERFACE) && 
            "Can't release an interface that isn't active.");
 
-    if (ACTIVE_INTERFACE.rasterizer.unload_textures &&
-        !ACTIVE_INTERFACE.rasterizer.unload_textures())
+    /* Since opening the Kelpo renderer window acts as a renderer initializer,
+     * we assume that if the window isn't open, the renderer failed to initialize;
+     * in which case we shoudn't attempt to call any releasing functions on it.*/
+    if (ACTIVE_INTERFACE.window.is_open &&
+        ACTIVE_INTERFACE.window.is_open())
     {
-        /* The function call is expected to have called kelpo_error(), so we
-         * can just return.*/
-        return 0;
-    }
+        if (ACTIVE_INTERFACE.rasterizer.unload_textures &&
+            !ACTIVE_INTERFACE.rasterizer.unload_textures())
+        {
+            /* The function call is expected to have called kelpo_error(), so we
+            * can just return.*/
+            return 0;
+        }
 
-    if (ACTIVE_INTERFACE.window.release &&
-        !ACTIVE_INTERFACE.window.release())
-    {
-        /* The function call is expected to have called kelpo_error(), so we
-         * can just return.*/
-        return 0;
+        if (ACTIVE_INTERFACE.window.release &&
+            !ACTIVE_INTERFACE.window.release())
+        {
+            /* The function call is expected to have called kelpo_error(), so we
+            * can just return.*/
+            return 0;
+        }
     }
     
     if (kelpoInterface->dllHandle &&

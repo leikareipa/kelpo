@@ -56,7 +56,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_6_surface_from_texture(const struct 
 
     /* Create the texture's DirectDraw surface.*/
     {
-        DDSURFACEDESC surfaceDescription;
+        DDSURFACEDESC surfaceDescription = {0};
 
         memset(&surfaceDescription, 0, sizeof(DDSURFACEDESC));
         surfaceDescription.dwSize = sizeof(DDSURFACEDESC);
@@ -79,7 +79,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_6_surface_from_texture(const struct 
     mipSurface = d3dTexture;
     for (m = 0; m < texture->numMipLevels; m++)
     {
-        DDSURFACEDESC mipSurfaceDesc;
+        DDSURFACEDESC mipSurfaceDesc = {0};
         const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Kelpo textures are expected to be square.*/
 
         memset(&mipSurfaceDesc, 0, sizeof(mipSurfaceDesc));
@@ -140,7 +140,7 @@ LPDIRECTDRAWSURFACE kelpo_create_directdraw_6_surface_from_texture(const struct 
         if ((texture->numMipLevels > 1) &&
             (m < (texture->numMipLevels - 1)))
         {
-            DDSCAPS ddsCaps;
+            DDSCAPS ddsCaps = {0};
 
             ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
 

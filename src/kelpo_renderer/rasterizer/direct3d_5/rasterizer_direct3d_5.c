@@ -230,9 +230,10 @@ int kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s *
 
 int kelpo_rasterizer_direct3d_5__unload_textures(void)
 {
-    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
+    HRESULT hr = 0;
+    unsigned i = 0, m = 0;  
 
-    unsigned i = 0;
+    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
 
     IDirect3DDevice2_SetRenderState(D3DDEVICE_5,
                                     D3DRENDERSTATE_TEXTUREHANDLE,
@@ -241,7 +242,36 @@ int kelpo_rasterizer_direct3d_5__unload_textures(void)
     for (i = 0; i < UPLOADED_TEXTURES->count; i++)
     {
         LPDIRECTDRAWSURFACE uploadedTexture = ((LPDIRECTDRAWSURFACE*)UPLOADED_TEXTURES->data)[i];
-        IDirectDrawSurface3_Release(uploadedTexture);
+        LPDIRECTDRAWSURFACE mipSurface = uploadedTexture;
+        DDSURFACEDESC surfaceDesc = {0};
+        
+        surfaceDesc.dwSize = sizeof(surfaceDesc);
+
+        if (FAILED(hr = IDirectDrawSurface3_GetSurfaceDesc(uploadedTexture, &surfaceDesc)))
+        {
+            fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
+            return 0;
+        }
+
+        if (surfaceDesc.dwMipMapCount)
+        {
+            for (m = 0; m < surfaceDesc.dwMipMapCount; m++)
+            {
+                DDSCAPS ddsCaps = {0};
+                ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
+
+                if (SUCCEEDED(IDirectDrawSurface3_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+                {
+                    IDirectDrawSurface3_Release(mipSurface);
+                }
+            }
+        }
+        else
+        {
+            IDirectDrawSurface3_Release(uploadedTexture);
+        }
+        
     }
 
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);

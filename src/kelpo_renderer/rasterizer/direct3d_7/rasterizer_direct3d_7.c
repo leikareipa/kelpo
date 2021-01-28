@@ -91,7 +91,7 @@ int kelpo_rasterizer_direct3d_7__clear_frame(void)
 int kelpo_rasterizer_direct3d_7__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(texture && "Attempting to upload a NULL texture");
-    
+
     assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
 
     LPDIRECTDRAWSURFACE7 d3dTexture = kelpo_create_directdraw_7_surface_from_texture(texture, D3DDEVICE_7);
@@ -220,16 +220,46 @@ int kelpo_rasterizer_direct3d_7__update_texture(struct kelpo_polygon_texture_s *
 
 int kelpo_rasterizer_direct3d_7__unload_textures(void)
 {
-    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
+    HRESULT hr = 0;
+    unsigned i = 0, m = 0;  
 
-    unsigned i = 0;
+    assert(UPLOADED_TEXTURES && "The texture stack hasn't been initialized.");
 
     IDirect3DDevice7_SetTexture(D3DDEVICE_7, 0, NULL);
 
     for (i = 0; i < UPLOADED_TEXTURES->count; i++)
     {
         LPDIRECTDRAWSURFACE7 uploadedTexture = ((LPDIRECTDRAWSURFACE7*)UPLOADED_TEXTURES->data)[i];
-        IDirectDrawSurface7_Release(uploadedTexture);
+        LPDIRECTDRAWSURFACE7 mipSurface = uploadedTexture;
+        DDSURFACEDESC2 surfaceDesc = {0};
+        
+        surfaceDesc.dwSize = sizeof(surfaceDesc);
+
+        if (FAILED(hr = IDirectDrawSurface7_GetSurfaceDesc(uploadedTexture, &surfaceDesc)))
+        {
+            fprintf(stderr, "DirectDraw error 0x%x\n", hr);
+            kelpo_error(KELPOERR_API_CALL_FAILED);
+            return 0;
+        }
+
+        if (surfaceDesc.dwMipMapCount)
+        {
+            for (m = 0; m < surfaceDesc.dwMipMapCount; m++)
+            {
+                DDSCAPS2 ddsCaps = {0};
+                ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
+
+                if (SUCCEEDED(IDirectDrawSurface7_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
+                {
+                    IDirectDrawSurface7_Release(mipSurface);
+                }
+            }
+        }
+        else
+        {
+            IDirectDrawSurface7_Release(uploadedTexture);
+        }
+        
     }
 
     kelpoa_generic_stack__clear(UPLOADED_TEXTURES);

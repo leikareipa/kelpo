@@ -120,7 +120,7 @@ int kelpo_surface_direct3d_7__flip_surface(void)
     return kelpo_surface_directdraw_7__flip_surface(IS_VSYNC_ENABLED);
 }
 
-static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT kelpo_surface_direct3d_7__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -141,8 +141,7 @@ int kelpo_surface_direct3d_7__create_surface(const unsigned width,
     WINDOW_BIT_DEPTH = bpp;
     IS_VSYNC_ENABLED = (vsyncEnabled? 1 : 0);
 
-    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Direct3D 7", window_proc) ||
-        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
+    if (!(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
     {
         return 0;
     }

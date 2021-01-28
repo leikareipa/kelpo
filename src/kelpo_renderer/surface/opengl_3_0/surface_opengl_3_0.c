@@ -183,16 +183,17 @@ static void set_vsync_enabled(const int vsyncOn)
 
 int kelpo_surface_opengl_3_0__release_surface(void)
 {
-    assert((WINDOW_HANDLE &&
-            RENDER_CONTEXT) &&
-           "Attempting to release the display surface before it has been acquired."); 
-
-    if (!wglMakeCurrent(NULL, NULL) ||
-        !wglDeleteContext(RENDER_CONTEXT) ||
-        !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
+    if (WINDOW_HANDLE && RENDER_CONTEXT)
     {
-        kelpo_error(KELPOERR_API_CALL_FAILED);
-        return 0;
+        if (!wglMakeCurrent(NULL, NULL) ||
+            !wglDeleteContext(RENDER_CONTEXT) ||
+            !ReleaseDC(WINDOW_HANDLE, WINDOW_DC))
+        {
+            kelpo_error(KELPOERR_API_CALL_FAILED);
+            return 0;
+        }
+
+        RENDER_CONTEXT = 0;
     }
     
     /* Return from fullscreen.*/
@@ -208,7 +209,7 @@ int kelpo_surface_opengl_3_0__flip_surface(void)
     return 1;
 }
 
-static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT kelpo_surface_opengl_3_0__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -311,8 +312,7 @@ int kelpo_surface_opengl_3_0__create_surface(const unsigned width,
         }
     }
 
-    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL 3.0", window_proc) ||
-        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()) ||
+    if (!(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()) ||
         !(WINDOW_DC = GetDC(WINDOW_HANDLE)))
     {
         return 0;

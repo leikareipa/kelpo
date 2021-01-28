@@ -11,6 +11,10 @@
 #ifndef KELPO_RENDERER_SURFACE_DIRECT3D_5_SURFACE_DIRECT3D_5_H
 #define KELPO_RENDERER_SURFACE_DIRECT3D_5_SURFACE_DIRECT3D_5_H
 
+#include <windef.h>
+
+LRESULT kelpo_surface_direct3d_5__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam);
+
 int kelpo_surface_direct3d_5__release_surface(void);
 
 int kelpo_surface_direct3d_5__flip_surface(void);

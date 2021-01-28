@@ -15,14 +15,35 @@ static int initialize(const unsigned deviceId,
                       const unsigned screenHeight,
                       const unsigned screenBPP)
 {
-    return (kelpo_surface_opengl_1_2__create_surface(screenWidth, screenHeight, screenBPP, 1, deviceId) &&
-            kelpo_rasterizer_opengl_1_2__initialize());
+    if (!kelpo_window__create_window(screenWidth, screenHeight, RENDERER_NAME, kelpo_surface_opengl_1_2__window_message_handler))
+    {
+        goto initialization_failed;
+    }
+
+    if (!kelpo_surface_opengl_1_2__create_surface(screenWidth, screenHeight, screenBPP, 1, deviceId))
+    {
+        kelpo_surface_opengl_1_2__release_surface();
+        goto initialization_failed;
+    }
+
+    if (!kelpo_rasterizer_opengl_1_2__initialize())
+    {
+        kelpo_rasterizer_opengl_1_2__release();
+        kelpo_surface_opengl_1_2__release_surface();
+        goto initialization_failed;
+    }
+
+    return 1;
+
+    initialization_failed:
+    kelpo_window__release_window();
+    return 0;
 }
 
 static int release(void)
 {
-    return (kelpo_surface_opengl_1_2__release_surface() &&
-            kelpo_rasterizer_opengl_1_2__release() &&
+    return (kelpo_surface_opengl_1_2__release_surface() &
+            kelpo_rasterizer_opengl_1_2__release() &
             kelpo_window__release_window());
 }
 

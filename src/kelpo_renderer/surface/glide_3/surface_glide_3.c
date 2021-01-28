@@ -23,9 +23,11 @@ static HWND WINDOW_HANDLE = 0;
 
 int kelpo_surface_glide_3__release_surface(void)
 {
-    assert(GLIDE_RENDER_CONTEXT && "Can't release a NULL render context.");
-
-    grSstWinClose(GLIDE_RENDER_CONTEXT);
+    if (GLIDE_RENDER_CONTEXT)
+    {
+        grSstWinClose(GLIDE_RENDER_CONTEXT);
+        GLIDE_RENDER_CONTEXT = 0;
+    }
 
     if (!kelpo_window__release_window())
     {
@@ -42,7 +44,7 @@ int kelpo_surface_glide_3__flip_surface(void)
     return 1;
 }
 
-static LRESULT window_proc(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT kelpo_surface_glide_3__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -86,8 +88,7 @@ int kelpo_surface_glide_3__create_surface(const unsigned width,
         return 0;
     };
 
-    if (!kelpo_window__create_window(WINDOW_WIDTH, WINDOW_HEIGHT, "Glide 3", window_proc) ||
-        !(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
+    if (!(WINDOW_HANDLE = (HWND)kelpo_window__get_window_handle()))
     {
         return 0;
     }

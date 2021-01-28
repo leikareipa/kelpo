@@ -93,13 +93,9 @@ int kelpo_surface_glide_3__create_surface(const unsigned width,
         return 0;
     }
 
-    if (!ShowWindow(WINDOW_HANDLE, SW_SHOW) ||
-        !SetForegroundWindow(WINDOW_HANDLE) ||
-        !SetFocus(WINDOW_HANDLE))
-    {
-        kelpo_error(KELPOERR_API_CALL_FAILED);
-        return 0;
-    }
+    ShowWindow(WINDOW_HANDLE, SW_SHOW);
+    SetForegroundWindow(WINDOW_HANDLE);
+    SetFocus(WINDOW_HANDLE);
 
     grGlideInit();
     grSstSelect(deviceIdx);

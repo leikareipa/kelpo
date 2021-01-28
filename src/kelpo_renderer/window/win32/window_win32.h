@@ -20,4 +20,6 @@ int kelpo_window__process_window_messages(void);
 
 int kelpo_window__is_window_open(void);
 
+int kelpo_window__is_window_closing(void);
+
 #endif

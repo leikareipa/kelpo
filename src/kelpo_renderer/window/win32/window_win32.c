@@ -17,6 +17,7 @@ static HWND WINDOW_HANDLE = 0;
 static unsigned WINDOW_WIDTH = 0;
 static unsigned WINDOW_HEIGHT = 0;
 static int DOES_WINDOW_EXIST = 0;
+static int IS_WINDOW_CLOSING = 0;
 static HINSTANCE WINDOW_H_INSTANCE = 0;
 
 /* A pointer to a function provided by the creator of this window. The function
@@ -31,6 +32,11 @@ static kelpo_custom_window_message_handler_t *EXTERNAL_MESSAGE_HANDLER = 0;
 int kelpo_window__is_window_open(void)
 {
     return DOES_WINDOW_EXIST;
+}
+
+int kelpo_window__is_window_closing(void)
+{
+    return IS_WINDOW_CLOSING;
 }
 
 static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -51,10 +57,8 @@ static LRESULT CALLBACK window_message_handler(HWND windowHandle, UINT message, 
     {
         case WM_CLOSE:
         {
-            WINDOW_HANDLE = 0;
-            kelpo_window__release_window();
-
-            break;
+            IS_WINDOW_CLOSING = 1;
+            return 1;
         }
 
         default: return DefWindowProc(windowHandle, message, wParam, lParam);
@@ -97,6 +101,7 @@ int kelpo_window__release_window(void)
 
     WINDOW_H_INSTANCE = 0;
     DOES_WINDOW_EXIST = 0;
+    IS_WINDOW_CLOSING = 0;
 
     return 1;
 }

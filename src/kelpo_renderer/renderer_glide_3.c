@@ -54,6 +54,7 @@ int export_interface(struct kelpo_interface_s *const interface)
     interface->window.open = initialize;
     interface->window.release = release;
     interface->window.is_open = kelpo_window__is_window_open;
+    interface->window.is_closing = kelpo_window__is_window_closing;
     interface->window.process_messages = kelpo_window__process_window_messages;
     interface->window.flip_surface = kelpo_surface_glide_3__flip_surface;
     interface->window.get_handle = kelpo_window__get_window_handle;

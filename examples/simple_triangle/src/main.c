@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
     /* Render the triangle (until the user presses Esc).*/
     while (kelpo->window.process_messages(),
-           kelpo->window.is_open())
+           !kelpo->window.is_closing())
     {
         kelpo->rasterizer.clear_frame();
         kelpo->rasterizer.draw_triangles(&triangle, 1);

@@ -30,7 +30,7 @@ static int USER_WANTS_RENDERER_CHANGE = 0;
 
 /* If the user has requested the renderer to be changed, this will hold the
  * name of the desired renderer.*/
-static const char *NEXT_RENDERER_NAME;
+static const char *NEXT_RENDERER_NAME = NULL;
 
 /* If something goes wrong while attempting to set a new renderer, this will
  * hold the most recent error code related to that failure.*/
@@ -172,6 +172,8 @@ int main(int argc, char *argv[])
     cliArgs.windowHeight = 1080;
     cliArgs.windowBPP = 32;
     cliparse_get_params(argc, argv, &cliArgs);
+
+    NEXT_RENDERER_NAME = cliArgs.rendererName;
         
     /* Initialize Kelpo.*/
     if (!kelpo_create_interface(&kelpo, cliArgs.rendererName) ||
@@ -228,7 +230,7 @@ int main(int argc, char *argv[])
 
     render_loop:
     while (kelpo->window.process_messages(),
-           kelpo->window.is_open())
+           !kelpo->window.is_closing())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
 
@@ -241,7 +243,7 @@ int main(int argc, char *argv[])
 
             if (!use_another_renderer(kelpo, NEXT_RENDERER_NAME, &cliArgs))
             {
-                fprintf(stderr, "Failed to change the renderer. Attempting to fall back...\n");
+                fprintf(stderr, "Falling back...\n");
 
                 /* Once we've recorded the error code associated with failing to change
                  * the renderer, we can reset Kelpo's error code queue to catch any

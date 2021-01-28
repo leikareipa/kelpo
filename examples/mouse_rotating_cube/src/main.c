@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
 
     /* Render loop.*/
     while (kelpo->window.process_messages(),
-           kelpo->window.is_open())
+           !kelpo->window.is_closing())
     {
         /* Rotate the cube and transform its vertices into screen space.*/
         kelpoa_generic_stack__clear(worldSpaceTriangles);

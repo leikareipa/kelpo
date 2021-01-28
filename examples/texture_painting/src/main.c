@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 
     /* Render loop.*/
     while (kelpo->window.process_messages(),
-           kelpo->window.is_open())
+           !kelpo->window.is_closing())
     {
         static float rotX = 0, rotY = 0, rotZ = 0;
 

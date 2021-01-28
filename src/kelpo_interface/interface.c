@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-typedef void *(*dll_import_fn_t)(struct kelpo_interface_s *const);
+typedef void *(*dll_import_fn_t)(struct kelpo_interface_s *const, const unsigned);
 
 /* The current render interface. Created/initialized by the most recent call to
  * kelpo_create_interface(). Only one interface can be active at a time.*/
@@ -52,14 +52,7 @@ int kelpo_create_interface(const struct kelpo_interface_s **dst,
     get_kelpo_interface = (dll_import_fn_t)GetProcAddress(ACTIVE_INTERFACE.dllHandle, "export_interface");
     assert(get_kelpo_interface && "Malformed renderer DLL; required export not found.");
 
-    if (!get_kelpo_interface(&ACTIVE_INTERFACE))
-    {
-        /* The function call is expected to have called kelpo_error(), so we
-         * can just return.*/
-        return 0;
-    }
-
-    if (ACTIVE_INTERFACE.metadata.rendererVersionMajor != KELPO_INTERFACE_VERSION_MAJOR)
+    if (!get_kelpo_interface(&ACTIVE_INTERFACE, KELPO_INTERFACE_VERSION_MAJOR))
     {
         kelpo_error(KELPOERR_RENDERER_NOT_COMPATIBLE_WITH_INTERFACE);
         return 0;

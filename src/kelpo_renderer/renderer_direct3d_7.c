@@ -3,7 +3,6 @@
 #include <kelpo_renderer/rasterizer/direct3d_7/rasterizer_direct3d_7.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
 #include <kelpo_interface/interface.h>
-#include <kelpo_interface/error.h>
 
 static const char RENDERER_NAME[] = "Direct3D 7";
 static const unsigned RENDERER_VERSION[3] = {KELPO_INTERFACE_VERSION_MAJOR,
@@ -52,10 +51,15 @@ extern "C"
 {
 #endif
 
-/* Returns 1 on success; 0 on failure. NOTE: On failure, this function must also
- * call kelpo_error() to report a corresponding error code.*/
-int export_interface(struct kelpo_interface_s *const interface)
+/* Returns 1 on success; 0 on failure.*/
+int export_interface(struct kelpo_interface_s *const interface,
+                     const unsigned interfaceVersion)
 {
+    if (interfaceVersion != RENDERER_VERSION[0])
+    {
+        return 0;
+    }
+
     interface->window.open = initialize;
     interface->window.release = release;
     interface->window.is_open = kelpo_window__is_window_open;

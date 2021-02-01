@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     struct kelpo_polygon_triangle_s triangle;
 
     /* Default rendering options.*/
-    const char *rendererName = "opengl_1_2";
+    const char *rendererName = "opengl_1_1";
     const unsigned renderDeviceIdx = 0;
     const unsigned windowWidth = 1920;
     const unsigned windowHeight = 1080;

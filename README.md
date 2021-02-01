@@ -40,7 +40,7 @@ Renderer code is further split into three sub-categories:
 2. Window
 3. Surface
 
-Rasterizer code is responsible for rendering polygons using rasterizing functionality provided by the API (e.g. OpenGL 1.2). Exposed functions in rasterizer code use the `kelpo_rasterizer_xxxx__` prefix, where "xxxx" is the API's name (e.g. "opengl_1_2").
+Rasterizer code is responsible for rendering polygons using rasterizing functionality provided by the API (e.g. OpenGL 1.1). Exposed functions in rasterizer code use the `kelpo_rasterizer_xxxx__` prefix, where "xxxx" is the API's name (e.g. "opengl_1_1").
 
 Window code provides the means to create and manage a Win32 window in which rasterized images can be displayed to the user. Exposed functions in window code use the `kelpo_window__` prefix.
 

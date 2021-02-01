@@ -35,7 +35,7 @@ int kelpo_create_interface(const struct kelpo_interface_s **dst,
      * renderer name.*/
     KELPO_COPY_RENDERER_NAME(ACTIVE_INTERFACE.metadata.rendererName, rendererName);
 
-    if      (strcmp(rendererName, "opengl_1_2") == 0) dllFilename = "kelpo_renderer_opengl_1_2.dll";
+    if      (strcmp(rendererName, "opengl_1_1") == 0) dllFilename = "kelpo_renderer_opengl_1_1.dll";
     else if (strcmp(rendererName, "opengl_3_0") == 0) dllFilename = "kelpo_renderer_opengl_3_0.dll";
     else if (strcmp(rendererName, "glide_3")    == 0) dllFilename = "kelpo_renderer_glide_3.dll";
     else if (strcmp(rendererName, "direct3d_5") == 0) dllFilename = "kelpo_renderer_direct3d_5.dll";

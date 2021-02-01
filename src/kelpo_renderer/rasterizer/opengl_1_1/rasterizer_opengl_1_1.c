@@ -8,9 +8,10 @@
 #include <stddef.h>
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
+#include <kelpo_renderer/rasterizer/opengl_1_1/rasterizer_opengl_1_1.h>
 #include <kelpo_auxiliary/generic_stack.h>
 #include <kelpo_interface/polygon/triangle/triangle.h>
 #include <kelpo_interface/polygon/texture.h>
@@ -22,9 +23,14 @@
 /* For keeping track of where in texture memory textures have been uploaded.
  * Stack elements will be of type GLuint, which represents an OpenGL texture
  * ID as returned by glGenTextures().*/
-static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES;
+static struct kelpoa_generic_stack_s *UPLOADED_TEXTURES = NULL;
 
-int kelpo_rasterizer_opengl_1_2__initialize(void)
+/* For texture operations that need temporary storage; e.g. converting from
+ * packed to unpacked pixels. See its initialization to find out how much
+ * space it has.*/
+static uint8_t *TEXTURE_SCRATCH = NULL;
+
+int kelpo_rasterizer_opengl_1_1__initialize(void)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -39,23 +45,54 @@ int kelpo_rasterizer_opengl_1_2__initialize(void)
         glDisable(GL_GENERATE_MIPMAP);
     #endif
 
-    UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(GLuint));
+    if (!(UPLOADED_TEXTURES = kelpoa_generic_stack__create(10, sizeof(GLuint))) ||
+        !(TEXTURE_SCRATCH = malloc(4 * KELPO_TEXTURE_MAX_SIDE_LENGTH * KELPO_TEXTURE_MAX_SIDE_LENGTH)))
+    {
+        kelpo_error(KELPOERR_OUT_OF_SYSTEM_MEMORY);
+        return 0;
+    }
 
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__release(void)
+int kelpo_rasterizer_opengl_1_1__release(void)
 {
     kelpoa_generic_stack__free(UPLOADED_TEXTURES);
 
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__clear_frame(void)
+int kelpo_rasterizer_opengl_1_1__clear_frame(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return 1;
+}
+
+/* Converts the given 16-bit BGRA/5551 values into 32-bit RGBA/8888 and returns
+ * a pointer to the converted data. NOTE: The returned data will be valid only
+ * until this function is called again.*/
+static const uint8_t* bgra5551_to_rgba8888(const uint16_t *const bgra5551,
+                                           const uint32_t width,
+                                           const uint32_t height)
+{
+    uint32_t x = 0, y = 0;
+
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
+            const uint32_t srcIdx = (x + y * width);
+            const uint32_t dstIdx = (srcIdx * 4);
+            
+            TEXTURE_SCRATCH[dstIdx + 0] = (8   * ((bgra5551[srcIdx] >> 10) & 0x1f));
+            TEXTURE_SCRATCH[dstIdx + 1] = (8   * ((bgra5551[srcIdx] >> 5) & 0x1f));
+            TEXTURE_SCRATCH[dstIdx + 2] = (8   * ((bgra5551[srcIdx] >> 0) & 0x1f));
+            TEXTURE_SCRATCH[dstIdx + 3] = (255 * ((bgra5551[srcIdx] >> 15) & 0x1));
+        }
+    }
+
+    return TEXTURE_SCRATCH;
 }
 
 static int set_parameters_for_texture(const struct kelpo_polygon_texture_s *const texture)
@@ -88,17 +125,23 @@ static int upload_texture_mipmap_data(const struct kelpo_polygon_texture_s *cons
 
     assert((texture && texture->apiId) && "Invalid texture.");
 
+    assert((texture->width == texture->height) && "Expected square textures.");
+
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
 
     for (m = 0; m < texture->numMipLevels; m++)
     {
         const unsigned mipLevelSideLength = (texture->width / pow(2, m));
 
-        glTexSubImage2D(GL_TEXTURE_2D, m,
-                        0, 0,
-                        mipLevelSideLength, mipLevelSideLength,
-                        GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV,
-                        texture->mipLevel[m]);
+        glTexSubImage2D(GL_TEXTURE_2D,
+                        m,
+                        0,
+                        0,
+                        mipLevelSideLength,
+                        mipLevelSideLength,
+                        GL_RGBA,
+                        GL_UNSIGNED_BYTE,
+                        bgra5551_to_rgba8888(texture->mipLevel[m], mipLevelSideLength, mipLevelSideLength));
     }
 
     return 1;
@@ -115,25 +158,44 @@ static int upload_texture_data(const struct kelpo_polygon_texture_s *const textu
 
     assert(texture && "Attempting to process a NULL texture");
 
+    assert((texture->width == texture->height) && "Expected square textures.");
+
     glBindTexture(GL_TEXTURE_2D, texture->apiId);
 
     if (numMipLevels > 1)
     {
         for (m = 0; m < numMipLevels; m++)
         {
-            const unsigned resDiv = (pow(2, m));
-            glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, (texture->width / resDiv), (texture->height / resDiv), 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[m]);
+            const unsigned mipLevelSideLength = (texture->width / pow(2, m));
+
+            glTexImage2D(GL_TEXTURE_2D,
+                         m,
+                         GL_RGBA,
+                         mipLevelSideLength,
+                         mipLevelSideLength,
+                         0,
+                         GL_RGBA,
+                         GL_UNSIGNED_BYTE,
+                         bgra5551_to_rgba8888(texture->mipLevel[m], mipLevelSideLength, mipLevelSideLength));
         }
     }
     else
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV, texture->mipLevel[0]);
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RGBA,
+                     texture->width,
+                     texture->height,
+                     0,
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     bgra5551_to_rgba8888(texture->mipLevel[0], texture->width, texture->height));
     }
 
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_opengl_1_1__upload_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(texture && "Attempting to upload a NULL texture");
 
@@ -152,7 +214,7 @@ int kelpo_rasterizer_opengl_1_2__upload_texture(struct kelpo_polygon_texture_s *
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s *const texture)
+int kelpo_rasterizer_opengl_1_1__update_texture(struct kelpo_polygon_texture_s *const texture)
 {
     assert(texture && "Attempting to update a NULL texture");
 
@@ -171,7 +233,7 @@ int kelpo_rasterizer_opengl_1_2__update_texture(struct kelpo_polygon_texture_s *
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__unload_textures(void)
+int kelpo_rasterizer_opengl_1_1__unload_textures(void)
 {
     glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteTextures(UPLOADED_TEXTURES->count, UPLOADED_TEXTURES->data);
@@ -180,7 +242,7 @@ int kelpo_rasterizer_opengl_1_2__unload_textures(void)
     return 1;
 }
 
-int kelpo_rasterizer_opengl_1_2__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
+int kelpo_rasterizer_opengl_1_1__draw_triangles(struct kelpo_polygon_triangle_s *const triangles,
                                                 const unsigned numTriangles)
 {
     unsigned i = 0, v = 0;

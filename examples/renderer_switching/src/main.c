@@ -114,7 +114,7 @@ static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wP
             {
                 switch (wParam)
                 {
-                    case 0x31: case VK_NUMPAD1: NEXT_RENDERER_NAME = "opengl_1_2"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x31: case VK_NUMPAD1: NEXT_RENDERER_NAME = "opengl_1_1"; USER_WANTS_RENDERER_CHANGE = 1; break;
                     case 0x32: case VK_NUMPAD2: NEXT_RENDERER_NAME = "opengl_3_0"; USER_WANTS_RENDERER_CHANGE = 1; break;
                     case 0x33: case VK_NUMPAD3: NEXT_RENDERER_NAME = "direct3d_5"; USER_WANTS_RENDERER_CHANGE = 1; break;
                     case 0x34: case VK_NUMPAD4: NEXT_RENDERER_NAME = "direct3d_7"; USER_WANTS_RENDERER_CHANGE = 1; break;
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
     struct cliparse_params_s cliArgs = {0};
-    cliArgs.rendererName = "opengl_1_2";
+    cliArgs.rendererName = "opengl_1_1";
     cliArgs.windowWidth = 1920;
     cliArgs.windowHeight = 1080;
     cliArgs.windowBPP = 32;

@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
-    CLI_ARGS.rendererName = "opengl_1_2";
+    CLI_ARGS.rendererName = "opengl_1_1";
     CLI_ARGS.windowWidth = 1920;
     CLI_ARGS.windowHeight = 1080;
     CLI_ARGS.windowBPP = 32;

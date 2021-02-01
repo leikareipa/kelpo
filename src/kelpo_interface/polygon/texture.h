@@ -3,6 +3,9 @@
 
 #include <kelpo_interface/stdint.h>
 
+/* Note: Kelpo textures are expected to be square.*/
+#define KELPO_TEXTURE_MAX_SIDE_LENGTH 256
+
 struct kelpo_polygon_texture_s
 {
     unsigned width, height;

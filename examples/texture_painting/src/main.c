@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     /* Set up default rendering options, and parse the command-line to see if
      * the user has provided any overrides for them.*/
     struct cliparse_params_s cliArgs = {0};
-    cliArgs.rendererName = "opengl_1_2";
+    cliArgs.rendererName = "opengl_1_1";
     cliArgs.windowWidth = 1920;
     cliArgs.windowHeight = 1080;
     cliArgs.windowBPP = 32;

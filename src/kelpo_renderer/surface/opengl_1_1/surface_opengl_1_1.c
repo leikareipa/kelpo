@@ -7,8 +7,8 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <kelpo_renderer/surface/opengl_1_2/surface_opengl_1_2.h>
-#include <kelpo_renderer/rasterizer/opengl_1_2/rasterizer_opengl_1_2.h>
+#include <kelpo_renderer/surface/opengl_1_1/surface_opengl_1_1.h>
+#include <kelpo_renderer/rasterizer/opengl_1_1/rasterizer_opengl_1_1.h>
 #include <kelpo_renderer/window/win32/window_win32.h>
 #include <kelpo_interface/error.h>
 
@@ -56,7 +56,7 @@ static void set_opengl_vsync_enabled(const int vsyncOn)
     return;
 }
 
-int kelpo_surface_opengl_1_2__release_surface(void)
+int kelpo_surface_opengl_1_1__release_surface(void)
 {
     assert((WINDOW_HANDLE &&
             RENDER_CONTEXT) &&
@@ -76,14 +76,14 @@ int kelpo_surface_opengl_1_2__release_surface(void)
     return 1;
 }
 
-int kelpo_surface_opengl_1_2__flip_surface(void)
+int kelpo_surface_opengl_1_1__flip_surface(void)
 {
     SwapBuffers(WINDOW_DC);
 
     return 1;
 }
 
-LRESULT kelpo_surface_opengl_1_2__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT kelpo_surface_opengl_1_1__window_message_handler(HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -102,7 +102,7 @@ LRESULT kelpo_surface_opengl_1_2__window_message_handler(HWND windowHandle, UINT
     return 0;
 }
 
-int kelpo_surface_opengl_1_2__create_surface(const unsigned width,
+int kelpo_surface_opengl_1_1__create_surface(const unsigned width,
                                              const unsigned height,
                                              const unsigned bpp,
                                              const int vsyncEnabled,

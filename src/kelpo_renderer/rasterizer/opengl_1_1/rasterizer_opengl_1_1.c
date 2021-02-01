@@ -1,7 +1,7 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
  * 
- * OpenGL 1.2 rasterizer for the Kelpo renderer.
+ * OpenGL 1.1 rasterizer for the Kelpo renderer.
  * 
  */
 

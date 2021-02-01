@@ -1,7 +1,7 @@
 /*
  * 2019 Tarpeeksi Hyvae Soft
  * 
- * OpenGL 1.2 render surface for the Kelpo renderer.
+ * OpenGL 1.1 render surface for the Kelpo renderer.
  *
  */
 

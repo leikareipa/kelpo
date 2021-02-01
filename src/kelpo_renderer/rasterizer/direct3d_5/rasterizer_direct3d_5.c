@@ -129,7 +129,7 @@ int kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s *
 
     /* Verify that the new texture's data is compatible with the existing surface.*/
     {
-        DDSURFACEDESC textureSurfaceDesc;
+        DDSURFACEDESC textureSurfaceDesc = {0};
 
         textureSurfaceDesc.dwSize = sizeof(textureSurfaceDesc);
 
@@ -148,7 +148,7 @@ int kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s *
     /* Update the texture's pixel data on all mip levels.*/
     for (m = 0; m < texture->numMipLevels; m++)
     {
-        DDSURFACEDESC mipSurfaceDesc;
+        DDSURFACEDESC mipSurfaceDesc = {0};
         const unsigned mipLevelSideLength = (texture->width / pow(2, m)); /* Kelpo textures are expected to be square.*/
         
         /* Copy the texture's mip level pixel data into the DirectDraw surface.*/
@@ -208,15 +208,11 @@ int kelpo_rasterizer_direct3d_5__update_texture(struct kelpo_polygon_texture_s *
         if ((texture->numMipLevels > 1) &&
             (m < (texture->numMipLevels - 1)))
         {
-            DDSCAPS ddsCaps;
+            DDSCAPS ddsCaps = {0};
 
             ddsCaps.dwCaps = (DDSCAPS_TEXTURE | DDSCAPS_MIPMAP);
 
-            if (SUCCEEDED(hr = IDirectDrawSurface3_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
-            {
-                IDirectDrawSurface3_Release(mipSurface);
-            }
-            else
+            if (FAILED(hr = IDirectDrawSurface3_GetAttachedSurface(mipSurface, &ddsCaps, &mipSurface)))
             {
                 fprintf(stderr, "Direct3D error 0x%x\n", hr);
                 kelpo_error(KELPOERR_API_CALL_FAILED);

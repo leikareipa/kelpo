@@ -1,7 +1,7 @@
 /*
  * 2021 Tarpeeksi Hyvae Soft
  * 
- * LDemonstrates switching between Kelpo renderers on the fly.
+ * Demonstrates switching between Kelpo renderers on the fly.
  * 
  */
 
@@ -30,14 +30,10 @@ static int USER_WANTS_RENDERER_CHANGE = 0;
 
 /* If the user has requested the renderer to be changed, this will hold the
  * name of the desired renderer.*/
-static const char *NEXT_RENDERER_NAME = NULL;
+static const char *SELECTED_RENDERER_NAME = "Undefined";
 
-/* If something goes wrong while attempting to set a new renderer, this will
- * hold the most recent error code related to that failure.*/
-static enum kelpo_error_code_e RENDERER_CHANGE_ERROR_CODE = KELPOERR_ALL_GOOD;
-
-/* If we fail to set a particular renderer, its name will be recorded here.*/
-static const char *FAILED_RENDERER_NAME;
+/* For displaying rendering errors to the user.*/
+static char ERROR_STRING[512];
 
 uint32_t NUM_TEXTURES = 0;
 struct kelpo_polygon_texture_s *TEXTURES = NULL;
@@ -114,11 +110,11 @@ static LRESULT window_message_handler(HWND windowHandle, UINT message, WPARAM wP
             {
                 switch (wParam)
                 {
-                    case 0x31: case VK_NUMPAD1: NEXT_RENDERER_NAME = "opengl_1_1"; USER_WANTS_RENDERER_CHANGE = 1; break;
-                    case 0x32: case VK_NUMPAD2: NEXT_RENDERER_NAME = "opengl_3_0"; USER_WANTS_RENDERER_CHANGE = 1; break;
-                    case 0x33: case VK_NUMPAD3: NEXT_RENDERER_NAME = "direct3d_5"; USER_WANTS_RENDERER_CHANGE = 1; break;
-                    case 0x34: case VK_NUMPAD4: NEXT_RENDERER_NAME = "direct3d_7"; USER_WANTS_RENDERER_CHANGE = 1; break;
-                    case 0x35: case VK_NUMPAD5: NEXT_RENDERER_NAME = "glide_3"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x31: case VK_NUMPAD1: SELECTED_RENDERER_NAME = "opengl_1_1"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x32: case VK_NUMPAD2: SELECTED_RENDERER_NAME = "opengl_3_0"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x33: case VK_NUMPAD3: SELECTED_RENDERER_NAME = "direct3d_5"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x34: case VK_NUMPAD4: SELECTED_RENDERER_NAME = "direct3d_7"; USER_WANTS_RENDERER_CHANGE = 1; break;
+                    case 0x35: case VK_NUMPAD5: SELECTED_RENDERER_NAME = "glide_3"; USER_WANTS_RENDERER_CHANGE = 1; break;
                     default: break;
                 }
             }
@@ -153,6 +149,16 @@ static unsigned framerate(void)
     return framesPerSecond;
 }
 
+/* A function that will be called each time Kelpo reports an error.*/
+void error_callback(enum kelpo_error_code_e errorCode)
+{
+    sprintf(ERROR_STRING, "%s: %s",
+            SELECTED_RENDERER_NAME,
+            kelpo_error_string(errorCode));
+
+    return;
+}
+
 int main(int argc, char *argv[])
 {
     const struct kelpo_interface_s *kelpo = NULL;
@@ -173,15 +179,19 @@ int main(int argc, char *argv[])
     cliArgs.windowBPP = 32;
     cliparse_get_params(argc, argv, &cliArgs);
 
-    NEXT_RENDERER_NAME = cliArgs.rendererName;
-        
     /* Initialize Kelpo.*/
-    if (!kelpo_create_interface(&kelpo, cliArgs.rendererName) ||
-        !kelpo->window.open(cliArgs.renderDeviceIdx, cliArgs.windowWidth, cliArgs.windowHeight, cliArgs.windowBPP) ||
-        !kelpo->window.set_message_handler(window_message_handler))
     {
-        fprintf(stderr, "Failed to initialize Kelpo.\n");
-        goto cleanup;
+        kelpo_error_callback(error_callback);
+        
+        SELECTED_RENDERER_NAME = cliArgs.rendererName;
+
+        if (!kelpo_create_interface(&kelpo, cliArgs.rendererName) ||
+            !kelpo->window.open(cliArgs.renderDeviceIdx, cliArgs.windowWidth, cliArgs.windowHeight, cliArgs.windowBPP) ||
+            !kelpo->window.set_message_handler(window_message_handler))
+        {
+            fprintf(stderr, "Failed to initialize Kelpo.\n");
+            goto cleanup;
+        }
     }
 
     /* Load assets from disk and send them to Kelpo.*/
@@ -236,27 +246,21 @@ int main(int argc, char *argv[])
 
         if (USER_WANTS_RENDERER_CHANGE)
         {
-            /* We want to display to the user any errors that result from changing
-             * (or trying to change) the renderer, so we clear away previous errors.*/
-            kelpo_error_reset();
-            RENDERER_CHANGE_ERROR_CODE = KELPOERR_ALL_GOOD;
-
-            if (!use_another_renderer(kelpo, NEXT_RENDERER_NAME, &cliArgs))
+            if (printf("Switching to %s...\n", SELECTED_RENDERER_NAME),
+                !use_another_renderer(kelpo, SELECTED_RENDERER_NAME, &cliArgs))
             {
-                fprintf(stderr, "Falling back...\n");
-
-                /* Once we've recorded the error code associated with failing to change
-                 * the renderer, we can reset Kelpo's error code queue to catch any
-                 * relevant new errors.*/
-                RENDERER_CHANGE_ERROR_CODE = kelpo_error_peek();
-                FAILED_RENDERER_NAME = NEXT_RENDERER_NAME;
-                kelpo_error_reset();
-
-                if (!use_another_renderer(kelpo, cliArgs.rendererName, &cliArgs))
+                if (printf("Falling back to %s...\n", cliArgs.rendererName),
+                    !use_another_renderer(kelpo, cliArgs.rendererName, &cliArgs))
                 {
                     fprintf(stderr, "Failed to restore the fallback renderer. Exiting.\n");
                     goto cleanup;
                 }
+            }
+            else
+            {
+                /* Since we've now successfully switched renderers, we can remove
+                 * any previous error message.*/
+                ERROR_STRING[0] = '\0';
             }
             
             USER_WANTS_RENDERER_CHANGE = 0;
@@ -292,21 +296,11 @@ int main(int argc, char *argv[])
             kelpoa_text_mesh__print(screenSpaceTriangles, fpsString, 25, 90, 200, 200, 200, 1);
             kelpoa_text_mesh__print(screenSpaceTriangles, "Press 1-5 to set renderer", 25, 120, 255, 255, 255, 1);
 
-            if (RENDERER_CHANGE_ERROR_CODE)
+            if (strlen(ERROR_STRING))
             {
-                kelpoa_text_mesh__print(screenSpaceTriangles,
-                                        FAILED_RENDERER_NAME,
-                                        25,
-                                        (cliArgs.windowHeight - (2 * kelpoa_text_mesh__character_height()) - 25),
-                                        255, 0, 0,
-                                        1.25);
-
-                kelpoa_text_mesh__print(screenSpaceTriangles,
-                                        kelpo_error_string(RENDERER_CHANGE_ERROR_CODE),
-                                        25,
+                kelpoa_text_mesh__print(screenSpaceTriangles, ERROR_STRING, 25,
                                         (cliArgs.windowHeight - kelpoa_text_mesh__character_height() - 25),
-                                        255, 0, 0,
-                                        1.25);
+                                        255, 0, 0, 1.25);
             }
         }
 
@@ -314,12 +308,6 @@ int main(int argc, char *argv[])
         kelpo->rasterizer.clear_frame();
         kelpo->rasterizer.draw_triangles(screenSpaceTriangles->data, screenSpaceTriangles->count);
         kelpo->window.flip_surface();
-
-        if (kelpo_error_peek() != KELPOERR_ALL_GOOD)
-        {
-            fprintf(stderr, "Kelpo has reported an error.\n");
-            goto cleanup;
-        }
     }
 
     cleanup:

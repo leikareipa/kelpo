@@ -21,6 +21,17 @@ int KELPO_ERROR_VERBOSE = 1;
 static unsigned NUM_REPORTED_ERRORS = 0;
 static enum kelpo_error_code_e REPORTED_ERRORS[MAX_NUM_REPORTED_ERRORS];
 
+/* A user-settable function that will be called each time an error is reported
+ * via kelpo_report_error(). Use kelpo_error_callback() to set it.*/
+static kelpo_error_callback_fn_t *ERROR_CALLBACK = NULL;
+
+void kelpo_error_callback(kelpo_error_callback_fn_t callback)
+{
+    ERROR_CALLBACK = callback;
+
+    return;
+}
+
 unsigned kelpo_error_reset(void)
 {
     const unsigned numErrors = NUM_REPORTED_ERRORS;
@@ -83,6 +94,11 @@ void kelpo_report_error(enum kelpo_error_code_e errorCode,
                         lineNumber,
                         errorCode,
                         kelpo_error_string(errorCode));
+    }
+
+    if (ERROR_CALLBACK)
+    {
+        ERROR_CALLBACK(errorCode);
     }
 
     return;

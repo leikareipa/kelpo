@@ -21,8 +21,18 @@ extern int KELPO_ERROR_VERBOSE;
  * or from program startup if no such call has been made.*/
 enum kelpo_error_code_e kelpo_error_code(void);
 
+/* User-registerable callback function for when errors are reported.*/
+typedef void kelpo_error_callback_fn_t(enum kelpo_error_code_e errorCode);
+
 /* Returns a human-readable string corresponding to the given error code.*/
 const char* kelpo_error_string(const enum kelpo_error_code_e errorCode);
+
+/* Register a callback function that gets called every time an error is reported
+ * via kelpo_report_error() - i.e. whenever Kelpo emits an error. See
+ * kelpo_error_callback_fn_t.
+ * 
+ * To remove the callback, call this function with NULL.*/
+void kelpo_error_callback(kelpo_error_callback_fn_t callback);
 
 /* Returns the most recent error code, or KELPOERR_ALL_GOOD if there are no
  * errors in the error queue (e.g. due to no errors having been reported, or

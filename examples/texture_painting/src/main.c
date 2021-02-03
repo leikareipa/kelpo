@@ -22,27 +22,7 @@
 #include <kelpo_interface/error.h>
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
-
-/* Call this function once per frame and it'll tell you an estimate of the frame
- * rate (FPS).*/
-static unsigned framerate(void)
-{
-    static unsigned numFramesCounted = 0;
-    static unsigned framesPerSecond = 0;
-    static unsigned frameRateTimer = 0;
-
-    numFramesCounted++;
-
-    if (!frameRateTimer ||
-        (time(NULL) - frameRateTimer) >= 2)
-    {
-        framesPerSecond = (numFramesCounted / (time(NULL) - frameRateTimer));
-        frameRateTimer = time(NULL);
-        numFramesCounted = 0;
-    }
-
-    return framesPerSecond;
-}
+#include "../../common_src/framerate_estimate.h"
 
 /* Generates mipmaps for the given texture of its base mip level down to 1 x 1.*/
 static int regenerate_mipmaps_for_texture(struct kelpo_polygon_texture_s *const texture)
@@ -185,7 +165,7 @@ int main(int argc, char *argv[])
             char polyString[50];
             const unsigned numScreenPolys = screenSpaceTriangles->count;
             const unsigned numWorldPolys = worldSpaceTriangles->count;
-            const unsigned fps = framerate();
+            const unsigned fps = framerate_estimate();
 
             sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
             sprintf(polyString, "Polygons: %d/%d", ((numScreenPolys > 9999999)? 9999999 : numScreenPolys),

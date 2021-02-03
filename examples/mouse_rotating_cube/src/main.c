@@ -21,6 +21,7 @@
 #include <kelpo_interface/error.h>
 #include "../../common_src/default_window_message_handler.h"
 #include "../../common_src/parse_command_line.h"
+#include "../../common_src/framerate_estimate.h"
 
 #include <windows.h>
 #include <windowsx.h>
@@ -30,27 +31,6 @@ static struct cliparse_params_s CLI_ARGS = {0};
 
 /* For rotating the cube. These values will be modified by mouse/keyboard input.*/
 static struct { float rotX, rotY, rotZ, zoom; } CAMERA = {0, 0, 0, 4.7};
-
-/* Call this function once per frame and it'll tell you an estimate of the frame
- * rate (FPS).*/
-static unsigned framerate(void)
-{
-    static unsigned numFramesCounted = 0;
-    static unsigned framesPerSecond = 0;
-    static unsigned frameRateTimer = 0;
-
-    numFramesCounted++;
-
-    if (!frameRateTimer ||
-        ((time(NULL) - frameRateTimer) >= 2))
-    {
-        framesPerSecond = (numFramesCounted / (time(NULL) - frameRateTimer));
-        frameRateTimer = time(NULL);
-        numFramesCounted = 0;
-    }
-
-    return framesPerSecond;
-}
 
 /* A message handler that will be attached to the Kelpo window; to monitor the
  * user's mouse and keyboard inputs.*/
@@ -215,7 +195,7 @@ int main(int argc, char *argv[])
                 char polyString[50];
                 const unsigned numScreenPolys = screenSpaceTriangles->count;
                 const unsigned numWorldPolys = worldSpaceTriangles->count;
-                const unsigned fps = framerate();
+                const unsigned fps = framerate_estimate();
 
                 sprintf(fpsString, "FPS: %d", ((fps > 999)? 999 : fps));
                 sprintf(polyString, "Polygons: %d/%d", ((numScreenPolys > 9999999)? 9999999 : numScreenPolys),

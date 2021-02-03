@@ -9,6 +9,7 @@ SRC_FILES="
 src/main.c
 ../common_src/default_window_message_handler.c
 ../common_src/parse_command_line.c
+../common_src/framerate_estimate.c
 ../../src/kelpo_auxiliary/generic_stack.c
 ../../src/kelpo_auxiliary/load_kac_1_0_mesh.c
 ../../src/kelpo_auxiliary/import_kac_1_0.c
